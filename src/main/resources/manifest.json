@@ -1,0 +1,21 @@
+{
+  "Group": "Styles",
+  "Name": "King_Of_The_Hytale",
+  "Version": "0.0.1",
+  "Description": "King Of The Hill game mode, inspired by Arma 3 KOTH",
+  "Authors": [
+    {
+      "Name": "Guilherme R."
+    }
+  ],
+  "ServerVersion": "2026.02.19-1a311a592",
+  "Dependencies": {
+
+  },
+  "OptionalDependencies": {
+
+  },
+  "DisabledByDefault": false,
+  "Main": "styles.KOTH",
+  "IncludesAssetPack": true
+}
