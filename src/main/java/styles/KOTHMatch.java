@@ -6,25 +6,48 @@ import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import styles.team.KOTHTeam;
 import styles.team.name.TeamNameGenerator;
+import styles.utils.MathHelper;
+import styles.world.KOTHTeamZone;
+import styles.world.KOTHZone;
 
 import javax.annotation.Nullable;
 import java.util.*;
+
+import static styles.utils.Utils.print;
 
 public class KOTHMatch {
 
     private static boolean KOTHMatchStatus = false;
     private static final Map<UUID, KOTHTeam> Teams = new HashMap<>();
 
-    private static Vector3i zonePosition;
+    private static KOTHZone Zone;
+    private static final List<KOTHTeamZone> TeamZones = new ArrayList<>();
 
     public static void start(Vector3i startPos, int teamCount, int areaSize, Collection<PlayerRef> playerRefList, World world) {
         setKOTHMatchStatus(true);
+        Zone = new KOTHZone(startPos);
+
+        PlayerRef tempPlayerRef = (PlayerRef) playerRefList.toArray()[0];
+
+        float angleBetweenBases = 360.0f / teamCount;
+        float startAngle = 0.0f;
+        Vector3i baseLocation = new Vector3i(KOTHTeam.distanceBaseFromZone, 0, 0);
+        baseLocation = MathHelper.vectorSum(baseLocation, Zone.getPosition());
 
         List<String> nameList = TeamNameGenerator.genRandomNameList(teamCount);
-
         int i = 0;
         while(i < teamCount){
             if(KOTHTeam.createTeam(Teams, UUID.randomUUID(), nameList.get(i))) {
+                TeamZones.add(new KOTHTeamZone(baseLocation, getLastTeamAdded()));
+                print(tempPlayerRef, "[KOTH] Team " + getLastTeamAdded().getDisplayName() + " base added on Pos: " + baseLocation.x + " " + baseLocation.y + " " + baseLocation.z);
+
+                if(i < teamCount - 1) {
+                    Vector3i other = MathHelper.vectorAngleSum(startAngle, angleBetweenBases);
+                    other = MathHelper.scalarVector(other, KOTHTeam.distanceBaseFromZone);
+                    baseLocation = MathHelper.vectorSum(other, Zone.getPosition());
+                    startAngle += angleBetweenBases;
+                }
+
                 i++;
             }
         }
@@ -38,9 +61,6 @@ public class KOTHMatch {
                 i = 0;
             }
         }
-
-        zonePosition = startPos;
-
     }
 
     public static boolean join(PlayerRef playerRef) {
@@ -79,6 +99,8 @@ public class KOTHMatch {
     public static Map<UUID, KOTHTeam> getTeams(){ return Teams; }
 
     public static int getTeamPlayerCount(KOTHTeam team) { return team.getPlayerCount(); }
+
+    public static KOTHTeam getLastTeamAdded() { return (KOTHTeam) Teams.values().toArray()[Teams.size() - 1]; }
 
     @Nullable
     public static KOTHTeam findPlayerTeam(PlayerRef playerRef){

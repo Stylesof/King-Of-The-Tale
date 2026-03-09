@@ -1,0 +1,20 @@
+package styles.world;
+
+import com.hypixel.hytale.math.vector.Vector3i;
+import styles.team.KOTHTeam;
+
+public class KOTHTeamZone extends KOTHZone {
+
+    private final KOTHTeam ownerTeam;
+
+    public KOTHTeamZone(Vector3i zonePosition, KOTHTeam owner) {
+        super(zonePosition);
+        this.ownerTeam = owner;
+    }
+
+    @Override
+    public void Tick() {
+        super.Tick();
+
+    }
+}

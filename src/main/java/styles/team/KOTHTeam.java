@@ -12,6 +12,8 @@ public class KOTHTeam {
     private final Collection<PlayerRef> playerList = new ArrayList<>();
     private final String displayName;
 
+    public static final int distanceBaseFromZone = 100;
+
     public KOTHTeam(UUID id, String displayName){
         this.teamID = id;
         this.displayName = displayName;
