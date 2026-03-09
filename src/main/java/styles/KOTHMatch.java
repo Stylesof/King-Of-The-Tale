@@ -1,5 +1,7 @@
 package styles;
 
+import com.hypixel.hytale.math.vector.Vector3d;
+import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
@@ -14,11 +16,12 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 import static styles.utils.Utils.print;
+import static styles.utils.Utils.printL;
 
 public class KOTHMatch {
 
     private static boolean KOTHMatchStatus = false;
-    private static final Map<UUID, KOTHTeam> Teams = new HashMap<>();
+    private static final LinkedHashMap<UUID, KOTHTeam> Teams = new LinkedHashMap<>();
 
     private static KOTHZone Zone;
     private static final List<KOTHTeamZone> TeamZones = new ArrayList<>();
@@ -32,20 +35,19 @@ public class KOTHMatch {
         float angleBetweenBases = 360.0f / teamCount;
         float startAngle = 0.0f;
         Vector3i baseLocation = new Vector3i(KOTHTeam.distanceBaseFromZone, 0, 0);
-        baseLocation = MathHelper.vectorSum(baseLocation, Zone.getPosition());
+        baseLocation = MathHelper.vectorSum(baseLocation.toVector3d(), Zone.getPosition().toVector3d()).ceil().toVector3i();
 
         List<String> nameList = TeamNameGenerator.genRandomNameList(teamCount);
         int i = 0;
         while(i < teamCount){
             if(KOTHTeam.createTeam(Teams, UUID.randomUUID(), nameList.get(i))) {
                 TeamZones.add(new KOTHTeamZone(baseLocation, getLastTeamAdded()));
-                print(tempPlayerRef, "[KOTH] Team " + getLastTeamAdded().getDisplayName() + " base added on Pos: " + baseLocation.x + " " + baseLocation.y + " " + baseLocation.z);
 
                 if(i < teamCount - 1) {
-                    Vector3i other = MathHelper.vectorAngleSum(startAngle, angleBetweenBases);
-                    other = MathHelper.scalarVector(other, KOTHTeam.distanceBaseFromZone);
-                    baseLocation = MathHelper.vectorSum(other, Zone.getPosition());
                     startAngle += angleBetweenBases;
+                    Vector3d other = MathHelper.vectorAngleSum(startAngle);
+                    other = MathHelper.scalarVector(other, KOTHTeam.distanceBaseFromZone);
+                    baseLocation = MathHelper.vectorSum(other, Zone.getPosition().toVector3d()).ceil().toVector3i();
                 }
 
                 i++;
@@ -102,7 +104,7 @@ public class KOTHMatch {
 
     public static int getTeamPlayerCount(KOTHTeam team) { return team.getPlayerCount(); }
 
-    public static KOTHTeam getLastTeamAdded() { return (KOTHTeam) Teams.values().toArray()[Teams.size() - 1]; }
+    public static KOTHTeam getLastTeamAdded() { return Teams.lastEntry().getValue(); }
 
     @Nullable
     public static KOTHTeam findPlayerTeam(PlayerRef playerRef){

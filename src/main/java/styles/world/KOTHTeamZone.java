@@ -1,5 +1,7 @@
 package styles.world;
 
+import com.hypixel.hytale.math.vector.Vector3d;
+import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
 import styles.team.KOTHTeam;
 
@@ -17,4 +19,6 @@ public class KOTHTeamZone extends KOTHZone {
         super.Tick();
 
     }
+
+    public KOTHTeam getOwner() { return ownerTeam; }
 }
