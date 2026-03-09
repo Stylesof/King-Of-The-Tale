@@ -11,6 +11,8 @@ import com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayer
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import styles.commands.team.KOTHTeamCommand;
+import styles.team.KOTHTeam;
 
 import javax.annotation.Nonnull;
 
@@ -24,6 +26,8 @@ public class KOTHCommand extends AbstractCommandCollection {
 
         this.addSubCommand(new KOTHStartCommand());
         this.addSubCommand(new KOTHStopCommand());
+
+        this.addSubCommand(new KOTHTeamCommand());
     }
 
 

@@ -2,10 +2,7 @@ package styles.commands;
 
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.basecommands.CommandBase;
-import com.hypixel.hytale.server.core.plugin.JavaPlugin;
-import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
-import styles.utils.Utils;
-import styles.KOTH;
+import styles.KOTHMatch;
 
 import javax.annotation.Nonnull;
 
@@ -19,9 +16,11 @@ public class KOTHStopCommand extends CommandBase {
 
     @Override
     protected void executeSync(@Nonnull CommandContext commandContext) {
-        if(!KOTH.getKOTHMatchStatus()){
-            print(commandContext, "There isn't an KOTH Match happening at the moment!");
-            return;
+        if(!KOTHMatch.getKOTHMatchStatus()){
+            print(commandContext, "[KOTH] There isn't any match happening in the moment!");
+        }else{
+            KOTHMatch.stop();
+            print(commandContext, "[KOTH] Stopped the active KOTH match!");
         }
     }
 }
