@@ -7,14 +7,12 @@ import com.hypixel.hytale.server.core.command.system.arguments.system.OptionalAr
 import com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg;
 import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractAsyncPlayerCommand;
-import com.hypixel.hytale.server.core.command.system.basecommands.CommandBase;
-import com.hypixel.hytale.server.core.plugin.JavaPlugin;
-import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import styles.KOTH;
+import styles.KOTHMatch;
+import styles.team.KOTHTeam;
 
 import javax.annotation.Nonnull;
 
@@ -39,8 +37,8 @@ public class KOTHStartCommand extends AbstractAsyncPlayerCommand {
     @Nonnull
     @Override
     protected CompletableFuture<Void> executeAsync(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        if(KOTH.getKOTHMatchStatus()){
-            print(commandContext, "Has already an KOTH Match happening!");
+        if(KOTHMatch.getKOTHMatchStatus()){
+            print(commandContext, "[KOTH] Has already an KOTH Match happening!");
             return CompletableFuture.completedFuture(null);
         }
 
@@ -49,12 +47,12 @@ public class KOTHStartCommand extends AbstractAsyncPlayerCommand {
         String _world_name = world_name.get(commandContext);
 
         if(_area_size < 100 || _area_size > 1000) {
-            print(commandContext, "Invalid area size value! Use: (min: 100, max: 1000)");
+            print(commandContext, "[KOTH] Invalid area size value! Use: (min: 100, max: 1000)");
             return CompletableFuture.completedFuture(null);
         }
 
         if(_team_qnt < 1 || _team_qnt > 5) {
-            print(commandContext, "Invalid team quantity value! Use: (min: 1, max: 5)");
+            print(commandContext, "[KOTH] Invalid team quantity value! Use: (min: 1, max: 5)");
             return CompletableFuture.completedFuture(null);
         }
 
@@ -65,12 +63,20 @@ public class KOTHStartCommand extends AbstractAsyncPlayerCommand {
         //print(commandContext, "WorldName: " + _world_name);
 
         if(Universe.get().getWorld(_world_name) == null) {
-            print(commandContext, "Invalid World! Use: /world list to see all worlds available");
+            print(commandContext, "[KOTH] Invalid World! Use: /world list to see all worlds available");
             return CompletableFuture.completedFuture(null);
         }else{
             if(Universe.get().isWorldLoadable(_world_name)) {
                 // World exists and or loaded
-
+                World worldStart = Universe.get().getWorld(_world_name);
+                KOTHMatch.start(
+                        playerRef.getTransform().getPosition().toVector3i(),
+                        _team_qnt,
+                        _area_size,
+                        world.getPlayerRefs(),
+                        worldStart
+                );
+                print(commandContext, "[KOTH] Started an KOTH match!");
             }
         }
 
