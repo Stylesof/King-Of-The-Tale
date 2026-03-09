@@ -51,7 +51,7 @@ public class KOTHStartCommand extends AbstractAsyncPlayerCommand {
             return CompletableFuture.completedFuture(null);
         }
 
-        if(_team_qnt < 1 || _team_qnt > 5) {
+        if(_team_qnt < 2 || _team_qnt > 5) {
             print(commandContext, "[KOTH] Invalid team quantity value! Use: (min: 1, max: 5)");
             return CompletableFuture.completedFuture(null);
         }
