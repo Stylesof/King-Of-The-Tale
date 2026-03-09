@@ -1,14 +1,13 @@
 package styles;
 
 import com.hypixel.hytale.math.vector.Vector3i;
-import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import styles.team.KOTHTeam;
 import styles.team.name.TeamNameGenerator;
 
 import javax.annotation.Nullable;
-import java.awt.geom.Point2D;
 import java.util.*;
 
 public class KOTHMatch {
@@ -25,7 +24,7 @@ public class KOTHMatch {
 
         int i = 0;
         while(i < teamCount){
-            if(KOTHTeam.createTeam(UUID.randomUUID(), Teams, nameList.get(i))) {
+            if(KOTHTeam.createTeam(Teams, UUID.randomUUID(), nameList.get(i))) {
                 i++;
             }
         }
@@ -40,16 +39,25 @@ public class KOTHMatch {
             }
         }
 
+        zonePosition = startPos;
+
     }
 
-    public static boolean join() {
-        if(getKOTHMatchStatus()){
-
-
-
-        }else{
+    public static boolean join(PlayerRef playerRef) {
+        if(!getKOTHMatchStatus()){
             return false;
         }
+
+        KOTHTeam choosenTeam = (KOTHTeam) Teams.values().toArray()[0];
+        int playerCounter = Universe.get().getPlayerCount();
+        for(KOTHTeam team : Teams.values()){
+            if(team.getPlayerCount() < playerCounter){
+                playerCounter = team.getPlayerCount();
+                choosenTeam = team;
+            }
+        }
+
+        choosenTeam.addPlayerRef(playerRef);
 
         return true;
     }
@@ -69,6 +77,8 @@ public class KOTHMatch {
     }
 
     public static Map<UUID, KOTHTeam> getTeams(){ return Teams; }
+
+    public static int getTeamPlayerCount(KOTHTeam team) { return team.getPlayerCount(); }
 
     @Nullable
     public static KOTHTeam findPlayerTeam(PlayerRef playerRef){
