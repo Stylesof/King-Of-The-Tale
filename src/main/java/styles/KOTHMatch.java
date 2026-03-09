@@ -85,6 +85,8 @@ public class KOTHMatch {
     public static void stop() {
         setKOTHMatchStatus(false);
         Teams.clear();
+        TeamZones.clear();
+        Zone = null;
     }
 
 
