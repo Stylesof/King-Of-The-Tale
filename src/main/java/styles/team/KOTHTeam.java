@@ -10,10 +10,11 @@ public class KOTHTeam {
 
     public final UUID teamID;
     private final Collection<PlayerRef> playerList = new ArrayList<>();
-    private String displayName;
+    private final String displayName;
 
-    public KOTHTeam(UUID id){
+    public KOTHTeam(UUID id, String displayName){
         this.teamID = id;
+        this.displayName = displayName;
     }
 
     // Add player to the Team
@@ -25,19 +26,18 @@ public class KOTHTeam {
         return playerList.contains(playerRef);
     }
 
-    public static boolean createTeam(UUID id, Map<UUID, KOTHTeam> teamList, String displayName) {
-        if(teamList.containsKey(id)){
+    public static boolean createTeam(Map<UUID, KOTHTeam> teamListRef, UUID id, String displayName) {
+        if(teamListRef.containsKey(id)){
             printL("[KOTH] There is an Team with that ID already!");
             return false;
         }else{
-            teamList.put(id, new KOTHTeam(id));
-            teamList.get(id).setDisplayName(displayName);
+            teamListRef.put(id, new KOTHTeam(id, displayName));
             return true;
         }
     }
 
     public String getDisplayName() { return displayName; }
 
-    public void setDisplayName(String name) { this.displayName = name; }
+    public int getPlayerCount() { return playerList.size(); }
 
 }

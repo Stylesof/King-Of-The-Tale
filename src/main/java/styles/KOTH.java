@@ -1,8 +1,10 @@
 package styles;
 
+import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import styles.commands.KOTHCommand;
+import styles.events.OnPlayerConnectEvent;
 
 import javax.annotation.Nonnull;
 
@@ -18,6 +20,8 @@ public class KOTH extends JavaPlugin {
     @Override
     protected void setup() {
         this.getCommandRegistry().registerCommand(new KOTHCommand());
+
+        this.getEventRegistry().registerGlobal(PlayerConnectEvent.class, OnPlayerConnectEvent::onPlayerConnect);
     }
 
     @Override

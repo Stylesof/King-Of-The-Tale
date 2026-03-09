@@ -3,16 +3,19 @@ package styles.utils;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
 
 import javax.annotation.Nonnull;
 import java.util.logging.Level;
 
 public class Utils {
 
-    public static void print(@Nonnull CommandContext cmdctx, String msg){
-
+    public static void print(@Nonnull CommandContext cmdctx, String msg) {
         cmdctx.sendMessage(Message.raw(msg));
+    }
 
+    public static void print(@Nonnull PlayerRef playerRef, String msg) {
+        playerRef.sendMessage(Message.raw(msg));
     }
 
     public static void printL(String message, Level level){
