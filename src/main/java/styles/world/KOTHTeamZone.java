@@ -14,11 +14,7 @@ public class KOTHTeamZone extends KOTHZone {
         this.ownerTeam = owner;
     }
 
-    @Override
-    public void Tick() {
-        super.Tick();
 
-    }
 
     public KOTHTeam getOwner() { return ownerTeam; }
 }

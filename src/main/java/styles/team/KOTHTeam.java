@@ -40,6 +40,8 @@ public class KOTHTeam {
 
     public String getDisplayName() { return displayName; }
 
+    public Collection<PlayerRef> getPlayerList() { return playerList; }
+
     public int getPlayerCount() { return playerList.size(); }
 
 }
