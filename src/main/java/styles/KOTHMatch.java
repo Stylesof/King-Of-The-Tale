@@ -4,12 +4,22 @@ import com.hypixel.hytale.component.ArchetypeChunk;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.math.block.BlockUtil;
+import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
+import com.hypixel.hytale.server.core.asset.type.fluid.Fluid;
+import com.hypixel.hytale.server.core.command.commands.world.chunk.ChunkForceTickCommand;
+import com.hypixel.hytale.server.core.command.commands.world.chunk.ChunkLoadCommand;
+import com.hypixel.hytale.server.core.entity.entities.BlockEntity;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.chunk.BlockChunk;
+import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
+import com.hypixel.hytale.server.core.universe.world.commands.block.BlockSetTickingCommand;
+import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import styles.team.KOTHTeam;
@@ -28,6 +38,7 @@ import static styles.util.PrintMacros.printL;
 public class KOTHMatch {
 
     private static boolean KOTHMatchStatus = false;
+    private static boolean toStop = false;
     private static final LinkedHashMap<UUID, KOTHTeam> Teams = new LinkedHashMap<>();
 
     private static KOTHZone Zone;
@@ -75,9 +86,22 @@ public class KOTHMatch {
             // Team Base (if its in air, try catch the ground,
             // if doesn't have an ground, return failed to
             // create a base and stop the match
-            BlockType block = world.getBlockType(team.getBaseZone().getPosition());
-            if(BlockType.getAssetMap().getAsset("AIR") == block){
-                print(playerRef, "[KOTH] The Base is in air!");
+            Vector3i pos = team.getBaseZone().getPosition();
+            BlockType block = world.getBlockType(pos);
+            int fluid = world.getFluidId(pos.x, pos.y, pos.z);
+
+            if(block != null){
+                print(playerRef, "[KOTH] Your Base block is: " + block.getId());
+
+                Vector3i newPos = new Vector3i(pos);
+
+                while(block.getId().equals("Empty") && fluid == 0) {
+
+                    newPos.subtract(0, 1, 0);
+                    block = world.getBlockType(newPos);
+                    fluid = world.getFluidId(newPos.x, newPos.y, newPos.z);
+
+                }
             }
             // ==============================
         }
@@ -108,6 +132,13 @@ public class KOTHMatch {
                             @Nonnull Store<EntityStore> store, @Nonnull CommandBuffer<EntityStore> commandBuffer) {
 
         if(!KOTHMatch.getKOTHMatchStatus()) return;
+        if(toStop) {
+            KOTHMatch.setKOTHMatchStatus(false);
+            Teams.clear();
+            Zone = null;
+            toStop = false;
+            return;
+        }
 
         Ref<EntityStore> ref = archetypeChunk.getReferenceTo(index);
 
@@ -134,27 +165,23 @@ public class KOTHMatch {
                     zone.getPlayersInZone().remove(player);
                 }
             } else if (npc != null) {
-                Vector3d position = npc.getOldPosition();
-                if (zone.isInside(position)) {
-                    printL("[KOTH Debug] Entity \"" + npc.getRoleName() + "\" is inside of an base!");
-                    zone.getNpcsInZone().add(npc);
-                }else{
-                    zone.getNpcsInZone().remove(npc);
-                }
+                //Vector3d position = npc.getOldPosition();
+                //if (zone.isInside(position)) {
+                //    zone.getNpcsInZone().add(npc);
+                //}else{
+                //    zone.getNpcsInZone().remove(npc);
+                //}
             }
         }
 
-        if(Zone.isInside(player.getTransform().getPosition())) {
+        if(player != null && Zone.isInside(player.getTransform().getPosition())) {
             print(player, "[KOTH] You are inside of the main Zone!");
         }
     }
 
     // MATCH STOP
     public static void stop() {
-        setKOTHMatchStatus(false);
-        //TeamZones.clear();
-        Teams.clear();
-        Zone = null;
+        toStop = true;
     }
 
     public static boolean getKOTHMatchStatus() {
