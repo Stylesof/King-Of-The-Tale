@@ -8,7 +8,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import javax.annotation.Nonnull;
 import java.util.logging.Level;
 
-public class Utils {
+public class PrintMacros {
 
     public static void print(@Nonnull CommandContext cmdctx, String msg) {
         cmdctx.sendMessage(Message.raw(msg));
@@ -18,6 +18,7 @@ public class Utils {
         playerRef.sendMessage(Message.raw(msg));
     }
 
+    // PRINT TO THE LOGGER
     public static void printL(String message, Level level){
         HytaleLogger.getLogger().at(level).log(message);
     }

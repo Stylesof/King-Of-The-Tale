@@ -1,21 +1,29 @@
 package styles;
 
+import com.hypixel.hytale.component.ArchetypeChunk;
+import com.hypixel.hytale.component.CommandBuffer;
+import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import styles.team.KOTHTeam;
 import styles.team.name.TeamNameGenerator;
 import styles.util.MathHelper;
 import styles.world.KOTHTeamZone;
 import styles.world.KOTHZone;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-import static styles.util.Utils.print;
-import static styles.util.Utils.printL;
+import static styles.util.PrintMacros.print;
+import static styles.util.PrintMacros.printL;
 
 public class KOTHMatch {
 
@@ -23,8 +31,9 @@ public class KOTHMatch {
     private static final LinkedHashMap<UUID, KOTHTeam> Teams = new LinkedHashMap<>();
 
     private static KOTHZone Zone;
-    private static final List<KOTHTeamZone> TeamZones = new ArrayList<>();
+    //private static final List<KOTHTeamZone> TeamZones = new ArrayList<>();
 
+    // MATCH START
     public static void start(Vector3i startPos, int teamCount, int areaRadius, List<PlayerRef> playerRefList, World world) {
         setKOTHMatchStatus(true);
         Zone = new KOTHZone(startPos);
@@ -41,14 +50,13 @@ public class KOTHMatch {
         List<String> nameList = TeamNameGenerator.genRandomNameList(teamCount);
         int i = 0;
         while(i < teamCount){
-            if(KOTHTeam.createTeam(Teams, UUID.randomUUID(), nameList.get(i))) {
-                TeamZones.add(new KOTHTeamZone(baseLocation, getLastTeamAdded()));
+            if(KOTHTeam.createTeam(Teams, UUID.randomUUID(), nameList.get(i), baseLocation)) {
 
                 print(tempPlayerRef, "[KOTH] Base of team \"" + getLastTeamAdded().getDisplayName() + "\" created on: (" + baseLocation.x + ", " + baseLocation.y + ", " + baseLocation.z + ")");
 
                 if(i < teamCount - 1) {
                     startAngle += angleBetweenBases;
-                    Vector3d other = MathHelper.convertAngleToVector(startAngle);
+                    Vector3d other = MathHelper.convertAngleToUnitVector(startAngle);
                     other = MathHelper.scalarVector(other, distanceZoneBase);
                     baseLocation = MathHelper.vectorSum(other, Zone.getPosition().toVector3d()).ceil().toVector3i();
                 }
@@ -62,12 +70,20 @@ public class KOTHMatch {
             KOTHTeam team = (KOTHTeam) Teams.values().toArray()[i++];
             team.addPlayerRef(playerRef);
 
-            if(!(i < Teams.size())){
-                i = 0;
+            // ==============================
+            // Use that to prepare the region for the
+            // Team Base (if its in air, try catch the ground,
+            // if doesn't have an ground, return failed to
+            // create a base and stop the match
+            BlockType block = world.getBlockType(team.getBaseZone().getPosition());
+            if(BlockType.getAssetMap().getAsset("AIR") == block){
+                print(playerRef, "[KOTH] The Base is in air!");
             }
+            // ==============================
         }
     }
 
+    // MATCH PLAYER JOIN
     public static boolean join(PlayerRef playerRef) {
         if(!getKOTHMatchStatus()){
             return false;
@@ -87,19 +103,59 @@ public class KOTHMatch {
         return true;
     }
 
-    public static void tick() {
+    // MATCH TICK
+    public static void tick(float dt, int index, @Nonnull ArchetypeChunk<EntityStore> archetypeChunk,
+                            @Nonnull Store<EntityStore> store, @Nonnull CommandBuffer<EntityStore> commandBuffer) {
+
         if(!KOTHMatch.getKOTHMatchStatus()) return;
 
+        Ref<EntityStore> ref = archetypeChunk.getReferenceTo(index);
 
+        PlayerRef player = store.getComponent(ref, PlayerRef.getComponentType());
+        NPCEntity npc = store.getComponent(ref, NPCEntity.getComponentType());
+
+        for(KOTHTeam team : Teams.values()) {
+            KOTHTeamZone zone = team.getBaseZone();
+            if (player != null && player.isValid()) {
+                Vector3d position = player.getTransform().getPosition();
+                if (zone.isInside(position)) {
+                    print(player, "[KOTH] You are inside of an base!");
+
+                    zone.getPlayersInZone().add(player);
+
+                    if (KOTHMatch.getPlayerTeam(player) != null) {
+                        if (zone.getOwner() != KOTHMatch.getPlayerTeam(player)) {
+                            print(player, "[KOTH] But it's not your base!");
+                        }
+                    } else {
+                        print(player, "[KOTH] You are not, in a team!");
+                    }
+                }else{
+                    zone.getPlayersInZone().remove(player);
+                }
+            } else if (npc != null) {
+                Vector3d position = npc.getOldPosition();
+                if (zone.isInside(position)) {
+                    printL("[KOTH Debug] Entity \"" + npc.getRoleName() + "\" is inside of an base!");
+                    zone.getNpcsInZone().add(npc);
+                }else{
+                    zone.getNpcsInZone().remove(npc);
+                }
+            }
+        }
+
+        if(Zone.isInside(player.getTransform().getPosition())) {
+            print(player, "[KOTH] You are inside of the main Zone!");
+        }
     }
 
+    // MATCH STOP
     public static void stop() {
         setKOTHMatchStatus(false);
-        TeamZones.clear();
+        //TeamZones.clear();
         Teams.clear();
         Zone = null;
     }
-
 
     public static boolean getKOTHMatchStatus() {
         return KOTHMatchStatus;
@@ -111,21 +167,22 @@ public class KOTHMatch {
 
     public static Map<UUID, KOTHTeam> getTeams(){ return Teams; }
 
-    public static int getTeamPlayerCount(KOTHTeam team) { return team.getPlayerCount(); }
-
     public static KOTHTeam getLastTeamAdded() { return Teams.lastEntry().getValue(); }
 
+    public static int getTeamPlayerCount(KOTHTeam team) { return team.getPlayerCount(); }
+
+    //public static List<KOTHTeamZone> getTeamZones() { return TeamZones; }
+
     @Nullable
-    public static KOTHTeam findPlayerTeam(PlayerRef playerRef){
+    public static KOTHTeam getPlayerTeam(PlayerRef playerRef) {
         if(getKOTHMatchStatus()){
             for(KOTHTeam team : Teams.values()){
-                if(team.containsPlayerRef(playerRef)){
+                if(team.containsPlayer(playerRef)){
                     return team;
                 }
             }
         }
 
-        return  null;
+        return null;
     }
-
 }
