@@ -7,15 +7,15 @@ import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import styles.team.KOTHTeam;
 import styles.team.name.TeamNameGenerator;
-import styles.utils.MathHelper;
+import styles.util.MathHelper;
 import styles.world.KOTHTeamZone;
 import styles.world.KOTHZone;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
-import static styles.utils.Utils.print;
-import static styles.utils.Utils.printL;
+import static styles.util.Utils.print;
+import static styles.util.Utils.printL;
 
 public class KOTHMatch {
 

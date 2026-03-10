@@ -4,7 +4,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 
 import java.util.*;
 
-import static styles.utils.Utils.printL;
+import static styles.util.Utils.printL;
 
 public class KOTHTeam {
 

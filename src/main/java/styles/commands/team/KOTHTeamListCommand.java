@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 
 import java.util.concurrent.CompletableFuture;
 
-import static styles.utils.Utils.print;
+import static styles.util.Utils.print;
 
 public class KOTHTeamListCommand extends AbstractAsyncPlayerCommand {
 

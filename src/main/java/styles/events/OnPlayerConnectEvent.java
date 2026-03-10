@@ -4,7 +4,7 @@ import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import styles.KOTHMatch;
 
-import static styles.utils.Utils.print;
+import static styles.util.Utils.print;
 
 public class OnPlayerConnectEvent {
 
