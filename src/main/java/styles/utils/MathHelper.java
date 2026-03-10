@@ -1,12 +1,10 @@
 package styles.utils;
 
 import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.math.vector.Vector3f;
-import com.hypixel.hytale.math.vector.Vector3i;
 
 public class MathHelper {
 
-    public static Vector3d vectorAngleSum(float angleInDegree) {
+    public static Vector3d convertAngleToVector(float angleInDegree) {
 
         double angle = Math.toRadians(angleInDegree);
 

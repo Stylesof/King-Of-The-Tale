@@ -73,7 +73,7 @@ public class KOTHStartCommand extends AbstractAsyncPlayerCommand {
                         playerRef.getTransform().getPosition().toVector3i(),
                         _team_qnt,
                         _area_size,
-                        world.getPlayerRefs(),
+                        world.getPlayerRefs().stream().toList(),
                         worldStart
                 );
                 print(commandContext, "[KOTH] Started an KOTH match!");
