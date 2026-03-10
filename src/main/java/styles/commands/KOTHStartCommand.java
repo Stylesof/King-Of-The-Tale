@@ -12,13 +12,12 @@ import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import styles.KOTHMatch;
-import styles.team.KOTHTeam;
 
 import javax.annotation.Nonnull;
 
 import java.util.concurrent.CompletableFuture;
 
-import static styles.utils.Utils.print;
+import static styles.util.Utils.print;
 
 public class KOTHStartCommand extends AbstractAsyncPlayerCommand {
 

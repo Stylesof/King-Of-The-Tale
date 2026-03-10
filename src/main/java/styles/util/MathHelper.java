@@ -1,4 +1,4 @@
-package styles.utils;
+package styles.util;
 
 import com.hypixel.hytale.math.vector.Vector3d;
 

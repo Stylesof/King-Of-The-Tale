@@ -1,4 +1,4 @@
-package styles.utils;
+package styles.util;
 
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.Message;
