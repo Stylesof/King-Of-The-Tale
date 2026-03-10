@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static styles.util.Utils.printL;
+import static styles.util.PrintMacros.printL;
 
 public class TeamNameGenerator {
 

@@ -5,17 +5,21 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import styles.commands.KOTHCommand;
 import styles.events.OnPlayerConnectEvent;
+import styles.util.log.LogTypes;
+import styles.util.log.LogTypesDebug;
 import styles.world.tick.TickHandler;
 
 import javax.annotation.Nonnull;
 
-import static styles.util.Utils.printL;
+import static styles.util.PrintMacros.printL;
+import static styles.util.log.PrintLog.printLog;
+import static styles.util.log.PrintLog.printLogDebug;
 
 public class KOTH extends JavaPlugin {
 
     public KOTH(@Nonnull JavaPluginInit init) {
         super(init);
-        printL("Loaded!");
+        printLogDebug(LogTypesDebug.KOTHLoadSucess);
     }
 
     @Override

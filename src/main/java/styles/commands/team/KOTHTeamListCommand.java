@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 
 import java.util.concurrent.CompletableFuture;
 
-import static styles.util.Utils.print;
+import static styles.util.PrintMacros.print;
 
 public class KOTHTeamListCommand extends AbstractAsyncPlayerCommand {
 
@@ -51,7 +51,7 @@ public class KOTHTeamListCommand extends AbstractAsyncPlayerCommand {
                     message += team.getDisplayName();
                 }
 
-                if(team.containsPlayerRef(playerRef)){
+                if(team.containsPlayer(playerRef)){
                     print(commandContext, message + " (your team)");
                 }else{
                     print(commandContext, message);

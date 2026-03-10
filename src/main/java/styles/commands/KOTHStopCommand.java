@@ -6,7 +6,7 @@ import styles.KOTHMatch;
 
 import javax.annotation.Nonnull;
 
-import static styles.util.Utils.print;
+import static styles.util.PrintMacros.print;
 
 public class KOTHStopCommand extends CommandBase {
 

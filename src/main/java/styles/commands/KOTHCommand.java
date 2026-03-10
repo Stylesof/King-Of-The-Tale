@@ -3,7 +3,7 @@ package styles.commands;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractCommandCollection;
 import styles.commands.team.KOTHTeamCommand;
 
-import static styles.util.Utils.print;
+import static styles.util.PrintMacros.print;
 
 public class KOTHCommand extends AbstractCommandCollection {
 

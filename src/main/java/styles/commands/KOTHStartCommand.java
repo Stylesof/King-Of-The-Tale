@@ -17,7 +17,7 @@ import javax.annotation.Nonnull;
 
 import java.util.concurrent.CompletableFuture;
 
-import static styles.util.Utils.print;
+import static styles.util.PrintMacros.print;
 
 public class KOTHStartCommand extends AbstractAsyncPlayerCommand {
 
