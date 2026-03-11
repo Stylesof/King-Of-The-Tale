@@ -3,28 +3,26 @@ package styles;
 import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
-import styles.commands.KOTHCommand;
+import styles.commands.KOTTCommand;
 import styles.events.OnPlayerConnectEvent;
-import styles.util.log.LogTypes;
 import styles.util.log.LogTypesDebug;
 import styles.world.tick.TickHandler;
 
 import javax.annotation.Nonnull;
 
 import static styles.util.PrintMacros.printL;
-import static styles.util.log.PrintLog.printLog;
 import static styles.util.log.PrintLog.printLogDebug;
 
-public class KOTH extends JavaPlugin {
+public class KOTT extends JavaPlugin {
 
-    public KOTH(@Nonnull JavaPluginInit init) {
+    public KOTT(@Nonnull JavaPluginInit init) {
         super(init);
-        printLogDebug(LogTypesDebug.KOTHLoadSucess);
+        printLogDebug(LogTypesDebug.KOTTLoadSuccess);
     }
 
     @Override
     protected void setup() {
-        this.getCommandRegistry().registerCommand(new KOTHCommand());
+        this.getCommandRegistry().registerCommand(new KOTTCommand());
 
         this.getEventRegistry().registerGlobal(PlayerConnectEvent.class, OnPlayerConnectEvent::onPlayerConnect);
 

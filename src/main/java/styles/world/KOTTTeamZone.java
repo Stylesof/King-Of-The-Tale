@@ -1,19 +1,16 @@
 package styles.world;
 
-import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
-import styles.KOTH;
-import styles.team.KOTHTeam;
+import styles.team.KOTTTeam;
 
-public class KOTHTeamZone extends KOTHZone {
+public class KOTTTeamZone extends KOTTZone {
 
-    private final KOTHTeam owner;
+    private final KOTTTeam owner;
 
-    public KOTHTeamZone(Vector3i zonePosition, KOTHTeam owner) {
+    public KOTTTeamZone(Vector3i zonePosition, KOTTTeam owner) {
         super(zonePosition);
         this.owner = owner;
     }
 
-    public KOTHTeam getOwner() { return owner; }
+    public KOTTTeam getOwner() { return owner; }
 }

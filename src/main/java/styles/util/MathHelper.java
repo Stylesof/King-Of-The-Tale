@@ -1,7 +1,6 @@
 package styles.util;
 
 import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.math.vector.Vector3i;
 
 public class MathHelper {
 

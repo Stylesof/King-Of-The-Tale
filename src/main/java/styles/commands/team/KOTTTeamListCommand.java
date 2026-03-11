@@ -9,8 +9,8 @@ import com.hypixel.hytale.server.core.command.system.basecommands.AbstractAsyncP
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import styles.KOTHMatch;
-import styles.team.KOTHTeam;
+import styles.KOTTMatch;
+import styles.team.KOTTTeam;
 
 import javax.annotation.Nonnull;
 
@@ -18,11 +18,11 @@ import java.util.concurrent.CompletableFuture;
 
 import static styles.util.PrintMacros.print;
 
-public class KOTHTeamListCommand extends AbstractAsyncPlayerCommand {
+public class KOTTTeamListCommand extends AbstractAsyncPlayerCommand {
 
     private final OptionalArg<Integer> showuuid;
 
-    public KOTHTeamListCommand() {
+    public KOTTTeamListCommand() {
         super("list", "Lists all Teams availables!");
 
         this.showuuid = withOptionalArg("showuuid", "Show the team name + uuid. (1. Name + UUID, 2. UUID Only)", ArgTypes.INTEGER);
@@ -31,7 +31,7 @@ public class KOTHTeamListCommand extends AbstractAsyncPlayerCommand {
     @Nonnull
     @Override
     protected CompletableFuture<Void> executeAsync(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        if(KOTHMatch.getKOTHMatchStatus()){
+        if(KOTTMatch.getKOTHMatchStatus()){
 
             int show = 0;
             if(this.showuuid.get(commandContext) != null){
@@ -40,7 +40,7 @@ public class KOTHTeamListCommand extends AbstractAsyncPlayerCommand {
 
             print(commandContext, "Teams:");
             int i = 0;
-            for(KOTHTeam team : KOTHMatch.getTeams().values()){
+            for(KOTTTeam team : KOTTMatch.getTeams().values()){
                 String message = i + ": ";
 
                 if(show == 1){

@@ -9,13 +9,10 @@ import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.damage.DeathComponent;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
-import styles.KOTHMatch;
+import styles.KOTTMatch;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import static styles.util.PrintMacros.print;
-import static styles.util.PrintMacros.printL;
 
 public class TickHandler extends EntityTickingSystem<EntityStore> {
 
@@ -23,7 +20,7 @@ public class TickHandler extends EntityTickingSystem<EntityStore> {
     public void tick(float dt, int index, @Nonnull ArchetypeChunk<EntityStore> archetypeChunk,
                      @Nonnull Store<EntityStore> store, @Nonnull CommandBuffer<EntityStore> commandBuffer) {
 
-        KOTHMatch.tick(dt, index, archetypeChunk, store, commandBuffer);
+        KOTTMatch.tick(dt, index, archetypeChunk, store, commandBuffer);
 
     }
 

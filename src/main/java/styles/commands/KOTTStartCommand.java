@@ -11,7 +11,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import styles.KOTHMatch;
+import styles.KOTTMatch;
 
 import javax.annotation.Nonnull;
 
@@ -19,13 +19,13 @@ import java.util.concurrent.CompletableFuture;
 
 import static styles.util.PrintMacros.print;
 
-public class KOTHStartCommand extends AbstractAsyncPlayerCommand {
+public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
 
     private final RequiredArg<Integer> team_qnt;
     private final RequiredArg<Integer> area_size;
     private final OptionalArg<String> world_name;
 
-    public KOTHStartCommand() {
+    public KOTTStartCommand() {
         super("start", "Create an KOTH game session!");
 
         this.team_qnt = this.withRequiredArg("team_qnt", "Quantity of Teams", ArgTypes.INTEGER);
@@ -36,7 +36,7 @@ public class KOTHStartCommand extends AbstractAsyncPlayerCommand {
     @Nonnull
     @Override
     protected CompletableFuture<Void> executeAsync(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        if(KOTHMatch.getKOTHMatchStatus()){
+        if(KOTTMatch.getKOTHMatchStatus()){
             print(commandContext, "[KOTH] Has already an KOTH Match happening!");
             return CompletableFuture.completedFuture(null);
         }
@@ -68,7 +68,7 @@ public class KOTHStartCommand extends AbstractAsyncPlayerCommand {
             if(Universe.get().isWorldLoadable(_world_name)) {
                 // World exists and or loaded
                 World worldStart = Universe.get().getWorld(_world_name);
-                KOTHMatch.start(
+                KOTTMatch.start(
                         playerRef.getTransform().getPosition().toVector3i(),
                         _team_qnt,
                         _area_size,
