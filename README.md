@@ -1,2 +1,2 @@
-# King-Of-The-Hytale
-King Of The Hill Minigame in Hytale. Based on Arma 3 KOTH mod.
+# King-Of-The-Tale
+King Of The Hill mode in Hytale, with modern weapons and gears. Based on KOTH Arma 3 mod.
