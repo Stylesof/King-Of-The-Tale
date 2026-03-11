@@ -73,7 +73,8 @@ public class KOTHStartCommand extends AbstractAsyncPlayerCommand {
                         _team_qnt,
                         _area_size,
                         world.getPlayerRefs().stream().toList(),
-                        worldStart
+                        worldStart,
+                        commandContext
                 );
                 print(commandContext, "[KOTH] Started an KOTH match!");
             }
