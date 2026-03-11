@@ -21,9 +21,9 @@ public class PrintLog {
     static {
 
         //debug
-        logsDebug.put(LogTypesDebug.KOTHLoadFailed,
+        logsDebug.put(LogTypesDebug.KOTTLoadFailed,
                 "[KOTH Debug] Failed to load the KOTH mod!");
-        logsDebug.put(LogTypesDebug.KOTHLoadSucess,
+        logsDebug.put(LogTypesDebug.KOTTLoadSuccess,
                 "[KOTH Debug] KOTH mod successfuly loaded!");
 
         //normal

@@ -8,7 +8,7 @@ import java.util.*;
 
 import static styles.util.PrintMacros.printL;
 
-public class KOTHTeam {
+public class KOTTTeam {
 
     public final UUID teamID;
     private final Collection<PlayerRef> playerList = new ArrayList<>();
@@ -18,7 +18,7 @@ public class KOTHTeam {
 
     public static final int distanceBaseFromZone = 100;
 
-    public KOTHTeam(UUID id, String displayName, Vector3i basePosition) {
+    public KOTTTeam(UUID id, String displayName, Vector3i basePosition) {
         this.teamID = id;
         this.displayName = displayName;
         this.baseZone = new KOTTTeamZone(basePosition, this);
@@ -33,12 +33,12 @@ public class KOTHTeam {
         return playerList.contains(playerRef);
     }
 
-    public static boolean createTeam(Map<UUID, KOTHTeam> teamListRef, UUID id, String displayName, Vector3i basePosition) {
+    public static boolean createTeam(Map<UUID, KOTTTeam> teamListRef, UUID id, String displayName, Vector3i basePosition) {
         if(teamListRef.containsKey(id)){
             printL("[KOTH] There is an Team with that ID already!");
             return false;
         }else{
-            teamListRef.put(id, new KOTHTeam(id, displayName, basePosition));
+            teamListRef.put(id, new KOTTTeam(id, displayName, basePosition));
             return true;
         }
     }

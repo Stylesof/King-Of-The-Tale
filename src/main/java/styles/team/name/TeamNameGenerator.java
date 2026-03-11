@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static styles.util.PrintMacros.printL;
-
 public class TeamNameGenerator {
 
     public static final List<String> Names = new ArrayList<>(){};

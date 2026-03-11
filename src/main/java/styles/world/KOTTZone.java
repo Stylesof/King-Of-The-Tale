@@ -2,9 +2,7 @@ package styles.world;
 
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
-import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import styles.util.MathHelper;
 
@@ -13,7 +11,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KOTHZone {
+public class KOTTZone {
 
     private final Vector3i zonePosition;
     private final List<NPCEntity> npcsInZone = new ArrayList<>();
@@ -21,7 +19,7 @@ public class KOTHZone {
 
     public static final int zoneRadius = 100;
 
-    public KOTHZone(@Nonnull Vector3i zonePosition) { this.zonePosition = zonePosition; }
+    public KOTTZone(@Nonnull Vector3i zonePosition) { this.zonePosition = zonePosition; }
 
     @Nullable
     public List<PlayerRef> getPlayersInZone() { return playersInZone; }
