@@ -2,8 +2,7 @@ package styles.team;
 
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import styles.world.KOTHTeamZone;
-import styles.world.KOTHZone;
+import styles.world.KOTTTeamZone;
 
 import java.util.*;
 
@@ -15,14 +14,14 @@ public class KOTHTeam {
     private final Collection<PlayerRef> playerList = new ArrayList<>();
     private final String displayName;
 
-    private final KOTHTeamZone baseZone;
+    private final KOTTTeamZone baseZone;
 
     public static final int distanceBaseFromZone = 100;
 
     public KOTHTeam(UUID id, String displayName, Vector3i basePosition) {
         this.teamID = id;
         this.displayName = displayName;
-        this.baseZone = new KOTHTeamZone(basePosition, this);
+        this.baseZone = new KOTTTeamZone(basePosition, this);
     }
 
     // Add player to the Team
@@ -44,7 +43,7 @@ public class KOTHTeam {
         }
     }
 
-    public KOTHTeamZone getBaseZone() { return this.baseZone; }
+    public KOTTTeamZone getBaseZone() { return this.baseZone; }
 
     public String getDisplayName() { return displayName; }
 
