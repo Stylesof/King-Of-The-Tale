@@ -2,6 +2,7 @@ package styles.world.tick;
 
 import com.hypixel.hytale.component.ArchetypeChunk;
 import com.hypixel.hytale.component.CommandBuffer;
+import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
@@ -11,16 +12,15 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
-import styles.team.KOTTTeam;
 import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.concurrent.CompletableFuture;
 
 import static styles.util.PrintMacros.print;
+import static styles.util.PrintMacros.printL;
 
-public class TickHandler extends EntityTickingSystem<EntityStore> {
+public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
 
     // For Entity 2
     @Override
@@ -28,7 +28,8 @@ public class TickHandler extends EntityTickingSystem<EntityStore> {
                      @Nonnull Store<EntityStore> store, @Nonnull CommandBuffer<EntityStore> commandBuffer) {
 
         // verify if actual entity is inside any zone
-        PlayerRef player = store.getComponent(archetypeChunk.getReferenceTo(index), PlayerRef.getComponentType());
+        Ref<EntityStore> ref = archetypeChunk.getReferenceTo(index);
+        PlayerRef playerRef = ref.getStore().getComponent(ref, PlayerRef.getComponentType());
 
         if (player != null) {
 
@@ -36,8 +37,12 @@ public class TickHandler extends EntityTickingSystem<EntityStore> {
 
             if (match.getPlayerTeam(player).getBaseZone().isInside(player.getTransform().getPosition())) {
                 print(player, "[KOTH] You are inside your base!");
+            } else {
+                print(player, "Algo aconteceu!");
             }
 
+        }else {
+            printL("Failed!");
         }
 
     }
