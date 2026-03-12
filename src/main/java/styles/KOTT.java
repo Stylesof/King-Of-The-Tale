@@ -6,7 +6,7 @@ import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import styles.commands.KOTTCommand;
 import styles.events.OnPlayerConnectEvent;
 import styles.util.log.LogTypesDebug;
-import styles.world.tick.TickHandler;
+import styles.world.tick.EntityTickHandler;
 
 import javax.annotation.Nonnull;
 
@@ -26,7 +26,7 @@ public class KOTT extends JavaPlugin {
 
         this.getEventRegistry().registerGlobal(PlayerConnectEvent.class, OnPlayerConnectEvent::onPlayerConnect);
 
-        this.getEntityStoreRegistry().registerSystem(new TickHandler());
+        this.getEntityStoreRegistry().registerSystem(new EntityTickHandler());
     }
 
     @Override

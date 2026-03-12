@@ -1,6 +1,7 @@
 package styles.util;
 
 import com.hypixel.hytale.math.vector.Vector3d;
+import com.hypixel.hytale.math.vector.Vector3i;
 
 public class MathHelper {
 
@@ -20,6 +21,10 @@ public class MathHelper {
 
     public static Vector3d vectorSum(Vector3d first, Vector3d second) {
         return new Vector3d(first.x + second.x, first.y + second.y, first.z + second.z);
+    }
+
+    public static Vector3i vectorSum(Vector3i first, Vector3i second) {
+        return new Vector3i(first.x + second.x, first.y + second.y, first.z + second.z);
     }
 
     public static double positionDistance(Vector3d first, Vector3d second) {

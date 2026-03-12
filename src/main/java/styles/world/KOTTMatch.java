@@ -6,19 +6,13 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.vector.Transform;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
-import com.hypixel.hytale.protocol.packets.worldmap.CreateUserMarker;
-import com.hypixel.hytale.protocol.packets.worldmap.MapMarker;
-import com.hypixel.hytale.protocol.packets.worldmap.MapMarkerComponent;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
-import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.teleport.Teleport;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import com.hypixel.hytale.server.core.universe.world.worldmap.WorldMapManager;
-import com.hypixel.hytale.server.core.universe.world.worldmap.markers.MarkersCollector;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarkersStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.worldstore.WorldMarkersResource;
@@ -29,7 +23,9 @@ import styles.world.util.WorldBuilder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 import static styles.util.PrintMacros.print;
 import static styles.util.PrintMacros.printL;
@@ -58,7 +54,7 @@ public class KOTTMatch {
         marker.setId("user_shared_" + UUID.randomUUID());
         marker.setPosition(Zone.getPosition().x, Zone.getPosition().z);
         marker.setName("Attack Zone");
-        marker.setIcon("Common/Icons/ItemCategories/Items-Weapons.png");
+        marker.setIcon("hytale:Icons/ItemCategories/Items-Weapons.png");
         store.addUserMapMarker(marker);
         // WIP
 
@@ -101,11 +97,28 @@ public class KOTTMatch {
                 // Clear an specified area position with a specific size, in a square shape
                 Vector3i basePos = getLastTeamAdded().getBaseZone().getPosition();
                 WorldBuilder.clearAreaSquare(basePos, 10, world);
-                BlockType block = BlockType.fromString("Rock_Stone");
-                if(block != null) {
-                    print(playerRef, "Tudo certo " + block.getId());
+
+                // Create default base
+                {
+                    BlockType block = BlockType.fromString("Rock_Stone");
+                    WorldBuilder.PointToPoint baseFloor = new WorldBuilder.PointToPoint(-5, -1, -5, 5, -1, 5);
+                    baseFloor.addCenter(basePos);
+                    WorldBuilder.createFillSquare(baseFloor, block, world);
+
+                    WorldBuilder.PointToPoint pillar = new WorldBuilder.PointToPoint(-5, -1, -5, -5, 4, -5);
+                    pillar.addCenter(basePos);
+                    WorldBuilder.createFillSquare(pillar, block, world);
+                    pillar.getStart().x += 5 * 2;
+                    pillar.getEnd().x += 5 * 2;
+                    WorldBuilder.createFillSquare(pillar, block, world);
+                    pillar.getStart().z += 5 * 2;
+                    pillar.getEnd().z += 5 * 2;
+                    WorldBuilder.createFillSquare(pillar, block, world);
+                    pillar.getStart().x += -5 * 2;
+                    pillar.getEnd().x += -5 * 2;
+                    pillar.addCenter(basePos);
+                    WorldBuilder.createFillSquare(pillar, block, world);
                 }
-                WorldBuilder.createFillSquare(new Vector3i(basePos.x - 4, basePos.y - 1, basePos.z - 5), new Vector3i(basePos.x -4, basePos.y - 1, basePos.z + 5), block, world);
 
                 i++;
             }
@@ -149,12 +162,6 @@ public class KOTTMatch {
         return true;
     }
 
-    // MATCH TICK
-    public void tick(float dt, int index, @Nonnull ArchetypeChunk<EntityStore> archetypeChunk,
-                            @Nonnull Store<EntityStore> store, @Nonnull CommandBuffer<EntityStore> commandBuffer) {
-
-    }
-
     // MATCH STOP
     public void stop() {
         setKOTHMatchStatus(false);
@@ -175,10 +182,6 @@ public class KOTTMatch {
     public Map<UUID, KOTTTeam> getTeams(){ return this.Teams; }
 
     public KOTTTeam getLastTeamAdded() { return this.Teams.lastEntry().getValue(); }
-
-    //public int getTeamPlayerCount(KOTTTeam team) { return team.getPlayerCount(); }
-
-    //public static List<KOTHTeamZone> getTeamZones() { return TeamZones; }
 
     @Nullable
     public KOTTTeam getPlayerTeam(PlayerRef playerRef) {
