@@ -61,4 +61,14 @@ public class WorldBuilder {
 
         return pos;
     }
+
+    public static void createFillSquare(Vector3i startPoint, Vector3i finalPoint, BlockType blockType, World world) {
+        for(int y = startPoint.y; y <= finalPoint.y; y++){
+            for(int x = startPoint.x; x <= finalPoint.x; x++){
+                for(int z = startPoint.z; z <= finalPoint.z; z++){
+                    world.setBlock(x, y, z, blockType.getId());
+                }
+            }
+        }
+    }
 }

@@ -2,6 +2,14 @@ package styles.util.log;
 
 public enum LogTypes {
 
-    KOTHMatchJoin;
+    // ERRORS
+    KOTTInvalidAreaSize,
+    KOTTInvalidTeamCount,
+    KOTTInvalidWorld,
+
+    KOTTMatchAlreadyRunning,
+
+    KOTTMatchJoin,
+    KOTTMatchStarted;
 
 }
