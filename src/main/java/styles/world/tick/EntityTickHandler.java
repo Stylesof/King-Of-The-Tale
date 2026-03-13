@@ -30,21 +30,19 @@ public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
         // verify if actual entity is inside any zone
         Ref<EntityStore> ref = archetypeChunk.getReferenceTo(index);
         PlayerRef playerRef = ref.getStore().getComponent(ref, PlayerRef.getComponentType());
+/*
+        if (playerRef != null) {
 
-        if (player != null) {
+            KOTTMatch match = KOTTMatch.getMatchesList().get(Universe.get().getWorld(playerRef.getWorldUuid()));
 
-            KOTTMatch match = KOTTMatch.getMatchesList().get(Universe.get().getWorld(player.getWorldUuid()));
-
-            if (match.getPlayerTeam(player).getBaseZone().isInside(player.getTransform().getPosition())) {
-                print(player, "[KOTH] You are inside your base!");
+            if (match.getPlayerTeam(playerRef).getBaseZone().isInside(playerRef.getTransform().getPosition())) {
+                print(playerRef, "[KOTH] You are inside your base!");
             } else {
-                print(player, "Algo aconteceu!");
+                print(playerRef, "Algo aconteceu!");
             }
 
-        }else {
-            printL("Failed!");
         }
-
+*/
     }
 
     @Nullable

@@ -1,10 +1,10 @@
-package styles.team.name;
+package styles.util;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class TeamNameGenerator {
+public class StringGenerator {
 
     public static final List<String> Names = new ArrayList<>(){};
 
