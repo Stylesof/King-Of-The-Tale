@@ -53,11 +53,11 @@ public class KOTTStopCommand extends AbstractAsyncPlayerCommand {
         }
 
         // Verify if the world has an active match
-        KOTTMatch match = KOTTMatch.getMatchesList().get(_world);
+        KOTTMatch match = KOTTMatch.getMatchesList().get(_word_name);
         if(match == null || !match.getKOTHMatchStatus()){
             print(commandContext, "[KOTH] There isn't any match happening in the moment!");
         }else{
-            KOTTMatch.getMatchesList().get(_world).stop();
+            KOTTMatch.stop(_word_name);
             print(commandContext, "[KOTH] Stopped the active KOTH match!");
         }
 

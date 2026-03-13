@@ -1,10 +1,10 @@
 package styles.world;
 
-import com.hypixel.hytale.builtin.buildertools.commands.PrefabCommand;
 import com.hypixel.hytale.math.vector.Transform;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.Color;
+import com.hypixel.hytale.protocol.packets.worldmap.UpdateWorldMap;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.modules.entity.teleport.Teleport;
@@ -30,22 +30,18 @@ import static styles.util.PrintMacros.printL;
 
 public class KOTTMatch {
 
-    private static final Map<World, KOTTMatch> matchesList = new HashMap<>();
-
-    //private World matchWorld;
+    // [World Name] [KOTTMatch]
+    private static final Map<String, KOTTMatch> matchesList = new HashMap<>();
 
     private boolean KOTHMatchStatus = false;
-    //private boolean toStop = false;
     private final LinkedHashMap<UUID, KOTTTeam> Teams = new LinkedHashMap<>();
-
     private KOTTZone Zone;
-    private UserMapMarkersStore Store;
+    private UserMapMarkersStore userMapMarkerStore;
     //private static final List<KOTHTeamZone> TeamZones = new ArrayList<>();
 
     // MATCH START
     public void start(@Nonnull Vector3i startPos, int teamCount, int areaRadius, @Nonnull PlayerRef playerRef, @Nonnull World world, @Nonnull CommandContext commandContext) {
-        // WIP
-        Store = world.getChunkStore().getStore().getResource(WorldMarkersResource.getResourceType());
+        userMapMarkerStore = world.getChunkStore().getStore().getResource(WorldMarkersResource.getResourceType());
         UserMapMarker zoneMarker = new UserMapMarker();
             zoneMarker.setId(UUID.randomUUID().toString());
             zoneMarker.setPosition(startPos.x, startPos.z);
@@ -56,9 +52,7 @@ public class KOTTMatch {
         //store.removeUserMapMarker();
 
         Zone = new KOTTZone(startPos, zoneMarker);
-        Store.addUserMapMarker(Zone.getZoneMarker());
-
-        // WIP
+        userMapMarkerStore.addUserMapMarker(Zone.getZoneMarker());
 
         float angleBetweenBases = 360.0f / teamCount;
         float startAngle = 0.0f;
@@ -81,21 +75,21 @@ public class KOTTMatch {
                 }else {
                     printL("[KOTH Debug] ERROR: Invalid Base position!");
                 }
-                stop();
+                stop(world.getName());
                 return;
             }
 
             UserMapMarker zoneMarker2 = new UserMapMarker();
                 zoneMarker2.setId(UUID.randomUUID().toString());
                 zoneMarker2.setPosition(baseLocation.x, baseLocation.z);
-                zoneMarker2.setName("Attack Zone");
+                zoneMarker2.setName("Team " + nameList.get(i) + " Base");
                 zoneMarker2.setIcon("UserD.png");
                 zoneMarker2.setColorTint(colorList.get(i));
 
             // Create %teamCount% teams
             if (KOTTTeam.createTeam(Teams, UUID.randomUUID(), nameList.get(i), baseLocation, zoneMarker2)) {
 
-                Store.addUserMapMarker(getLastTeamAdded().getBaseZone().getZoneMarker());
+                userMapMarkerStore.addUserMapMarker(getLastTeamAdded().getBaseZone().getZoneMarker());
 
                 print(playerRef, "[KOTH] Base of team \"" + getLastTeamAdded().getDisplayName() + "\" created on: (" + baseLocation.x + ", " + baseLocation.y + ", " + baseLocation.z + ")");
 
@@ -174,19 +168,34 @@ public class KOTTMatch {
     }
 
     // MATCH STOP
-    public void stop() {
-        setKOTHMatchStatus(false);
+    public static void stop(@Nonnull String worldName) {
+        KOTTMatch match = KOTTMatch.getMatchesList().get(worldName);
 
-        for (KOTTTeam team : getTeams().values()) {
+        match.setKOTHMatchStatus(false);
+
+        for (KOTTTeam team : match.getTeams().values()) {
             if (team.getBaseZone().getZoneMarker() != null) {
-                Store.removeUserMapMarker(team.getBaseZone().getZoneMarker().getId());
+                if (team.getBaseZone() == null) printL("coisas feias");
+                match.userMapMarkerStore.removeUserMapMarker(team.getBaseZone().getZoneMarker().getId());
+                printL("Base Marker id: " + team.getBaseZone().getZoneMarker().getId());
+                printL("FUNCIONOU SEU FIA DA PUTA");
+
+                for (PlayerRef playerRef : Universe.get().getWorld(worldName).getPlayerRefs()) {
+                    playerRef.getPacketHandler().writeNoCache(new UpdateWorldMap(
+                            null,
+                            null,
+                            new String[]{team.getBaseZone().getZoneMarker().getId()}
+                    ));
+                }
+
             }
         }
 
-        Store.removeUserMapMarker(Zone.getZoneMarker().getId());
+        match.userMapMarkerStore.removeUserMapMarker(match.Zone.getZoneMarker().getId());
+        match.Teams.clear();
+        match.Zone = null;
 
-        Teams.clear();
-        Zone = null;
+        KOTTMatch.getMatchesList().remove(worldName);
     }
 
     //public boolean getToStop() { return this.toStop; }
@@ -218,5 +227,5 @@ public class KOTTMatch {
 
     //public World getWorld() { return matchWorld; }
 
-    public static Map<World, KOTTMatch> getMatchesList() { return matchesList; }
+    public static Map<String, KOTTMatch> getMatchesList() { return matchesList; }
 }
