@@ -1,29 +1,27 @@
 package styles.world;
 
-import com.hypixel.hytale.component.ArchetypeChunk;
-import com.hypixel.hytale.component.CommandBuffer;
-import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.builtin.buildertools.commands.PrefabCommand;
 import com.hypixel.hytale.math.vector.Transform;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.protocol.Color;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.modules.entity.teleport.Teleport;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
-import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarkersStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.worldstore.WorldMarkersResource;
 import styles.team.KOTTTeam;
-import styles.team.name.TeamNameGenerator;
+import styles.util.ColorGenerator;
+import styles.util.StringGenerator;
 import styles.util.MathHelper;
 import styles.world.util.WorldBuilder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -41,21 +39,25 @@ public class KOTTMatch {
     private final LinkedHashMap<UUID, KOTTTeam> Teams = new LinkedHashMap<>();
 
     private KOTTZone Zone;
+    private UserMapMarkersStore Store;
     //private static final List<KOTHTeamZone> TeamZones = new ArrayList<>();
 
     // MATCH START
     public void start(@Nonnull Vector3i startPos, int teamCount, int areaRadius, @Nonnull PlayerRef playerRef, @Nonnull World world, @Nonnull CommandContext commandContext) {
-        Zone = new KOTTZone(startPos);
-        //matchWorld = world;
-
         // WIP
-        UserMapMarkersStore store = world.getChunkStore().getStore().getResource(WorldMarkersResource.getResourceType());
-        UserMapMarker marker = new UserMapMarker();
-        marker.setId("user_shared_" + UUID.randomUUID());
-        marker.setPosition(Zone.getPosition().x, Zone.getPosition().z);
-        marker.setName("Attack Zone");
-        marker.setIcon("hytale:Icons/ItemCategories/Items-Weapons.png");
-        store.addUserMapMarker(marker);
+        Store = world.getChunkStore().getStore().getResource(WorldMarkersResource.getResourceType());
+        UserMapMarker zoneMarker = new UserMapMarker();
+            zoneMarker.setId(UUID.randomUUID().toString());
+            zoneMarker.setPosition(startPos.x, startPos.z);
+            zoneMarker.setName("Attack Zone");
+            zoneMarker.setIcon("UserF.png");
+            zoneMarker.setColorTint(new Color((byte) 255, (byte) 0, (byte) 0));
+        //store.addUserMapMarker(zoneMarker);
+        //store.removeUserMapMarker();
+
+        Zone = new KOTTZone(startPos, zoneMarker);
+        Store.addUserMapMarker(Zone.getZoneMarker());
+
         // WIP
 
         float angleBetweenBases = 360.0f / teamCount;
@@ -67,7 +69,8 @@ public class KOTTMatch {
         baseLocation = MathHelper.vectorSum(baseLocation.toVector3d(), Zone.getPosition().toVector3d()).ceil().toVector3i();
 
         // Using a pre-defined name template, get an list with random names
-        List<String> nameList = TeamNameGenerator.genRandomNameList(teamCount);
+        List<String> nameList = StringGenerator.genRandomNameList(teamCount);
+        List<Color> colorList = ColorGenerator.genRandomColorList(teamCount);
 
         int i = 0;
         while (i < teamCount) {
@@ -82,8 +85,17 @@ public class KOTTMatch {
                 return;
             }
 
+            UserMapMarker zoneMarker2 = new UserMapMarker();
+                zoneMarker2.setId(UUID.randomUUID().toString());
+                zoneMarker2.setPosition(baseLocation.x, baseLocation.z);
+                zoneMarker2.setName("Attack Zone");
+                zoneMarker2.setIcon("UserD.png");
+                zoneMarker2.setColorTint(colorList.get(i));
+
             // Create %teamCount% teams
-            if (KOTTTeam.createTeam(Teams, UUID.randomUUID(), nameList.get(i), baseLocation)) {
+            if (KOTTTeam.createTeam(Teams, UUID.randomUUID(), nameList.get(i), baseLocation, zoneMarker2)) {
+
+                Store.addUserMapMarker(getLastTeamAdded().getBaseZone().getZoneMarker());
 
                 print(playerRef, "[KOTH] Base of team \"" + getLastTeamAdded().getDisplayName() + "\" created on: (" + baseLocation.x + ", " + baseLocation.y + ", " + baseLocation.z + ")");
 
@@ -94,7 +106,7 @@ public class KOTTMatch {
                     baseLocation = MathHelper.vectorSum(other, Zone.getPosition().toVector3d()).ceil().toVector3i();
                 }
 
-                // Clear an specified area position with a specific size, in a square shape
+                // Clear a specified area position with a specific size, in a square shape
                 Vector3i basePos = getLastTeamAdded().getBaseZone().getPosition();
                 WorldBuilder.clearAreaSquare(basePos, 10, world);
 
@@ -116,7 +128,6 @@ public class KOTTMatch {
                     WorldBuilder.createFillSquare(pillar, block, world);
                     pillar.getStart().x += -5 * 2;
                     pillar.getEnd().x += -5 * 2;
-                    pillar.addCenter(basePos);
                     WorldBuilder.createFillSquare(pillar, block, world);
                 }
 
@@ -165,6 +176,15 @@ public class KOTTMatch {
     // MATCH STOP
     public void stop() {
         setKOTHMatchStatus(false);
+
+        for (KOTTTeam team : getTeams().values()) {
+            if (team.getBaseZone().getZoneMarker() != null) {
+                Store.removeUserMapMarker(team.getBaseZone().getZoneMarker().getId());
+            }
+        }
+
+        Store.removeUserMapMarker(Zone.getZoneMarker().getId());
+
         Teams.clear();
         Zone = null;
     }
