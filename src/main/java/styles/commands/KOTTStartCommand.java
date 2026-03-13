@@ -85,13 +85,13 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
         }
 
         // Verify if has an active match in the world
-        if (KOTTMatch.getMatchesList().containsKey(_world)) {
-            if (KOTTMatch.getMatchesList().get(_world).getKOTHMatchStatus()) {
+        if (KOTTMatch.getMatchesList().containsKey(_world_name)) {
+            if (KOTTMatch.getMatchesList().get(_world_name).getKOTHMatchStatus()) {
                 printLog(playerRef, LogTypes.KOTTMatchAlreadyRunning, "World name: \"" + _world_name + "\"!");
                 return CompletableFuture.completedFuture(null);
             }
         }else {
-            KOTTMatch.getMatchesList().put(_world, new KOTTMatch());
+            KOTTMatch.getMatchesList().put(_world_name, new KOTTMatch());
         }
 
         // Verify if the inserted pos is valid
@@ -101,7 +101,7 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
 
 
         // World exists and or loaded
-        KOTTMatch.getMatchesList().get(_world).start(
+        KOTTMatch.getMatchesList().get(_world_name).start(
                 _world_pos,
                 _team_qnt,
                 _area_size,

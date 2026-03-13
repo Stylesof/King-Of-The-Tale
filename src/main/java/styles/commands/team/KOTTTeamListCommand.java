@@ -2,6 +2,7 @@ package styles.commands.team;
 
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.protocol.packets.worldmap.UpdateWorldMap;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.arguments.system.OptionalArg;
 import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
@@ -58,7 +59,7 @@ public class KOTTTeamListCommand extends AbstractAsyncPlayerCommand {
         }
 
         // Verify if has an match active in the world
-        KOTTMatch match = KOTTMatch.getMatchesList().get(_world);
+        KOTTMatch match = KOTTMatch.getMatchesList().get(_word_name);
         if (match == null || !match.getKOTHMatchStatus()){
             print(commandContext, "[KOTH] There isn't any match happening in the moment!");
             return CompletableFuture.completedFuture(null);
