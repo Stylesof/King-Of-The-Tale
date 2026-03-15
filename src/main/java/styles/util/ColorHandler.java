@@ -6,9 +6,9 @@ import java.util.*;
 
 public class ColorHandler {
 
-    public static final Map<ColorType, Color> Colors = new HashMap();
+    public static final Map<ColorType, Color> Colors = new HashMap<>();
 
-    public static enum ColorType {
+    public enum ColorType {
 
         WHITE,
         GREEN,

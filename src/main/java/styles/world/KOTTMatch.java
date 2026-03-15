@@ -73,6 +73,7 @@ public class KOTTMatch {
                 stop(world.getName());
                 return;
             }
+            baseLocation.y += 1;
 
             UserMapMarker zoneMarker2 = new UserMapMarker();
                 zoneMarker2.setId(UUID.randomUUID().toString());
@@ -97,8 +98,9 @@ public class KOTTMatch {
 
                 // Clear a specified area position with a specific size, in a square shape
                 Vector3i basePos = getLastTeamAdded().getBaseZone().getPosition();
+                basePos.y--;
                 WorldBuilder.clearAreaSquare(basePos, 10, world);
-
+                basePos.y++;
                 // Create default base
                 WorldBuilder.constructTeamBase(basePos, ColorHandler.ColorType.BLUE, world);
 
@@ -130,16 +132,16 @@ public class KOTTMatch {
             return false;
         }
 
-        KOTTTeam choosenTeam = (KOTTTeam) Teams.values().toArray()[0];
+        KOTTTeam chosenTeam = (KOTTTeam) Teams.values().toArray()[0];
         int playerCounter = Universe.get().getPlayerCount();
         for (KOTTTeam team : Teams.values()) {
             if(team.getPlayerCount() < playerCounter){
                 playerCounter = team.getPlayerCount();
-                choosenTeam = team;
+                chosenTeam = team;
             }
         }
 
-        choosenTeam.addPlayerRef(playerRef);
+        chosenTeam.addPlayerRef(playerRef);
 
         return true;
     }
