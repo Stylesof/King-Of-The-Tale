@@ -2,7 +2,6 @@ package styles.commands.team;
 
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
-import com.hypixel.hytale.protocol.packets.worldmap.UpdateWorldMap;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.arguments.system.OptionalArg;
 import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
@@ -20,6 +19,7 @@ import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 
 import static styles.util.PrintMacros.print;
+import static styles.util.PrintMacros.printL;
 import static styles.util.log.PrintLog.printLog;
 
 public class KOTTTeamListCommand extends AbstractAsyncPlayerCommand {

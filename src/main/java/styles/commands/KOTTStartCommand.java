@@ -60,6 +60,16 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
         Boolean _clone = clone.get(commandContext);
         Boolean _loop = loop.get(commandContext);
 
+        // Verify if the inserted pos is valid
+        if (_world_pos == null) {
+            if(!commandContext.isPlayer()){
+                printL("[KOTT Debug] To use this command as not Player, you need to insert an position!");
+                return CompletableFuture.completedFuture(null);
+            }
+
+            _world_pos = playerRef.getTransform().getPosition().toVector3i();
+        }
+
         // Verify area size
         if (_area_size < 100 || _area_size > 1000) {
             printLog(playerRef, LogTypes.KOTTInvalidAreaSize);
@@ -94,12 +104,6 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
             KOTTMatch.getMatchesList().put(_world_name, new KOTTMatch());
         }
 
-        // Verify if the inserted pos is valid
-        if (_world_pos == null) {
-            _world_pos = playerRef.getTransform().getPosition().toVector3i();
-        }
-
-
         // World exists and or loaded
         KOTTMatch.getMatchesList().get(_world_name).start(
                 _world_pos,
@@ -110,7 +114,6 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
                 commandContext
         );
         printLog(playerRef, LogTypes.KOTTMatchStarted, "World name: \"" + _world_name + "\"!");
-
 
         return CompletableFuture.completedFuture(null);
     }

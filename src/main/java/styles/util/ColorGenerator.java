@@ -13,6 +13,7 @@ public class ColorGenerator {
     static  {
 
         // Colors.add(new Color((byte) 255, (byte) 0   ,(byte) 0));   // RED
+        Colors.add(new Color((byte) 0  , (byte) 0   ,(byte) 0));   // WHITE
         Colors.add(new Color((byte) 0  , (byte) 255 ,(byte) 0));   // GREEN
         Colors.add(new Color((byte) 0  , (byte) 0   ,(byte) 255)); // BLUE
         Colors.add(new Color((byte) 255, (byte) 255 ,(byte) 0));   // YELLOW

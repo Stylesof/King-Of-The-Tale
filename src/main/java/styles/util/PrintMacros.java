@@ -10,8 +10,9 @@ import java.util.logging.Level;
 
 public class PrintMacros {
 
-    public static void print(@Nonnull CommandContext cmdctx, String msg) {
-        cmdctx.sendMessage(Message.raw(msg));
+    public static void print(CommandContext cmdctx, String msg) {
+        if (cmdctx != null)
+            cmdctx.sendMessage(Message.raw(msg));
     }
 
     public static void print(@Nonnull PlayerRef playerRef, String msg) {
