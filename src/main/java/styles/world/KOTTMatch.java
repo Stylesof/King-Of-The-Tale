@@ -1,19 +1,30 @@
 package styles.world;
 
+import com.hypixel.hytale.builtin.buildertools.BuilderToolsPlugin;
+import com.hypixel.hytale.builtin.buildertools.commands.PasteCommand;
+import com.hypixel.hytale.builtin.buildertools.utils.RecursivePrefabLoader;
 import com.hypixel.hytale.math.vector.Transform;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.Color;
-import com.hypixel.hytale.protocol.packets.worldmap.UpdateWorldMap;
+import com.hypixel.hytale.protocol.packets.player.RemoveMapMarker;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
+import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.teleport.Teleport;
+import com.hypixel.hytale.server.core.prefab.PrefabRotation;
+import com.hypixel.hytale.server.core.prefab.PrefabStore;
+import com.hypixel.hytale.server.core.prefab.selection.buffer.PrefabBufferCall;
+import com.hypixel.hytale.server.core.prefab.selection.buffer.impl.IPrefabBuffer;
+import com.hypixel.hytale.server.core.prefab.selection.buffer.impl.PrefabBuffer;
+import com.hypixel.hytale.server.core.prefab.selection.standard.BlockSelection;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarkersStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.worldstore.WorldMarkersResource;
+import com.hypixel.hytale.server.core.util.PrefabUtil;
 import styles.team.KOTTTeam;
 import styles.util.ColorGenerator;
 import styles.util.StringGenerator;
@@ -22,8 +33,10 @@ import styles.world.util.WorldBuilder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
+import java.util.function.Function;
 
 import static styles.util.PrintMacros.print;
 import static styles.util.PrintMacros.printL;
@@ -36,21 +49,18 @@ public class KOTTMatch {
     private boolean KOTHMatchStatus = false;
     private final LinkedHashMap<UUID, KOTTTeam> Teams = new LinkedHashMap<>();
     private KOTTZone Zone;
-    private UserMapMarkersStore userMapMarkerStore;
+    //private UserMapMarkersStore userMapMarkerStore;
     //private static final List<KOTHTeamZone> TeamZones = new ArrayList<>();
 
     // MATCH START
     public void start(@Nonnull Vector3i startPos, int teamCount, int areaRadius, @Nonnull PlayerRef playerRef, @Nonnull World world, @Nonnull CommandContext commandContext) {
-        userMapMarkerStore = world.getChunkStore().getStore().getResource(WorldMarkersResource.getResourceType());
+        UserMapMarkersStore userMapMarkerStore = world.getChunkStore().getStore().getResource(WorldMarkersResource.getResourceType());
         UserMapMarker zoneMarker = new UserMapMarker();
             zoneMarker.setId(UUID.randomUUID().toString());
             zoneMarker.setPosition(startPos.x, startPos.z);
             zoneMarker.setName("Attack Zone");
             zoneMarker.setIcon("UserF.png");
             zoneMarker.setColorTint(new Color((byte) 255, (byte) 0, (byte) 0));
-        //store.addUserMapMarker(zoneMarker);
-        //store.removeUserMapMarker();
-
         Zone = new KOTTZone(startPos, zoneMarker);
         userMapMarkerStore.addUserMapMarker(Zone.getZoneMarker());
 
@@ -102,10 +112,27 @@ public class KOTTMatch {
 
                 // Clear a specified area position with a specific size, in a square shape
                 Vector3i basePos = getLastTeamAdded().getBaseZone().getPosition();
-                WorldBuilder.clearAreaSquare(basePos, 10, world);
+                //WorldBuilder.clearAreaSquare(basePos, 10, world);
 
                 // Create default base
                 {
+                    Path prefabStorePath = PrefabStore.get().findAssetPrefabPath("King-Of-The-Tale/test.json");
+                    if (prefabStorePath == null) {
+                        print(playerRef, "Deu errado!");
+                    }
+
+                    PrefabStore pref = PrefabStore.get();
+                    Function<String, BlockSelection> seila = pref::getAssetPrefab;
+                    RecursivePrefabLoader.BlockSelectionLoader load = new RecursivePrefabLoader.BlockSelectionLoader(prefabStorePath, seila);
+
+                    
+
+                    /*
+                        public static void paste(@Nonnull IPrefabBuffer buffer, @Nonnull World world, @Nonnull Vector3i position, @Nonnull Rotation yaw, boolean force, Random random, @Nonnull ComponentAccessor<EntityStore> componentAccessor) {
+                            paste(buffer, world, position, yaw, force, random, 0, componentAccessor);
+                        }
+                     */
+
                     BlockType block = BlockType.fromString("Rock_Stone");
                     WorldBuilder.PointToPoint baseFloor = new WorldBuilder.PointToPoint(-5, -1, -5, 5, -1, 5);
                     baseFloor.addCenter(basePos);
@@ -168,37 +195,44 @@ public class KOTTMatch {
     }
 
     // MATCH STOP
-    public static void stop(@Nonnull String worldName) {
-        KOTTMatch match = KOTTMatch.getMatchesList().get(worldName);
+    public static void stop(@Nonnull String worldName, @Nullable CommandContext commandContext) {
+        World world = Universe.get().getWorld(worldName);
+        if (world == null) {
+            printL("[KOTT Debug] Invalid world!");
+            print(commandContext, "[KOTT] Invalid World!");
+            return;
+        }
 
-        match.setKOTHMatchStatus(false);
+        if (!KOTTMatch.getMatchesList().containsKey(worldName)) {
+            printL("[KOTT Debug] Invalid match!");
+            print(commandContext, "[KOTT] Invalid match!");
+            return;
+        }
+        KOTTMatch match = KOTTMatch.getMatchesList().get(worldName);
+        if (match == null || !match.getKOTHMatchStatus()) {
+            print(commandContext, "[KOTH] There isn't any match happening in the moment!");
+            return;
+        }
+
+        UserMapMarkersStore store = world.getChunkStore().getStore().getResource(WorldMarkersResource.getResourceType());
 
         for (KOTTTeam team : match.getTeams().values()) {
             if (team.getBaseZone().getZoneMarker() != null) {
-                if (team.getBaseZone() == null) printL("coisas feias");
-                match.userMapMarkerStore.removeUserMapMarker(team.getBaseZone().getZoneMarker().getId());
-                printL("Base Marker id: " + team.getBaseZone().getZoneMarker().getId());
-                printL("FUNCIONOU SEU FIA DA PUTA");
-
-                for (PlayerRef playerRef : Universe.get().getWorld(worldName).getPlayerRefs()) {
-                    playerRef.getPacketHandler().writeNoCache(new UpdateWorldMap(
-                            null,
-                            null,
-                            new String[]{team.getBaseZone().getZoneMarker().getId()}
-                    ));
-                }
-
+                store.removeUserMapMarker(team.getBaseZone().getZoneMarker().getId());
             }
         }
 
-        match.userMapMarkerStore.removeUserMapMarker(match.Zone.getZoneMarker().getId());
+        store.removeUserMapMarker(match.Zone.getZoneMarker().getId());
+
         match.Teams.clear();
         match.Zone = null;
+        match.setKOTHMatchStatus(false);
+        //KOTTMatch.getMatchesList().remove(worldName);
 
-        KOTTMatch.getMatchesList().remove(worldName);
+        print(commandContext, "[KOTH] Stopped the active KOTH match!");
     }
 
-    //public boolean getToStop() { return this.toStop; }
+    public static void stop(@Nonnull String worldName) { stop(worldName, null); }
 
     public boolean getKOTHMatchStatus() {
         return KOTHMatchStatus;
@@ -224,8 +258,6 @@ public class KOTTMatch {
 
         return null;
     }
-
-    //public World getWorld() { return matchWorld; }
 
     public static Map<String, KOTTMatch> getMatchesList() { return matchesList; }
 }

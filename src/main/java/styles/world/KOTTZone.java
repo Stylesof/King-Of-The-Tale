@@ -28,6 +28,8 @@ public class KOTTZone {
         this.zoneMarker = zoneMarker;
     }
 
+    public KOTTZone(@Nonnull Vector3i zonePosition) { this(zonePosition, null); }
+
     @Nullable
     public List<PlayerRef> getPlayersInZone() { return playersInZone; }
 

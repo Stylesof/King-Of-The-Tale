@@ -38,28 +38,13 @@ public class KOTTStopCommand extends AbstractAsyncPlayerCommand {
     @Override
     protected CompletableFuture<Void> executeAsync(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
         String _word_name = world_name.get(commandContext);
-        World _world;
 
         // Verify if the world name is valid
         if(_word_name == null) {
             _word_name = world.getName();
         }
 
-        // Verify if the world is valid
-        _world = Universe.get().getWorld(_word_name);
-        if(_world == null) {
-            printLog(playerRef, LogTypes.KOTTInvalidWorld);
-            return CompletableFuture.completedFuture(null);
-        }
-
-        // Verify if the world has an active match
-        KOTTMatch match = KOTTMatch.getMatchesList().get(_word_name);
-        if(match == null || !match.getKOTHMatchStatus()){
-            print(commandContext, "[KOTH] There isn't any match happening in the moment!");
-        }else{
-            KOTTMatch.stop(_word_name);
-            print(commandContext, "[KOTH] Stopped the active KOTH match!");
-        }
+       KOTTMatch.stop(_word_name, commandContext);
 
         return  CompletableFuture.completedFuture(null);
     }
