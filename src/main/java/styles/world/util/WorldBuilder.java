@@ -1,10 +1,16 @@
 package styles.world.util;
 
+import com.hypixel.hytale.builtin.buildertools.commands.PasteCommand;
+import com.hypixel.hytale.builtin.hytalegenerator.patterns.WallPattern;
+import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3i;
-import com.hypixel.hytale.protocol.Color;
+import com.hypixel.hytale.protocol.BlockFace;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
+import com.hypixel.hytale.server.core.entity.entities.BlockEntity;
+import com.hypixel.hytale.server.core.modules.blockset.commands.BlockSetCommand;
 import com.hypixel.hytale.server.core.universe.world.World;
-import org.jline.jansi.io.Colors;
+import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
+import com.hypixel.hytale.server.core.universe.world.commands.block.BlockSetStateCommand;
 import styles.util.ColorHandler;
 import styles.util.MathHelper;
 import styles.world.util.filter.BlockFilter;
@@ -12,6 +18,13 @@ import styles.world.util.filter.BlockFilter;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import static styles.util.PrintMacros.printL;
+
+// ROTATION 4 = lay down to right
+// ROTATION 8 = upside down
+// ROTATION 12 = lay down to left
+// ROTATION 16 = lay dow to back
+// ROTATION 16 = lay dow to back flipped
 public class WorldBuilder {
 
     public static class PointToPoint {
@@ -31,6 +44,17 @@ public class WorldBuilder {
         public Vector3i getStart() { return start; }
 
         public Vector3i getEnd() { return end; }
+    }
+
+    public static class Point {
+        private Vector3i pos;
+        public Point(int x, int y, int z) {
+            pos = new Vector3i(x, y, z);
+        }
+
+        public void addCenter(Vector3i center) {
+            pos = MathHelper.vectorSum(pos, center);
+        }
     }
 
     /*=============================================================
@@ -101,7 +125,45 @@ public class WorldBuilder {
                     world.setBlock(x, y, z, blockType.getId());
                 }
             }
+            for(int x = space.start.x; x >= space.end.x; x--){
+                for(int z = space.start.z; z <= space.end.z; z++){
+                    world.setBlock(x, y, z, blockType.getId());
+                }
+            }
+            for(int x = space.start.x; x <= space.end.x; x++){
+                for(int z = space.start.z; z >= space.end.z; z--){
+                    world.setBlock(x, y, z, blockType.getId());
+                }
+            }
+            for(int x = space.start.x; x >= space.end.x; x--){
+                for(int z = space.start.z; z >= space.end.z; z--){
+                    world.setBlock(x, y, z, blockType.getId());
+                }
+            }
         }
+    }
+
+    public static void createPillar(@Nonnull Point point, int size, @Nonnull BlockType pillarBaseType, @Nonnull BlockType pillarBlockType, @Nonnull World world) {
+        world.setBlock(point.pos.x, point.pos.y, point.pos.z, pillarBaseType.getId());
+        for (int i = 0; i < size; i++) world.setBlock(point.pos.x, ++point.pos.y, point.pos.z, pillarBlockType.getId());
+        WorldChunk chunk = world.getChunk(ChunkUtil.indexChunkFromBlock(point.pos.x, point.pos.z));
+        if (chunk == null) {
+            printL("[KOTT Debug] Invalid chunk!");
+            return;
+        }
+        chunk.setBlock(point.pos.x, ++point.pos.y, point.pos.z, BlockType.getAssetMap().getIndex(pillarBaseType.getId()), pillarBaseType, 8, 0, 0);
+    }
+
+    public static void setBlock(Point point, BlockType blockType, int rotation, int filler, World world) {
+        WorldChunk chunk = world.getChunk(ChunkUtil.indexChunkFromBlock(point.pos.x, point.pos.z));
+        if (chunk == null) {
+            printL("[KOTT Debug] Invalid chunk!");
+            return;
+        }
+        chunk.setBlock(point.pos.x, point.pos.y, point.pos.z, BlockType.getAssetMap().getIndex(blockType.getId()), blockType, rotation, 0, 0);
+        chunk.isTicking(point.pos.x, point.pos.y, point.pos.z);
+        chunk.getChunkAccessor().performBlockUpdate(point.pos.x, point.pos.y, point.pos.y);
+        WallPattern.WallDirection
     }
 
     public static void constructTeamBase(@Nonnull Vector3i spawnLocation, @Nonnull ColorHandler.ColorType teamColor, @Nonnull World world) {
@@ -118,6 +180,9 @@ public class WorldBuilder {
         BlockType rockAquaBrick = BlockType.fromString("Rock_Aqua_Brick_Decorative");
         BlockType rockCrystalBlock = BlockType.fromString("Rock_Crystal_" + color + "_Block");
         BlockType rockBasaltBrick = BlockType.fromString("Rock_Basalt_Brick");
+        BlockType rockAquaBrickPillarBase = BlockType.fromString("Rock_Aqua_Brick_Pillar_Base");
+        BlockType rockAquaBrickPillar = BlockType.fromString("Rock_Aqua_Brick_Pillar_Middle");
+        BlockType rockAquaBrickWall = BlockType.fromString("Rock_Aqua_Brick_Wall");
 
         PointToPoint baseFloor = new PointToPoint(-8, -2, -8, 8, -2, 8);
         baseFloor.addCenter(spawnLocation);
@@ -159,6 +224,51 @@ public class WorldBuilder {
         baseCentralSquares.addCenter(spawnLocation);
         createFillSquare(baseCentralSquares, rockBasaltBrick, world);
 
+        Point pillarBase;
+        pillarBase = new Point(5, 0, 5);
+        pillarBase.addCenter(spawnLocation);
+        createPillar(pillarBase, 3, rockAquaBrickPillarBase, rockAquaBrickPillar, world);
+        pillarBase = new Point(5, 0, -5);
+        pillarBase.addCenter(spawnLocation);
+        createPillar(pillarBase, 3, rockAquaBrickPillarBase, rockAquaBrickPillar, world);
+        pillarBase = new Point(-5, 0, 5);
+        pillarBase.addCenter(spawnLocation);
+        createPillar(pillarBase, 3, rockAquaBrickPillarBase, rockAquaBrickPillar, world);
+        pillarBase = new Point(-5, 0, -5);
+        pillarBase.addCenter(spawnLocation);
+        createPillar(pillarBase, 3, rockAquaBrickPillarBase, rockAquaBrickPillar, world);
+
+        /*
+            PointToPoint baseLineUp;
+            baseLineUp = new PointToPoint(5, 5, 5, -5, 6, 5);
+            baseLineUp.addCenter(spawnLocation);
+            createFillSquare(baseLineUp, rockAquaBrick, world);
+            baseLineUp = new PointToPoint(-5, 5, 5, -5, 6, -5);
+            baseLineUp.addCenter(spawnLocation);
+            createFillSquare(baseLineUp, rockAquaBrick, world);
+            baseLineUp = new PointToPoint(-5, 5, -5, 5, 6, -5);
+            baseLineUp.addCenter(spawnLocation);
+            createFillSquare(baseLineUp, rockAquaBrick, world);
+            baseLineUp = new PointToPoint(5, 5, -5, 5, 6, 5);
+            baseLineUp.addCenter(spawnLocation);
+            createFillSquare(baseLineUp, rockAquaBrick, world);
+
+            PointToPoint baseWallLine;
+            baseWallLine = new PointToPoint(5, 0, 4, 5, 0, 2);
+            baseWallLine.addCenter(spawnLocation);
+            createFillSquare(baseWallLine, rockAquaBrickWall, world);
+            baseWallLine = new PointToPoint(5, 0, 2, 6, 0, 2);
+            baseWallLine.addCenter(spawnLocation);
+            createFillSquare(baseWallLine, rockAquaBrickWall, world);
+         */
+
+        Point baseLineWall = new Point(5, 0, -4);
+        baseLineWall.addCenter(spawnLocation);
+        setBlock(baseLineWall, rockAquaBrickWall, 1, 0, world);
+        baseLineWall.pos.z += 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 1, 1, world);
+        baseLineWall.pos.x += 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 0, 0, world);
 
     }
 }
