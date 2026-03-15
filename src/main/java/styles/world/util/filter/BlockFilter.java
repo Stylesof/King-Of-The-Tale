@@ -11,6 +11,13 @@ public class BlockFilter {
 
     private static Map<FilterTypes, List<String>> filterList = new HashMap<>();
 
+    public enum FilterTypes {
+
+        PLANT,
+        LEAVES,
+
+    }
+
     static {
 
         filterList.put(FilterTypes.PLANT, new ArrayList<>());
@@ -21,7 +28,7 @@ public class BlockFilter {
     public static boolean applyFilter(BlockType blockType, FilterTypes filterType) {
 
         for(String filter : filterList.get(filterType)){
-            if(blockType.getId().toString().contains(filter)) return true;
+            if(blockType.getId().contains(filter)) return true;
         }
 
         return false;
