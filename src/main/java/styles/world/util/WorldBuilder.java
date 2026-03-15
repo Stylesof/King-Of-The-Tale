@@ -1,12 +1,15 @@
 package styles.world.util;
 
 import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.protocol.Color;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.universe.world.World;
+import org.jline.jansi.io.Colors;
+import styles.util.ColorHandler;
 import styles.util.MathHelper;
 import styles.world.util.filter.BlockFilter;
-import styles.world.util.filter.FilterTypes;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class WorldBuilder {
@@ -71,7 +74,7 @@ public class WorldBuilder {
         // returns null in case of a world of water, or a world with a roof
         if (block == null || (!block.getId().equals("Empty") || fluid > 0)) return null;
 
-        while ((block.getId().equals("Empty") && fluid <= 0) || BlockFilter.applyFilter(block, FilterTypes.PLANT)) {
+        while ((block.getId().equals("Empty") && fluid <= 0) || BlockFilter.applyFilter(block, BlockFilter.FilterTypes.PLANT)) {
             pos.subtract(0, 1, 0);
             block = world.getBlockType(pos);
             fluid = world.getFluidId(pos.x, pos.y, pos.z);
@@ -99,5 +102,63 @@ public class WorldBuilder {
                 }
             }
         }
+    }
+
+    public static void constructTeamBase(@Nonnull Vector3i spawnLocation, @Nonnull ColorHandler.ColorType teamColor, @Nonnull World world) {
+        String color = switch (teamColor) {
+            case WHITE -> "White";
+            case GREEN -> "Green";
+            case BLUE -> "Blue";
+            case YELLOW -> "Yellow";
+            case CYAN -> "Cyan";
+            case PURPLE -> "Purple";
+        };
+
+        BlockType rockShaleBrick = BlockType.fromString("Rock_Shale_Brick");
+        BlockType rockAquaBrick = BlockType.fromString("Rock_Aqua_Brick_Decorative");
+        BlockType rockCrystalBlock = BlockType.fromString("Rock_Crystal_" + color + "_Block");
+        BlockType rockBasaltBrick = BlockType.fromString("Rock_Basalt_Brick");
+
+        PointToPoint baseFloor = new PointToPoint(-8, -2, -8, 8, -2, 8);
+        baseFloor.addCenter(spawnLocation);
+        createFillSquare(baseFloor, rockShaleBrick, world);
+
+        PointToPoint centralBaseFloor = new PointToPoint(-5, -1, -5, 5, -1, 5);
+        centralBaseFloor.addCenter(spawnLocation);
+        createFillSquare(centralBaseFloor, rockAquaBrick, world);
+
+        PointToPoint crystalBaseFloor = new PointToPoint(-4, -1, -4, 4, -1, 4);
+        crystalBaseFloor.addCenter(spawnLocation);
+        createFillSquare(crystalBaseFloor, rockCrystalBlock, world);
+
+        PointToPoint baseLine;
+        baseLine = new PointToPoint(1, -1, 0, 4, -1, 0);
+        baseLine.addCenter(spawnLocation);
+        createFillSquare(baseLine, rockAquaBrick, world);
+        baseLine = new PointToPoint(-1, -1, 0, -4, -1, 0);
+        baseLine.addCenter(spawnLocation);
+        createFillSquare(baseLine, rockAquaBrick, world);
+        baseLine = new PointToPoint(0, -1, 1, 0, -1, 4);
+        baseLine.addCenter(spawnLocation);
+        createFillSquare(baseLine, rockAquaBrick, world);
+        baseLine = new PointToPoint(0, -1, -1, 0, -1, -4);
+        baseLine.addCenter(spawnLocation);
+        createFillSquare(baseLine, rockAquaBrick, world);
+
+        PointToPoint baseCentralSquares;
+        baseCentralSquares = new PointToPoint(1, -1, 1, 2, -1, 2);
+        baseCentralSquares.addCenter(spawnLocation);
+        createFillSquare(baseCentralSquares, rockBasaltBrick, world);
+        baseCentralSquares = new PointToPoint(-1, -1, 1, -2, -1, 2);
+        baseCentralSquares.addCenter(spawnLocation);
+        createFillSquare(baseCentralSquares, rockBasaltBrick, world);
+        baseCentralSquares = new PointToPoint(1, -1, -1, 2, -1, -2);
+        baseCentralSquares.addCenter(spawnLocation);
+        createFillSquare(baseCentralSquares, rockBasaltBrick, world);
+        baseCentralSquares = new PointToPoint(-1, -1, -1, -2, -1, -2);
+        baseCentralSquares.addCenter(spawnLocation);
+        createFillSquare(baseCentralSquares, rockBasaltBrick, world);
+
+
     }
 }

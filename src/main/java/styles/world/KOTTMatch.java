@@ -1,42 +1,27 @@
 package styles.world;
 
-import com.hypixel.hytale.builtin.buildertools.BuilderToolsPlugin;
-import com.hypixel.hytale.builtin.buildertools.commands.PasteCommand;
-import com.hypixel.hytale.builtin.buildertools.utils.RecursivePrefabLoader;
 import com.hypixel.hytale.math.vector.Transform;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.Color;
-import com.hypixel.hytale.protocol.packets.player.RemoveMapMarker;
-import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
-import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.teleport.Teleport;
-import com.hypixel.hytale.server.core.prefab.PrefabRotation;
-import com.hypixel.hytale.server.core.prefab.PrefabStore;
-import com.hypixel.hytale.server.core.prefab.selection.buffer.PrefabBufferCall;
-import com.hypixel.hytale.server.core.prefab.selection.buffer.impl.IPrefabBuffer;
-import com.hypixel.hytale.server.core.prefab.selection.buffer.impl.PrefabBuffer;
-import com.hypixel.hytale.server.core.prefab.selection.standard.BlockSelection;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarkersStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.worldstore.WorldMarkersResource;
-import com.hypixel.hytale.server.core.util.PrefabUtil;
 import styles.team.KOTTTeam;
-import styles.util.ColorGenerator;
+import styles.util.ColorHandler;
 import styles.util.StringGenerator;
 import styles.util.MathHelper;
 import styles.world.util.WorldBuilder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
-import java.util.function.Function;
 
 import static styles.util.PrintMacros.print;
 import static styles.util.PrintMacros.printL;
@@ -74,7 +59,7 @@ public class KOTTMatch {
 
         // Using a pre-defined name template, get an list with random names
         List<String> nameList = StringGenerator.genRandomNameList(teamCount);
-        List<Color> colorList = ColorGenerator.genRandomColorList(teamCount);
+        List<Color> colorList = ColorHandler.genRandomColorList(teamCount);
 
         int i = 0;
         while (i < teamCount) {
@@ -112,45 +97,10 @@ public class KOTTMatch {
 
                 // Clear a specified area position with a specific size, in a square shape
                 Vector3i basePos = getLastTeamAdded().getBaseZone().getPosition();
-                //WorldBuilder.clearAreaSquare(basePos, 10, world);
+                WorldBuilder.clearAreaSquare(basePos, 10, world);
 
                 // Create default base
-                {
-                    Path prefabStorePath = PrefabStore.get().findAssetPrefabPath("King-Of-The-Tale/test.json");
-                    if (prefabStorePath == null) {
-                        print(playerRef, "Deu errado!");
-                    }
-
-                    PrefabStore pref = PrefabStore.get();
-                    Function<String, BlockSelection> seila = pref::getAssetPrefab;
-                    RecursivePrefabLoader.BlockSelectionLoader load = new RecursivePrefabLoader.BlockSelectionLoader(prefabStorePath, seila);
-
-                    
-
-                    /*
-                        public static void paste(@Nonnull IPrefabBuffer buffer, @Nonnull World world, @Nonnull Vector3i position, @Nonnull Rotation yaw, boolean force, Random random, @Nonnull ComponentAccessor<EntityStore> componentAccessor) {
-                            paste(buffer, world, position, yaw, force, random, 0, componentAccessor);
-                        }
-                     */
-
-                    BlockType block = BlockType.fromString("Rock_Stone");
-                    WorldBuilder.PointToPoint baseFloor = new WorldBuilder.PointToPoint(-5, -1, -5, 5, -1, 5);
-                    baseFloor.addCenter(basePos);
-                    WorldBuilder.createFillSquare(baseFloor, block, world);
-
-                    WorldBuilder.PointToPoint pillar = new WorldBuilder.PointToPoint(-5, -1, -5, -5, 4, -5);
-                    pillar.addCenter(basePos);
-                    WorldBuilder.createFillSquare(pillar, block, world);
-                    pillar.getStart().x += 5 * 2;
-                    pillar.getEnd().x += 5 * 2;
-                    WorldBuilder.createFillSquare(pillar, block, world);
-                    pillar.getStart().z += 5 * 2;
-                    pillar.getEnd().z += 5 * 2;
-                    WorldBuilder.createFillSquare(pillar, block, world);
-                    pillar.getStart().x += -5 * 2;
-                    pillar.getEnd().x += -5 * 2;
-                    WorldBuilder.createFillSquare(pillar, block, world);
-                }
+                WorldBuilder.constructTeamBase(basePos, ColorHandler.ColorType.BLUE, world);
 
                 i++;
             }

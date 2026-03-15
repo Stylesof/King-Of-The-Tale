@@ -1,0 +1,48 @@
+package styles.util;
+
+import com.hypixel.hytale.protocol.Color;
+
+import java.util.*;
+
+public class ColorHandler {
+
+    public static final Map<ColorType, Color> Colors = new HashMap();
+
+    public static enum ColorType {
+
+        WHITE,
+        GREEN,
+        BLUE,
+        YELLOW,
+        CYAN,
+        PURPLE;
+
+    }
+
+    static  {
+
+        // Colors.add(new Color((byte) 255, (byte) 0   ,(byte) 0));   // RED
+        Colors.put(ColorType.WHITE     , new Color((byte) 0  , (byte) 0   ,(byte) 0));   // WHITE
+        Colors.put(ColorType.GREEN     , new Color((byte) 0  , (byte) 255 ,(byte) 0));   // GREEN
+        Colors.put(ColorType.BLUE      , new Color((byte) 0  , (byte) 0   ,(byte) 255)); // BLUE
+        Colors.put(ColorType.YELLOW    , new Color((byte) 255, (byte) 255 ,(byte) 0));   // YELLOW
+        Colors.put(ColorType.CYAN, new Color((byte) 0  , (byte) 255 ,(byte) 255));       // CYAN
+        Colors.put(ColorType.PURPLE    , new Color((byte) 255, (byte) 0   ,(byte) 255)); // PURPLE
+
+    }
+
+    public static List<Color> genRandomColorList(int count) {
+        List<Color> temp = new ArrayList<>(Colors.values());
+        Random random = new Random();
+
+        List<Color> res = new ArrayList<>();
+
+        for(int i = 0; i < count; i++) {
+            int r = random.nextInt(temp.size());
+            res.add(temp.get(r));
+            temp.remove(r);
+        }
+
+        return res;
+    }
+}
