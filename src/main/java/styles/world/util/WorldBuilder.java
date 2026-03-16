@@ -1,16 +1,14 @@
 package styles.world.util;
 
-import com.hypixel.hytale.builtin.buildertools.commands.PasteCommand;
-import com.hypixel.hytale.builtin.hytalegenerator.patterns.WallPattern;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3i;
-import com.hypixel.hytale.protocol.BlockFace;
+import com.hypixel.hytale.protocol.BlockNeighbor;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
+import com.hypixel.hytale.server.core.asset.type.blocktype.config.RotationTuple;
 import com.hypixel.hytale.server.core.entity.entities.BlockEntity;
-import com.hypixel.hytale.server.core.modules.blockset.commands.BlockSetCommand;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
-import com.hypixel.hytale.server.core.universe.world.commands.block.BlockSetStateCommand;
+import com.hypixel.hytale.server.core.universe.world.connectedblocks.ConnectedBlocksUtil;
 import styles.util.ColorHandler;
 import styles.util.MathHelper;
 import styles.world.util.filter.BlockFilter;
@@ -163,7 +161,15 @@ public class WorldBuilder {
         chunk.setBlock(point.pos.x, point.pos.y, point.pos.z, BlockType.getAssetMap().getIndex(blockType.getId()), blockType, rotation, 0, 0);
         chunk.isTicking(point.pos.x, point.pos.y, point.pos.z);
         chunk.getChunkAccessor().performBlockUpdate(point.pos.x, point.pos.y, point.pos.y);
-        WallPattern.WallDirection
+
+        ConnectedBlocksUtil.setConnectedBlockAndNotifyNeighbors(
+                BlockType.getAssetMap().getIndex(blockType.getId()),
+                RotationTuple.get(rotation),
+                new Vector3i(0, 0, 0),
+                point.pos,
+                chunk.getWorld().getChunk(ChunkUtil.indexChunkFromBlock(point.pos.x, point.pos.z)),
+                chunk.getBlockChunk()
+                );
     }
 
     public static void constructTeamBase(@Nonnull Vector3i spawnLocation, @Nonnull ColorHandler.ColorType teamColor, @Nonnull World world) {
@@ -267,8 +273,29 @@ public class WorldBuilder {
         setBlock(baseLineWall, rockAquaBrickWall, 1, 0, world);
         baseLineWall.pos.z += 1;
         setBlock(baseLineWall, rockAquaBrickWall, 1, 1, world);
+        baseLineWall.pos.z += 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 1, 1, world);
         baseLineWall.pos.x += 1;
         setBlock(baseLineWall, rockAquaBrickWall, 0, 0, world);
 
+        baseLineWall = new Point(5, 0, 4);
+        baseLineWall.addCenter(spawnLocation);
+        setBlock(baseLineWall, rockAquaBrickWall, 1, 0, world);
+        baseLineWall.pos.z -= 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 1, 1, world);
+        baseLineWall.pos.z -= 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 1, 1, world);
+        baseLineWall.pos.x += 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 0, 0, world);
+
+        baseLineWall = new Point(4, 0, 5);
+        baseLineWall.addCenter(spawnLocation);
+        setBlock(baseLineWall, rockAquaBrickWall, 0, 0, world);
+        baseLineWall.pos.x -= 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 0, 1, world);
+        baseLineWall.pos.x -= 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 0, 1, world);
+        baseLineWall.pos.z += 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 1, 0, world);
     }
 }
