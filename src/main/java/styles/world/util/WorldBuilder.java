@@ -120,22 +120,22 @@ public class WorldBuilder {
         for(int y = space.start.y; y <= space.end.y; y++){
             for(int x = space.start.x; x <= space.end.x; x++){
                 for(int z = space.start.z; z <= space.end.z; z++){
-                    world.setBlock(x, y, z, blockType.getId());
+                    setBlock(x, y, z, blockType, world);
                 }
             }
             for(int x = space.start.x; x >= space.end.x; x--){
                 for(int z = space.start.z; z <= space.end.z; z++){
-                    world.setBlock(x, y, z, blockType.getId());
+                    setBlock(x, y, z, blockType, world);
                 }
             }
             for(int x = space.start.x; x <= space.end.x; x++){
                 for(int z = space.start.z; z >= space.end.z; z--){
-                    world.setBlock(x, y, z, blockType.getId());
+                    setBlock(x, y, z, blockType, world);
                 }
             }
             for(int x = space.start.x; x >= space.end.x; x--){
                 for(int z = space.start.z; z >= space.end.z; z--){
-                    world.setBlock(x, y, z, blockType.getId());
+                    setBlock(x, y, z, blockType, world);
                 }
             }
         }
@@ -171,6 +171,8 @@ public class WorldBuilder {
                 chunk.getBlockChunk()
                 );
     }
+
+    public static void setBlock(int x, int y, int z, BlockType blockType, World world) { setBlock(new Point(x, y, z), blockType, 0, 0, world); }
 
     public static void constructTeamBase(@Nonnull Vector3i spawnLocation, @Nonnull ColorHandler.ColorType teamColor, @Nonnull World world) {
         String color = switch (teamColor) {
@@ -244,30 +246,29 @@ public class WorldBuilder {
         pillarBase.addCenter(spawnLocation);
         createPillar(pillarBase, 3, rockAquaBrickPillarBase, rockAquaBrickPillar, world);
 
-        /*
-            PointToPoint baseLineUp;
-            baseLineUp = new PointToPoint(5, 5, 5, -5, 6, 5);
-            baseLineUp.addCenter(spawnLocation);
-            createFillSquare(baseLineUp, rockAquaBrick, world);
-            baseLineUp = new PointToPoint(-5, 5, 5, -5, 6, -5);
-            baseLineUp.addCenter(spawnLocation);
-            createFillSquare(baseLineUp, rockAquaBrick, world);
-            baseLineUp = new PointToPoint(-5, 5, -5, 5, 6, -5);
-            baseLineUp.addCenter(spawnLocation);
-            createFillSquare(baseLineUp, rockAquaBrick, world);
-            baseLineUp = new PointToPoint(5, 5, -5, 5, 6, 5);
-            baseLineUp.addCenter(spawnLocation);
-            createFillSquare(baseLineUp, rockAquaBrick, world);
+        PointToPoint baseLineUp;
+        baseLineUp = new PointToPoint(5, 5, 5, -5, 5, 5);
+        baseLineUp.addCenter(spawnLocation);
+        createFillSquare(baseLineUp, rockAquaBrick, world);
+        baseLineUp = new PointToPoint(-5, 5, 5, -5, 5, -5);
+        baseLineUp.addCenter(spawnLocation);
+        createFillSquare(baseLineUp, rockAquaBrick, world);
+        baseLineUp = new PointToPoint(-5, 5, -5, 5, 5, -5);
+        baseLineUp.addCenter(spawnLocation);
+        createFillSquare(baseLineUp, rockAquaBrick, world);
+        baseLineUp = new PointToPoint(5, 5, -5, 5, 5, 5);
+        baseLineUp.addCenter(spawnLocation);
+        createFillSquare(baseLineUp, rockAquaBrick, world);
 
-            PointToPoint baseWallLine;
-            baseWallLine = new PointToPoint(5, 0, 4, 5, 0, 2);
-            baseWallLine.addCenter(spawnLocation);
-            createFillSquare(baseWallLine, rockAquaBrickWall, world);
-            baseWallLine = new PointToPoint(5, 0, 2, 6, 0, 2);
-            baseWallLine.addCenter(spawnLocation);
-            createFillSquare(baseWallLine, rockAquaBrickWall, world);
-         */
+        PointToPoint baseWallLine;
+        baseWallLine = new PointToPoint(5, 0, 4, 5, 0, 2);
+        baseWallLine.addCenter(spawnLocation);
+        createFillSquare(baseWallLine, rockAquaBrickWall, world);
+        baseWallLine = new PointToPoint(5, 0, 2, 6, 0, 2);
+        baseWallLine.addCenter(spawnLocation);
+        createFillSquare(baseWallLine, rockAquaBrickWall, world);
 
+        // RIGHT WALLS
         Point baseLineWall = new Point(5, 0, -4);
         baseLineWall.addCenter(spawnLocation);
         setBlock(baseLineWall, rockAquaBrickWall, 1, 0, world);
@@ -278,6 +279,7 @@ public class WorldBuilder {
         baseLineWall.pos.x += 1;
         setBlock(baseLineWall, rockAquaBrickWall, 0, 0, world);
 
+        // RIGHT WALLS 2
         baseLineWall = new Point(5, 0, 4);
         baseLineWall.addCenter(spawnLocation);
         setBlock(baseLineWall, rockAquaBrickWall, 1, 0, world);
@@ -288,6 +290,62 @@ public class WorldBuilder {
         baseLineWall.pos.x += 1;
         setBlock(baseLineWall, rockAquaBrickWall, 0, 0, world);
 
+        // FRONT WALLS
+        baseLineWall = new Point(4, 0, -5);
+        baseLineWall.addCenter(spawnLocation);
+        setBlock(baseLineWall, rockAquaBrickWall, 0, 0, world);
+        baseLineWall.pos.x -= 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 0, 1, world);
+        baseLineWall.pos.x -= 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 0, 1, world);
+        baseLineWall.pos.z -= 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 1, 0, world);
+
+        // FRONT WALLS 2
+        baseLineWall = new Point(-4, 0, -5);
+        baseLineWall.addCenter(spawnLocation);
+        setBlock(baseLineWall, rockAquaBrickWall, 0, 0, world);
+        baseLineWall.pos.x += 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 0, 1, world);
+        baseLineWall.pos.x += 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 0, 1, world);
+        baseLineWall.pos.z -= 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 1, 0, world);
+
+        // LEFT WALLS
+        baseLineWall = new Point(-5, 0, -4);
+        baseLineWall.addCenter(spawnLocation);
+        setBlock(baseLineWall, rockAquaBrickWall, 1, 0, world);
+        baseLineWall.pos.z += 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 1, 1, world);
+        baseLineWall.pos.z += 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 1, 1, world);
+        baseLineWall.pos.x -= 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 0, 0, world);
+
+        // LEFT WALLS 2
+        baseLineWall = new Point(-5, 0, 4);
+        baseLineWall.addCenter(spawnLocation);
+        setBlock(baseLineWall, rockAquaBrickWall, 1, 0, world);
+        baseLineWall.pos.z -= 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 1, 1, world);
+        baseLineWall.pos.z -= 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 1, 1, world);
+        baseLineWall.pos.x -= 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 0, 0, world);
+
+        // BACK WALLS
+        baseLineWall = new Point(-4, 0, 5);
+        baseLineWall.addCenter(spawnLocation);
+        setBlock(baseLineWall, rockAquaBrickWall, 0, 0, world);
+        baseLineWall.pos.x += 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 0, 1, world);
+        baseLineWall.pos.x += 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 0, 1, world);
+        baseLineWall.pos.z += 1;
+        setBlock(baseLineWall, rockAquaBrickWall, 1, 0, world);
+
+        // BACK WALLS 2
         baseLineWall = new Point(4, 0, 5);
         baseLineWall.addCenter(spawnLocation);
         setBlock(baseLineWall, rockAquaBrickWall, 0, 0, world);
@@ -297,5 +355,7 @@ public class WorldBuilder {
         setBlock(baseLineWall, rockAquaBrickWall, 0, 1, world);
         baseLineWall.pos.z += 1;
         setBlock(baseLineWall, rockAquaBrickWall, 1, 0, world);
+
+
     }
 }
