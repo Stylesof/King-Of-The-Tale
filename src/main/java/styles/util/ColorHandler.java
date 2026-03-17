@@ -2,6 +2,7 @@ package styles.util;
 
 import com.hypixel.hytale.protocol.Color;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class ColorHandler {
@@ -22,7 +23,7 @@ public class ColorHandler {
     static  {
 
         // Colors.add(new Color((byte) 255, (byte) 0   ,(byte) 0));   // RED
-        Colors.put(ColorType.WHITE     , new Color((byte) 0  , (byte) 0   ,(byte) 0));   // WHITE
+        Colors.put(ColorType.WHITE     , new Color((byte) 255, (byte) 255 ,(byte) 255));   // WHITE
         Colors.put(ColorType.GREEN     , new Color((byte) 0  , (byte) 255 ,(byte) 0));   // GREEN
         Colors.put(ColorType.BLUE      , new Color((byte) 0  , (byte) 0   ,(byte) 255)); // BLUE
         Colors.put(ColorType.YELLOW    , new Color((byte) 255, (byte) 255 ,(byte) 0));   // YELLOW
@@ -44,5 +45,16 @@ public class ColorHandler {
         }
 
         return res;
+    }
+
+    @Nullable
+    public static ColorType getColorType(Color color) {
+        for (ColorType type : Colors.keySet()) {
+            if (Colors.get(type) == color) {
+                return  type;
+            }
+        }
+
+        return null;
     }
 }
