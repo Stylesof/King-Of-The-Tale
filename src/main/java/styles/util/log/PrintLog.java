@@ -2,7 +2,6 @@ package styles.util.log;
 
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 

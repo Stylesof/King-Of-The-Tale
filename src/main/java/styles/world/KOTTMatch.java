@@ -102,13 +102,13 @@ public class KOTTMatch {
                 WorldBuilder.clearAreaSquare(basePos, 10, world);
                 basePos.y++;
                 // Create default base
-                ColorHandler.ColorType type = ColorHandler.getColorType(colorList.get(i));
-                if (type == null) {
+                ColorHandler.ColorType teamColorType = ColorHandler.getColorType(colorList.get(i));
+                if (teamColorType == null) {
                     print(playerRef, "[KOTT] Failed to find team colorType!");
                     printL("[KOTT Debug] Failed to find team colorType!");
                     return;
                 }
-                WorldBuilder.constructTeamBase(basePos, type, world);
+                WorldBuilder.constructTeamBase(basePos, teamColorType, world);
 
                 i++;
             }
@@ -178,6 +178,10 @@ public class KOTTMatch {
             if (team.getBaseZone().getZoneMarker() != null) {
                 store.removeUserMapMarker(team.getBaseZone().getZoneMarker().getId());
             }
+
+            Vector3i basePos = team.getBaseZone().getPosition();
+            basePos.y -= 1;
+            WorldBuilder.clearAreaSquare(basePos, 7, world);
         }
 
         store.removeUserMapMarker(match.Zone.getZoneMarker().getId());

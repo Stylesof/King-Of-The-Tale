@@ -16,11 +16,6 @@ import javax.annotation.Nullable;
 
 import static styles.util.PrintMacros.printL;
 
-// ROTATION 4 = lay down to right
-// ROTATION 8 = upside down
-// ROTATION 12 = lay down to left
-// ROTATION 16 = lay dow to back
-// ROTATION 16 = lay dow to back flipped
 public class WorldBuilder {
 
     public static class PointToPoint {
@@ -31,6 +26,8 @@ public class WorldBuilder {
             start = new Vector3i(x, y, z);
             end = new Vector3i(x2, y2, z2);
         }
+
+        public PointToPoint(Vector3i start, Vector3i end) { this(start.x, start.y, start.z, end.x, end.y, end.z); }
 
         public void addCenter(Vector3i center) {
             start = MathHelper.vectorSum(start, center);
@@ -105,40 +102,24 @@ public class WorldBuilder {
         return pos;
     }
 
-    public static void createFillSquare(Vector3i startPoint, Vector3i finalPoint, BlockType blockType, World world) {
-        for(int y = startPoint.y; y <= finalPoint.y; y++){
-            for(int x = startPoint.x; x <= finalPoint.x; x++){
-                for(int z = startPoint.z; z <= finalPoint.z; z++){
-                    world.setBlock(x, y, z, blockType.getId());
-                }
-            }
-        }
-    }
-    public static void createFillSquare(PointToPoint space, BlockType blockType, int rotation, World world) {
-        for(int y = space.start.y; y <= space.end.y; y++){
-            for(int x = space.start.x; x <= space.end.x; x++){
-                for(int z = space.start.z; z <= space.end.z; z++){
-                    setBlock(x, y, z, blockType, rotation, world);
-                }
-            }
-            for(int x = space.start.x; x >= space.end.x; x--){
-                for(int z = space.start.z; z <= space.end.z; z++){
-                    setBlock(x, y, z, blockType, rotation, world);
-                }
-            }
-            for(int x = space.start.x; x <= space.end.x; x++){
-                for(int z = space.start.z; z >= space.end.z; z--){
-                    setBlock(x, y, z, blockType, rotation, world);
-                }
-            }
-            for(int x = space.start.x; x >= space.end.x; x--){
-                for(int z = space.start.z; z >= space.end.z; z--){
-                    setBlock(x, y, z, blockType, rotation, world);
-                }
-            }
-        }
-    }
+    public static void createFillSquare(Vector3i startPoint, Vector3i endPoint, BlockType blockType, World world) { createFillSquare(new PointToPoint(startPoint, endPoint), blockType, world); }
+
     public static void createFillSquare(PointToPoint space, BlockType blockType, World world) { createFillSquare(space, blockType, 0, world); }
+
+    public static void createFillSquare(PointToPoint space, BlockType blockType, int rotation, World world) {
+        int directionX, directionY, directionZ;
+       directionX = space.start.x <= space.end.x ? 1 : -1;
+       directionY = space.start.y <= space.end.y ? 1 : -1;
+       directionZ = space.start.z <= space.end.z ? 1 : -1;
+
+        for(int y = space.start.y; y != space.end.y + directionY; y+=directionY){
+            for(int x = space.start.x; x != space.end.x + directionX; x+=directionX){
+                for(int z = space.start.z; z != space.end.z + directionZ; z+=directionZ){
+                    setBlock(x, y, z, blockType, rotation, world);
+                }
+            }
+        }
+    }
 
     public static void createPillar(@Nonnull Point point, int size, @Nonnull BlockType pillarBaseType, @Nonnull BlockType pillarBlockType, @Nonnull World world) {
         world.setBlock(point.pos.x, point.pos.y, point.pos.z, pillarBaseType.getId());
@@ -481,26 +462,26 @@ public class WorldBuilder {
         baseStairs.pos.x += 1;
         setBlock(baseStairs, rockShaleBrickStairs, 0, 0, world);
 
-        // FRONT BENCH
+        // BACK BENCH
         Point baseBench = new Point(-3, -1,6);
         baseBench.addCenter(spawnLocation);
         setBlock(baseBench, templeLightBench, 0, 0, world);
         baseBench.pos.x += 7;
         setBlock(baseBench, templeLightBench, 0, 0, world);
 
-        // BACK BENCH
-        baseBench = new Point(-3, -1,-6);
+        // FRONT BENCH
+        baseBench = new Point(-4, -1,-6);
         baseBench.addCenter(spawnLocation);
-        setBlock(baseBench, templeLightBench, 0, 0, world);
+        setBlock(baseBench, templeLightBench, 2, 0, world);
         baseBench.pos.x += 7;
-        setBlock(baseBench, templeLightBench, 0, 0, world);
+        setBlock(baseBench, templeLightBench, 2, 0, world);
 
         // RIGHT BENCH
-        baseBench = new Point(6, -1,-3);
+        baseBench = new Point(6, -1,-4);
         baseBench.addCenter(spawnLocation);
-        setBlock(baseBench, templeLightBench, 3, 0, world);
+        setBlock(baseBench, templeLightBench, 1, 0, world);
         baseBench.pos.z += 7;
-        setBlock(baseBench, templeLightBench, 3, 0, world);
+        setBlock(baseBench, templeLightBench, 1, 0, world);
 
         // LEFT BENCH
         baseBench = new Point(-6, -1,-3);
