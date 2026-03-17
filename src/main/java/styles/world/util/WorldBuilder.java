@@ -19,35 +19,25 @@ import static styles.util.PrintMacros.printL;
 public class WorldBuilder {
 
     public static class PointToPoint {
-
-        private Vector3i start, end;
-
+        public Vector3i start, end;
         public PointToPoint(int x, int y, int z, int x2, int y2, int z2) {
             start = new Vector3i(x, y, z);
             end = new Vector3i(x2, y2, z2);
         }
 
         public PointToPoint(Vector3i start, Vector3i end) { this(start.x, start.y, start.z, end.x, end.y, end.z); }
-
         public void addCenter(Vector3i center) {
             start = MathHelper.vectorSum(start, center);
             end = MathHelper.vectorSum(end, center);
         }
-
-        public Vector3i getStart() { return start; }
-
-        public Vector3i getEnd() { return end; }
+        //public Vector3i getStart() { return start; }
+        //public Vector3i getEnd() { return end; }
     }
 
     public static class Point {
-        private Vector3i pos;
-        public Point(int x, int y, int z) {
-            pos = new Vector3i(x, y, z);
-        }
-
-        public void addCenter(Vector3i center) {
-            pos = MathHelper.vectorSum(pos, center);
-        }
+        public Vector3i pos;
+        public Point(int x, int y, int z) { pos = new Vector3i(x, y, z); }
+        public void addCenter(Vector3i center) { pos = MathHelper.vectorSum(pos, center); }
     }
 
     /*=============================================================
@@ -79,7 +69,7 @@ public class WorldBuilder {
         Returns:
             - Vector3i -> Vector with the position above the
                           WORLD surface
-    ========================================================== */
+    ===========================================================*/
     @Nullable
     public static Vector3i alignVectorToWorldSurface(Vector3i originalPos, World world) {
         Vector3i pos = new Vector3i(originalPos);
@@ -102,6 +92,15 @@ public class WorldBuilder {
         return pos;
     }
 
+    /*===========================================================
+        FUNCTION TO FILL AN SQUARE AREA WITH AN SPECIFIED BLOCK
+        TYPE.
+        Params:
+            - startPoint -> Start point of the square
+            - endPoint -> End point of the square
+            - blockType -> Type of Block to use
+            - world -> World reference
+     ==========================================================*/
     public static void createFillSquare(Vector3i startPoint, Vector3i endPoint, BlockType blockType, World world) { createFillSquare(new PointToPoint(startPoint, endPoint), blockType, world); }
 
     public static void createFillSquare(PointToPoint space, BlockType blockType, World world) { createFillSquare(space, blockType, 0, world); }
@@ -132,29 +131,36 @@ public class WorldBuilder {
         chunk.setBlock(point.pos.x, ++point.pos.y, point.pos.z, BlockType.getAssetMap().getIndex(pillarBaseType.getId()), pillarBaseType, 8, 0, 0);
     }
 
-    public static void setBlock(Point point, BlockType blockType, int rotation, int filler, World world) {
+    public static boolean setBlock(int x, int y, int z, @Nonnull BlockType blockType, int rotation, World world) { return setBlock(new Point(x, y, z), blockType, rotation, 0, world); }
+
+    public static boolean setBlock(@Nonnull Point point, @Nonnull BlockType blockType, int rotation, int filler, World world) {
         WorldChunk chunk = world.getChunk(ChunkUtil.indexChunkFromBlock(point.pos.x, point.pos.z));
         if (chunk == null) {
             printL("[KOTT Debug] Invalid chunk!");
-            return;
+            return false;
         }
         chunk.setBlock(point.pos.x, point.pos.y, point.pos.z, BlockType.getAssetMap().getIndex(blockType.getId()), blockType, rotation, 0, 0);
-        chunk.isTicking(point.pos.x, point.pos.y, point.pos.z);
+        chunk.setTicking(point.pos.x, point.pos.y, point.pos.z, true);
         chunk.getChunkAccessor().performBlockUpdate(point.pos.x, point.pos.y, point.pos.y);
+
+        if (chunk.getBlockChunk() == null) {
+            printL("[KOTT Debug] Invalid block chunk!");
+            return false;
+        }
 
         ConnectedBlocksUtil.setConnectedBlockAndNotifyNeighbors(
                 BlockType.getAssetMap().getIndex(blockType.getId()),
                 RotationTuple.get(rotation),
                 new Vector3i(0, 0, 0),
                 point.pos,
-                chunk.getWorld().getChunk(ChunkUtil.indexChunkFromBlock(point.pos.x, point.pos.z)),
+                chunk,
                 chunk.getBlockChunk()
-                );
+        );
+
+        return true;
     }
 
-    public static void setBlock(int x, int y, int z, BlockType blockType, int rotation, World world) { setBlock(new Point(x, y, z), blockType, rotation, 0, world); }
-
-    public static void constructTeamBase(@Nonnull Vector3i spawnLocation, @Nonnull ColorHandler.ColorType teamColor, @Nonnull World world) {
+    public static boolean constructTeamBase(@Nonnull Vector3i spawnLocation, @Nonnull ColorHandler.ColorType teamColor, @Nonnull World world) {
         String color = switch (teamColor) {
             case WHITE -> "White";
             case GREEN -> "Green";
@@ -177,15 +183,22 @@ public class WorldBuilder {
         BlockType rockAquaCobbleRoof = BlockType.fromString("Rock_Aqua_Cobble_Roof");
         BlockType rockAquaCobbleRoofFlat = BlockType.fromString("Rock_Aqua_Cobble_Roof_Flat");
 
-        PointToPoint baseFloor = new PointToPoint(-8, -2, -8, 8, -2, 8);
+        if (rockShaleBrick == null || rockAquaBrick == null || rockCrystalBlock == null || rockBasaltBrick == null || rockAquaBrickPillarBase == null || rockAquaBrickPillar == null ||
+            rockAquaBrickWall == null || rockShaleBrickStairs == null || templeLightBench == null || goldBrickOrnate == null || rockAquaCobbleRoof == null || rockAquaCobbleRoofFlat == null)
+            return false;
+
+        PointToPoint baseFloor;
+        baseFloor = new PointToPoint(-8, -2, -8, 8, -2, 8);
         baseFloor.addCenter(spawnLocation);
         createFillSquare(baseFloor, rockShaleBrick, world);
 
-        PointToPoint centralBaseFloor = new PointToPoint(-5, -1, -5, 5, -1, 5);
+        PointToPoint centralBaseFloor;
+        centralBaseFloor = new PointToPoint(-5, -1, -5, 5, -1, 5);
         centralBaseFloor.addCenter(spawnLocation);
         createFillSquare(centralBaseFloor, rockAquaBrick, world);
 
-        PointToPoint crystalBaseFloor = new PointToPoint(-4, -1, -4, 4, -1, 4);
+        PointToPoint crystalBaseFloor;
+        crystalBaseFloor = new PointToPoint(-4, -1, -4, 4, -1, 4);
         crystalBaseFloor.addCenter(spawnLocation);
         createFillSquare(crystalBaseFloor, rockCrystalBlock, world);
 
@@ -752,8 +765,10 @@ public class WorldBuilder {
         baseUpRoofFlat.addCenter(spawnLocation);
         setBlock(baseUpRoofFlat, rockAquaCobbleRoofFlat, 0, 0, world);
 
-        Point block = new Point(0, 8, 0);
-        block.addCenter(spawnLocation);
-        setBlock(block, rockCrystalBlock, 0, 0, world);
+        Point finalBlock = new Point(0, 8, 0);
+        finalBlock.addCenter(spawnLocation);
+        setBlock(finalBlock, rockCrystalBlock, 0, 0, world);
+
+        return true;
     }
 }

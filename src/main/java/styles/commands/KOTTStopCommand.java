@@ -7,18 +7,13 @@ import com.hypixel.hytale.server.core.command.system.arguments.system.OptionalAr
 import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractAsyncPlayerCommand;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import styles.util.log.LogTypes;
 import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
 
 import java.util.concurrent.CompletableFuture;
-
-import static styles.util.PrintMacros.print;
-import static styles.util.log.PrintLog.printLog;
 
 public class KOTTStopCommand extends AbstractAsyncPlayerCommand {
 
@@ -44,7 +39,7 @@ public class KOTTStopCommand extends AbstractAsyncPlayerCommand {
             _word_name = world.getName();
         }
 
-       KOTTMatch.stop(_word_name, commandContext);
+       KOTTMatch.stop(_word_name, true, commandContext);
 
         return  CompletableFuture.completedFuture(null);
     }
