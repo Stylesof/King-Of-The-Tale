@@ -102,7 +102,13 @@ public class KOTTMatch {
                 WorldBuilder.clearAreaSquare(basePos, 10, world);
                 basePos.y++;
                 // Create default base
-                WorldBuilder.constructTeamBase(basePos, ColorHandler.ColorType.BLUE, world);
+                ColorHandler.ColorType type = ColorHandler.getColorType(colorList.get(i));
+                if (type == null) {
+                    print(playerRef, "[KOTT] Failed to find team colorType!");
+                    printL("[KOTT Debug] Failed to find team colorType!");
+                    return;
+                }
+                WorldBuilder.constructTeamBase(basePos, type, world);
 
                 i++;
             }
