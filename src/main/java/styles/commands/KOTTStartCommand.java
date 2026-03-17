@@ -1,5 +1,6 @@
 package styles.commands;
 
+import com.hypixel.hytale.builtin.path.commands.WorldPathSaveCommand;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.vector.Vector3i;
@@ -11,13 +12,17 @@ import com.hypixel.hytale.server.core.command.system.basecommands.AbstractAsyncP
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.WorldConfig;
+import com.hypixel.hytale.server.core.universe.world.WorldConfigProvider;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import styles.util.log.LogTypes;
 import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 
 import static styles.util.PrintMacros.print;
 import static styles.util.PrintMacros.printL;
@@ -60,13 +65,21 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
         Boolean _clone = clone.get(commandContext);
         Boolean _loop = loop.get(commandContext);
 
+        // Verify if the inserted world name is valid
+        if (_world_name == null) {
+            if (!commandContext.isPlayer()) {
+                printL("[KOTT Debug] To use this command as not Player, you need to insert an world!");
+                return CompletableFuture.completedFuture(null);
+            }
+            _world_name = world.getName();
+        }
+
         // Verify if the inserted pos is valid
         if (_world_pos == null) {
-            if(!commandContext.isPlayer()){
+            if (!commandContext.isPlayer()) {
                 printL("[KOTT Debug] To use this command as not Player, you need to insert an position!");
                 return CompletableFuture.completedFuture(null);
             }
-
             _world_pos = playerRef.getTransform().getPosition().toVector3i();
         }
 
@@ -82,11 +95,6 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
             return CompletableFuture.completedFuture(null);
         }
 
-        // Verify if the inserted world name is valid
-        if (_world_name == null) {
-            _world_name = world.getName();
-        }
-
         // Verify if the world is valid
         World _world = Universe.get().getWorld(_world_name);
         if (_world == null) {
@@ -94,14 +102,32 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
             return CompletableFuture.completedFuture(null);
         }
 
-        // Verify if has an active match in the world
-        if (KOTTMatch.getMatchesList().containsKey(_world_name)) {
-            if (KOTTMatch.getMatchesList().get(_world_name).getKOTHMatchStatus()) {
-                printLog(playerRef, LogTypes.KOTTMatchAlreadyRunning, "World name: \"" + _world_name + "\"!");
+        if (_clone != null && _clone) {
+            UUID uuid = UUID.randomUUID();
+            _world_name = _world_name + "_clone_temp_" + uuid;
+            WorldConfig _world_config = _world.getWorldConfig();
+            CompletableFuture<World> fun = Universe.get().makeWorld(_world_name, _world.getSavePath(), _world_config);
+            fun.join();
+            _world = Universe.get().getWorld(_world_name);
+            if (_world == null) {
+                print(playerRef, "[KOTT] Failed to clone the world!");
+                printL("[KOTT Debug] Failed to clone the world!", Level.SEVERE);
                 return CompletableFuture.completedFuture(null);
             }
-        }else {
-            KOTTMatch.getMatchesList().put(_world_name, new KOTTMatch());
+        }
+
+        // Verify if has an active match in the world
+        if (!KOTTMatch.createMatch(_world_name)) {
+            printLog(playerRef, LogTypes.KOTTMatchAlreadyRunning, "World name: \"" + _world_name + "\"!");
+            return CompletableFuture.completedFuture(null);
+        }
+
+        if (_loop == null) {
+            _loop = false;
+        }
+
+        if (_clone == null) {
+            _clone = false;
         }
 
         // World exists and or loaded
@@ -109,6 +135,8 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
                 _world_pos,
                 _team_qnt,
                 _area_size,
+                _loop,
+                _clone,
                 playerRef,
                 _world,
                 commandContext
