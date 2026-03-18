@@ -38,7 +38,7 @@ public class KOTTMatch {
 
     private boolean KOTHMatchStatus = false;
     private boolean isLoop = false;
-    private boolean isClone = false;
+    private boolean isNewWorld = false;
     private Vector3i matchStartPos = new Vector3i();
     private final LinkedHashMap<UUID, KOTTTeam> Teams = new LinkedHashMap<>();
     private KOTTZone Zone;
@@ -55,11 +55,11 @@ public class KOTTMatch {
     }
 
     // MATCH START
-    public void start(@Nonnull Vector3i startPos, int teamCount, int areaRadius, @Nonnull PlayerRef playerRef, @Nonnull World world, @Nonnull CommandContext commandContext) { start(startPos, teamCount, areaRadius, false, false, playerRef, world, commandContext); }
+    public void start(@Nonnull Vector3i startPos, int teamCount, int areaRadius, @Nonnull PlayerRef playerRef, @Nonnull World world, @Nonnull CommandContext commandContext) { start(startPos, teamCount, areaRadius, false, true, playerRef, world, commandContext); }
 
-    public void start(@Nonnull Vector3i startPos, int teamCount, int areaRadius, boolean loop, boolean clone, PlayerRef playerRef, @Nonnull World world, @Nonnull CommandContext commandContext) {
+    public void start(@Nonnull Vector3i startPos, int teamCount, int areaRadius, boolean loop, boolean newWorld, PlayerRef playerRef, @Nonnull World world, @Nonnull CommandContext commandContext) {
         isLoop = loop;
-        isClone = clone;
+        isNewWorld = newWorld;
 
         matchStartPos = startPos;
 
@@ -215,39 +215,6 @@ public class KOTTMatch {
             return;
         }
 
-        if (match.isLoop && !forceStop) {
-            WorldConfig config = world.getWorldConfig();
-            String _worldName = worldName.substring(0, worldName.indexOf("_clone_temp_"));
-            UUID uuid = UUID.randomUUID();
-            String _worldName2 = _worldName + "_clone_temp_" + uuid;
-            printL("[KOTT Debug] New world name: " + _worldName);
-            CompletableFuture<World> fun = Universe.get().makeWorld(_worldName2, world.getSavePath(), config);
-            fun.join();
-            world = Universe.get().getWorld(_worldName2);
-            if (world != null) {
-                printL("[KOTT Debug] New world created!");
-            }else {
-                printL("[KOTT Debug] Failed to create new world!", Level.SEVERE);
-                return;
-            }
-            createMatch(_worldName2);
-            KOTTMatch newMatch = getMatchesList().get(_worldName2);
-            newMatch.start(
-                    match.getMatchStartPos(),
-                    match.getTeams().size(),
-                    KOTTZone.zoneRadius,
-                    match.isLoop,
-                    match.isClone,
-                    null,
-                    world,
-                    commandContext
-            );
-
-            Universe.get().removeWorld(_worldName);
-            Universe.get().getWorld(_worldName).validateDeleteOnRemove();
-            return;
-        }
-
         UserMapMarkersStore store = world.getChunkStore().getStore().getResource(WorldMarkersResource.getResourceType());
 
         for (KOTTTeam team : match.getTeams().values()) {
@@ -266,6 +233,38 @@ public class KOTTMatch {
         match.Zone = null;
         match.setKOTHMatchStatus(false);
         //KOTTMatch.getMatchesList().remove(worldName);
+
+        if (match.isLoop && !forceStop) {
+            WorldConfig config = world.getWorldConfig();
+            String _worldName = worldName.substring(0, worldName.indexOf("_clone_temp_"));
+            UUID uuid = UUID.randomUUID();
+            String newWorldName = _worldName + "_clone_temp_" + uuid;
+            printL("[KOTT Debug] New world name: " + _worldName);
+            CompletableFuture<World> fun = Universe.get().addWorld(newWorldName);
+            fun.join();
+            world = Universe.get().getWorld(newWorldName);
+            if (world != null) {
+                printL("[KOTT Debug] New world created!");
+                createMatch(newWorldName);
+                KOTTMatch newMatch = getMatchesList().get(newWorldName);
+                newMatch.start(
+                        match.getMatchStartPos(),
+                        match.getTeams().size(),
+                        KOTTZone.zoneRadius,
+                        match.isLoop,
+                        match.isNewWorld,
+                        null,
+                        world,
+                        commandContext
+                );
+
+                Universe.get().removeWorld(_worldName);
+                Universe.get().getWorld(_worldName).validateDeleteOnRemove();
+            }else {
+                printL("[KOTT Debug] Failed to create new world!", Level.SEVERE);
+                return;
+            }
+        }
 
         print(commandContext, "[KOTH] Stopped the active KOTH match!");
     }
