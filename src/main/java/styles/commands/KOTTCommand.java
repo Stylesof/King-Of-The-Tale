@@ -11,6 +11,7 @@ public class KOTTCommand extends AbstractCommandCollection {
 
         this.addSubCommand(new KOTTStartCommand());
         this.addSubCommand(new KOTTStopCommand());
+        this.addSubCommand(new KOTTJoinCommand());
 
         this.addSubCommand(new KOTTTeamCommand());
     }

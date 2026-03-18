@@ -77,7 +77,7 @@ public class WorldBuilder {
 
         BlockType block = world.getBlockType(pos);
         int fluid = world.getFluidId(pos.x, pos.y, pos.z);
-
+        //int fluid = 0;
         // returns null in case of a world of water, or a world with a roof
         if (block == null || (!block.getId().equals("Empty") || fluid > 0)) return null;
 
