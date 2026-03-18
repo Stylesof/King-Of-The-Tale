@@ -2,9 +2,11 @@ package styles.team;
 
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
 import styles.world.KOTTTeamZone;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -19,10 +21,10 @@ public class KOTTTeam {
     private final KOTTTeamZone baseZone;
     public static final int distanceBaseFromZone = 100;
 
-    public KOTTTeam(UUID id, String displayName, Vector3i basePosition, @Nullable UserMapMarker zoneMarker) {
+    public KOTTTeam(UUID id, String displayName, Vector3i basePosition, @Nonnull World world, @Nullable UserMapMarker zoneMarker) {
         this.teamID = id;
         this.displayName = displayName;
-        this.baseZone = new KOTTTeamZone(basePosition, this, zoneMarker);
+        this.baseZone = new KOTTTeamZone(basePosition, world, this, zoneMarker);
     }
 
     // Add player to the Team
@@ -34,12 +36,12 @@ public class KOTTTeam {
         return playerList.contains(playerRef);
     }
 
-    public static boolean createTeam(Map<UUID, KOTTTeam> teamListRef, UUID id, String displayName, Vector3i basePosition, @Nullable UserMapMarker zoneMarker) {
+    public static boolean createTeam(Map<UUID, KOTTTeam> teamListRef, UUID id, String displayName, Vector3i basePosition, @Nonnull World world, @Nullable UserMapMarker zoneMarker) {
         if(teamListRef.containsKey(id)){
             printL("[KOTH] There is an Team with that ID already!");
             return false;
         }else{
-            teamListRef.put(id, new KOTTTeam(id, displayName, basePosition, zoneMarker));
+            teamListRef.put(id, new KOTTTeam(id, displayName, basePosition, world, zoneMarker));
             return true;
         }
     }

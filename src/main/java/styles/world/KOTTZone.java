@@ -3,6 +3,7 @@ package styles.world;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import io.sentry.protocol.User;
@@ -19,16 +20,19 @@ public class KOTTZone {
     private final List<NPCEntity> npcsInZone = new ArrayList<>();
     private final List<PlayerRef> playersInZone = new ArrayList<>();
 
+    private final World world;
+
     private final UserMapMarker zoneMarker;
 
     public static final int zoneRadius = 100;
 
-    public KOTTZone(@Nonnull Vector3i zonePosition, @Nullable UserMapMarker zoneMarker) {
+    public KOTTZone(@Nonnull Vector3i zonePosition, @Nonnull World world) { this(zonePosition, world, null); }
+
+    public KOTTZone(@Nonnull Vector3i zonePosition, @Nonnull World world, @Nullable UserMapMarker zoneMarker) {
         this.zonePosition = zonePosition;
         this.zoneMarker = zoneMarker;
+        this.world = world;
     }
-
-    public KOTTZone(@Nonnull Vector3i zonePosition) { this(zonePosition, null); }
 
     @Nullable
     public List<PlayerRef> getPlayersInZone() { return playersInZone; }
@@ -54,4 +58,6 @@ public class KOTTZone {
     }
 
     public UserMapMarker getZoneMarker() { return this.zoneMarker; }
+
+    public World getWorld() { return this.world; }
 }

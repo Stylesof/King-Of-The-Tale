@@ -11,12 +11,11 @@ import java.util.logging.Level;
 public class PrintMacros {
 
     public static void print(CommandContext cmdctx, String msg) {
-        if (cmdctx != null)
-            cmdctx.sendMessage(Message.raw(msg));
+        if (cmdctx != null) cmdctx.sendMessage(Message.raw(msg));
     }
 
-    public static void print(@Nonnull PlayerRef playerRef, String msg) {
-        playerRef.sendMessage(Message.raw(msg));
+    public static void print(PlayerRef playerRef, String msg) {
+        if (playerRef != null) playerRef.sendMessage(Message.raw(msg));
     }
 
     // PRINT TO THE LOGGER
