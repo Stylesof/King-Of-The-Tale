@@ -3,17 +3,20 @@ package styles.commands;
 import com.hypixel.hytale.builtin.path.commands.WorldPathSaveCommand;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.math.vector.Transform;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.arguments.system.OptionalArg;
 import com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg;
 import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractAsyncPlayerCommand;
+import com.hypixel.hytale.server.core.modules.entity.teleport.Teleport;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.WorldConfig;
 import com.hypixel.hytale.server.core.universe.world.WorldConfigProvider;
+import com.hypixel.hytale.server.core.universe.world.commands.world.WorldAddCommand;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import styles.util.log.LogTypes;
 import styles.world.KOTTMatch;
@@ -28,6 +31,11 @@ import static styles.util.PrintMacros.print;
 import static styles.util.PrintMacros.printL;
 import static styles.util.log.PrintLog.printLog;
 
+/*
+    SOME PROBLEMS TO CLONE WORLDS, SO INSTEAD OF CLONING,
+    I WILL JUST CREATE A TOTALLY NEW ONE
+
+ */
 public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
 
     private final RequiredArg<Integer> team_count;
@@ -35,7 +43,8 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
     private final OptionalArg<String> world_name;
 
     private final OptionalArg<Vector3i> world_pos;
-    private final OptionalArg<Boolean> clone;
+    //private final OptionalArg<Boolean> clone;
+    private final OptionalArg<Boolean> new_world;
     private final OptionalArg<Boolean> loop;
 
     public KOTTStartCommand() {
@@ -46,7 +55,8 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
         this.world_name = this.withOptionalArg("world_name", "World to create the KOTT (leave empty for use the actual)", ArgTypes.STRING);
 
         this.world_pos = this.withOptionalArg("world_pos", "Position of the defined world to spawn the MainZone (Actual position by default)", ArgTypes.VECTOR3I);
-        this.clone = this.withOptionalArg("clone", "Clone the world before start? (This allow to play without making permanent modifications in the world)", ArgTypes.BOOLEAN);
+        //this.clone = this.withOptionalArg("clone", "Clone the world before start? (This allow to play without making permanent modifications in the world)", ArgTypes.BOOLEAN);
+        this.new_world = this.withOptionalArg("new_world", "Create a totally new world to start the match? (To avoid your own world destruction)", ArgTypes.BOOLEAN);
         this.loop = this.withOptionalArg("loop", "Should restart the match after the end? (Affected by the --clone option)", ArgTypes.BOOLEAN);
     }
 
@@ -62,7 +72,8 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
         String _world_name = world_name.get(commandContext);
 
         Vector3i _world_pos = world_pos.get(commandContext);
-        Boolean _clone = clone.get(commandContext);
+        //Boolean _clone = clone.get(commandContext);
+        Boolean _new_world = new_world.get(commandContext);
         Boolean _loop = loop.get(commandContext);
 
         // Verify if the inserted world name is valid
@@ -102,32 +113,35 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
             return CompletableFuture.completedFuture(null);
         }
 
-        if (_clone != null && _clone) {
+        /*
+        if (_clone == null) {
+            _clone = false;
+        }
+        */
+
+        /*
+        if (_clone) {
             UUID uuid = UUID.randomUUID();
             _world_name = _world_name + "_clone_temp_" + uuid;
             WorldConfig _world_config = _world.getWorldConfig();
-            CompletableFuture<World> fun = Universe.get().makeWorld(_world_name, _world.getSavePath(), _world_config);
+            CompletableFuture<World> fun = Universe.get().addWorld(_world_name);
             fun.join();
-            _world = Universe.get().getWorld(_world_name);
-            if (_world == null) {
-                print(playerRef, "[KOTT] Failed to clone the world!");
-                printL("[KOTT Debug] Failed to clone the world!", Level.SEVERE);
-                return CompletableFuture.completedFuture(null);
-            }
         }
+        */
 
-        // Verify if has an active match in the world
-        if (!KOTTMatch.createMatch(_world_name)) {
-            printLog(playerRef, LogTypes.KOTTMatchAlreadyRunning, "World name: \"" + _world_name + "\"!");
-            return CompletableFuture.completedFuture(null);
+        if (_new_world == null) {
+            _new_world = false;
         }
 
         if (_loop == null) {
             _loop = false;
         }
 
-        if (_clone == null) {
-            _clone = false;
+
+        // Verify if has an active match in the world
+        if (!KOTTMatch.createMatch(_world_name)) {
+            printLog(playerRef, LogTypes.KOTTMatchAlreadyRunning, "World name: \"" + _world_name + "\"!");
+            return CompletableFuture.completedFuture(null);
         }
 
         // World exists and or loaded
@@ -136,7 +150,7 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
                 _team_qnt,
                 _area_size,
                 _loop,
-                _clone,
+                _new_world,
                 playerRef,
                 _world,
                 commandContext
