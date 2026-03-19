@@ -15,6 +15,8 @@ import javax.annotation.Nonnull;
 
 import java.util.concurrent.CompletableFuture;
 
+import static styles.util.PrintMacros.printL;
+
 public class KOTTStopCommand extends AbstractAsyncPlayerCommand {
 
     private final OptionalArg<String> world_name;
@@ -39,8 +41,6 @@ public class KOTTStopCommand extends AbstractAsyncPlayerCommand {
             _word_name = world.getName();
         }
 
-       KOTTMatch.stop(_word_name, true, commandContext);
-
-        return  CompletableFuture.completedFuture(null);
+        return KOTTMatch.stop(_word_name, true, commandContext);
     }
 }

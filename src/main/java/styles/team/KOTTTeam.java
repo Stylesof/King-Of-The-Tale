@@ -24,7 +24,7 @@ public class KOTTTeam {
     public KOTTTeam(UUID id, String displayName, Vector3i basePosition, @Nonnull World world, @Nullable UserMapMarker zoneMarker) {
         this.teamID = id;
         this.displayName = displayName;
-        this.baseZone = new KOTTTeamZone(basePosition, world, this, zoneMarker);
+        this.baseZone = new KOTTTeamZone(distanceBaseFromZone, basePosition, world, this, zoneMarker);
     }
 
     // Add player to the Team
