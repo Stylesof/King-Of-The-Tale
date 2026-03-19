@@ -1,18 +1,23 @@
 package styles.world.util;
 
+import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.RotationTuple;
+import com.hypixel.hytale.server.core.command.commands.world.chunk.ChunkLoadCommand;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
 import com.hypixel.hytale.server.core.universe.world.connectedblocks.ConnectedBlocksUtil;
+import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import styles.util.ColorHandler;
 import styles.util.MathHelper;
 import styles.world.util.filter.BlockFilter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import java.util.concurrent.CompletableFuture;
 
 import static styles.util.PrintMacros.printL;
 
@@ -47,17 +52,19 @@ public class WorldBuilder {
             - size -> Size to clean
             - world -> Reference to the world to clean
     =============================================================*/
-    public static void clearAreaSquare(Vector3i pos, int size, World world) {
+    public static CompletableFuture<Void> clearAreaSquare(Vector3i pos, int size, World world) {
         Vector3i min = new Vector3i(pos.x - size, pos.y, pos.z - size); // left down corner
         Vector3i max = new Vector3i(pos.x + size, pos.y + size, pos.z + size);
 
-        for(int y = min.y; y <= max.y; y++){
-            for(int x = min.x; x <= max.x; x++){
-                for(int z = min.z; z <= max.z; z++){
-                    world.setBlock(x, y, z, "Empty");
+        return world.getChunkAsync(pos.x, pos.z).thenAccept(WorldChunk::markNeedsSaving).thenRun(() -> {
+            for(int y = min.y; y <= max.y; y++){
+                for(int x = min.x; x <= max.x; x++){
+                    for(int z = min.z; z <= max.z; z++){
+                        setBlock(x, y, z, BlockType.fromString("Empty"), 0, world);
+                    }
                 }
             }
-        }
+        });
     }
 
     /*===========================================================
@@ -107,9 +114,9 @@ public class WorldBuilder {
 
     public static void createFillSquare(PointToPoint space, BlockType blockType, int rotation, World world) {
         int directionX, directionY, directionZ;
-       directionX = space.start.x <= space.end.x ? 1 : -1;
-       directionY = space.start.y <= space.end.y ? 1 : -1;
-       directionZ = space.start.z <= space.end.z ? 1 : -1;
+        directionX = space.start.x <= space.end.x ? 1 : -1;
+        directionY = space.start.y <= space.end.y ? 1 : -1;
+        directionZ = space.start.z <= space.end.z ? 1 : -1;
 
         for(int y = space.start.y; y != space.end.y + directionY; y+=directionY){
             for(int x = space.start.x; x != space.end.x + directionX; x+=directionX){
@@ -139,6 +146,7 @@ public class WorldBuilder {
             printL("[KOTT Debug] Invalid chunk!");
             return false;
         }
+
         chunk.setBlock(point.pos.x, point.pos.y, point.pos.z, BlockType.getAssetMap().getIndex(blockType.getId()), blockType, rotation, 0, 0);
         chunk.setTicking(point.pos.x, point.pos.y, point.pos.z, true);
         chunk.getChunkAccessor().performBlockUpdate(point.pos.x, point.pos.y, point.pos.y);

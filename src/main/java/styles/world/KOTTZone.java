@@ -24,11 +24,12 @@ public class KOTTZone {
 
     private final UserMapMarker zoneMarker;
 
-    public static final int zoneRadius = 100;
+    private final int zoneRadius;
 
-    public KOTTZone(@Nonnull Vector3i zonePosition, @Nonnull World world) { this(zonePosition, world, null); }
+    public KOTTZone(@Nonnull int zoneRadius, @Nonnull Vector3i zonePosition, @Nonnull World world) { this(zoneRadius, zonePosition, world, null); }
 
-    public KOTTZone(@Nonnull Vector3i zonePosition, @Nonnull World world, @Nullable UserMapMarker zoneMarker) {
+    public KOTTZone(@Nonnull int zoneRadius, @Nonnull Vector3i zonePosition, @Nonnull World world, @Nullable UserMapMarker zoneMarker) {
+        this.zoneRadius = zoneRadius;
         this.zonePosition = zonePosition;
         this.zoneMarker = zoneMarker;
         this.world = world;
@@ -60,4 +61,6 @@ public class KOTTZone {
     public UserMapMarker getZoneMarker() { return this.zoneMarker; }
 
     public World getWorld() { return this.world; }
+
+    public int getZoneRadius() { return this.zoneRadius; }
 }

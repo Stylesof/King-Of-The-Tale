@@ -4,6 +4,7 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.server.core.command.commands.world.chunk.ChunkLoadCommand;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.arguments.system.FlagArg;
 import com.hypixel.hytale.server.core.command.system.arguments.system.OptionalArg;
@@ -21,8 +22,12 @@ import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
 
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static styles.util.PrintMacros.print;
 import static styles.util.PrintMacros.printL;
@@ -48,8 +53,8 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
         super("start", "Create an KOTT game session!");
 
         this.team_count = this.withRequiredArg("team_qnt", "Quantity of Teams.", ArgTypes.INTEGER);
-        this.area_size = this.withRequiredArg("area_size", "Area size to conquer (in blocks).", ArgTypes.INTEGER);
-        this.world_name = this.withOptionalArg("world_name", "World to create the KOTT (leave empty for use the actual).", ArgTypes.STRING);
+        this.area_size = this.withRequiredArg("zone_size", "Area size to conquer (in blocks).", ArgTypes.INTEGER);
+        this.world_name = this.withOptionalArg("world", "World to create the KOTT (leave empty for use the actual).", ArgTypes.STRING);
 
         this.world_pos = this.withOptionalArg("world_pos", "Position of the defined world to spawn the MainZone (Actual position by default).", ArgTypes.VECTOR3I);
         //this.clone = this.withOptionalArg("clone", "Clone the world before start? (This allow to play without making permanent modifications in the world)", ArgTypes.BOOLEAN);
@@ -65,7 +70,7 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
     @Override
     protected CompletableFuture<Void> executeAsync(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
         int _team_count = team_count.get(commandContext);
-        int _area_size = area_size.get(commandContext);
+        int _zone_size = area_size.get(commandContext);
         String _world_name = world_name.get(commandContext);
 
         Vector3i _world_pos = world_pos.get(commandContext);
@@ -92,7 +97,7 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
         }
 
         // Verify area size
-        if (_area_size < 100 || _area_size > 1000) {
+        if (_zone_size < 100 || _zone_size > 1000) {
             printLog(playerRef, LogTypes.KOTTInvalidAreaSize);
             return CompletableFuture.completedFuture(null);
         }
@@ -105,57 +110,103 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
 
         // Verify if the world is valid
         World _world = Universe.get().getWorld(_world_name);
-
-        if (_safe) {
-            UUID uuid = UUID.randomUUID();
-            String tempWorldName = "temp_" + uuid;
-            CompletableFuture<World> fun = Universe.get().addWorld(tempWorldName);
-            fun.join();
-            printL("[KOTT Debug] World \"" + tempWorldName + "\" created!");
-            Universe.get().getWorld(tempWorldName);
-            _world = Universe.get().getWorld(tempWorldName);
-        }
-
         if (_world == null) {
             printLog(playerRef, LogTypes.KOTTInvalidWorld);
             return CompletableFuture.completedFuture(null);
         }
 
         /*
-        if (_clone == null) {
-            _clone = false;
-        }
-        */
-
-        /*
-        if (_clone) {
+        Lock lock = new ReentrantLock();
+        CompletableFuture<World> fun;
+        if (_safe) {
             UUID uuid = UUID.randomUUID();
-            _world_name = _world_name + "_clone_temp_" + uuid;
-            WorldConfig _world_config = _world.getWorldConfig();
-            CompletableFuture<World> fun = Universe.get().addWorld(_world_name);
-            fun.join();
+            String tempWorldName = "temp_" + uuid;
+            fun = Universe.get().addWorld(tempWorldName);
+            //printL("[KOTT Debug] World \"" + tempWorldName + "\" created!");
+        }else {
+            fun = CompletableFuture.completedFuture(_world);
         }
-        */
 
-        // Verify if has an active match in the world
-        if (!KOTTMatch.createMatch(_world_name)) {
-            printLog(playerRef, LogTypes.KOTTMatchAlreadyRunning, "World name: \"" + _world_name + "\"!");
+        if (!KOTTMatch.createMatch(_world.getName())) {
+            printLog(playerRef, LogTypes.KOTTMatchAlreadyRunning, "World name: \"" + _world.getName() + "\"!");
             return CompletableFuture.completedFuture(null);
         }
+         */
 
-        // World exists and or loaded
-        KOTTMatch.getMatchesList().get(_world_name).start(
-                _world_pos,
-                _team_count,
-                _area_size,
-                _loop,
-                _safe,
-                playerRef,
-                _world,
-                commandContext
-        );
-        printLog(playerRef, LogTypes.KOTTMatchStarted, "World name: \"" + _world_name + "\"!");
 
-        return CompletableFuture.completedFuture(null);
+        //KOTTMatch.getMatchesList().get(_world_name).start(
+        //        _world_pos,
+        //        _team_count,
+        //        _area_size,
+        //        _loop,
+          //      _safe,
+        //        playerRef,
+        //        _world,
+       //         commandContext
+        //);KOTTMatch.getMatchesList().get(_world.getName()).start(
+        //                    final_world_pos,
+        //                    _team_count,
+        //                    _area_size,
+        //                    _loop,
+        //                    _safe,
+        //                    playerRef,
+        //                    _world,
+        //                    commandContext
+        //            ));
+
+        CompletableFuture<World> fun;
+        if (_safe) {
+            UUID uuid = UUID.randomUUID();
+            String tempWorldName = "temp_" + uuid;
+            fun = Universe.get().addWorld(tempWorldName);
+        } else {
+            fun = CompletableFuture.completedFuture(_world);
+        }
+
+        Vector3i final_world_pos = _world_pos;
+        return CompletableFuture.completedFuture(null).thenRun(() -> {
+            // Other World
+            if (_safe) {
+                fun.thenAccept(world1 -> {
+                    world1.getChunkAsync(final_world_pos.x, final_world_pos.z).thenAccept(WorldChunk::markNeedsSaving).thenRun(() -> {
+                        if (!KOTTMatch.createMatch(world1.getName())) {
+                            printLog(playerRef, LogTypes.KOTTMatchAlreadyRunning, "World name: \"" + world1.getName() + "\"!");
+                            return;
+                        }
+                        KOTTMatch.getMatchesList().get(world1.getName()).start(
+                                final_world_pos,
+                                _team_count,
+                                _zone_size,
+                                _loop,
+                                true,
+                                playerRef,
+                                commandContext,
+                                world1
+                        );
+                        print(playerRef, "[KOTT] Match created on world: " + world1.getName());
+                    });
+                });
+                return;
+            }
+
+            // Actual World
+            _world.getChunkAsync(final_world_pos.x, final_world_pos.z).thenAccept(WorldChunk::markNeedsSaving).thenRun(() -> {
+                if (!KOTTMatch.createMatch(_world.getName())) {
+                    printLog(playerRef, LogTypes.KOTTMatchAlreadyRunning, "World name: \"" + _world.getName() + "\"!");
+                    return;
+                }
+                KOTTMatch.getMatchesList().get(_world.getName()).start(
+                        final_world_pos,
+                        _team_count,
+                        _zone_size,
+                        _loop,
+                        false,
+                        playerRef,
+                        commandContext,
+                        _world
+                );
+                print(playerRef, "[KOTT] Match created on world: " + _world.getName());
+            });
+        });
     }
 }

@@ -12,8 +12,8 @@ public class KOTTTeamZone extends KOTTZone {
 
     private final KOTTTeam owner;
 
-    public KOTTTeamZone(@Nonnull Vector3i zonePosition, @Nonnull World world, KOTTTeam owner, @Nullable UserMapMarker zoneMarker) {
-        super(zonePosition, world, zoneMarker);
+    public KOTTTeamZone(@Nonnull int zoneRadius, @Nonnull Vector3i zonePosition, @Nonnull World world, KOTTTeam owner, @Nullable UserMapMarker zoneMarker) {
+        super(zoneRadius, zonePosition, world, zoneMarker);
         this.owner = owner;
     }
 
