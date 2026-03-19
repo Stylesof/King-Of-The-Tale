@@ -2,7 +2,6 @@ package styles.world;
 
 import com.hypixel.hytale.math.vector.Transform;
 import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.Color;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
@@ -25,6 +24,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
 import static styles.util.PrintMacros.print;
@@ -131,7 +131,7 @@ public class KOTTMatch {
                 // Clear a specified area position with a specific size, in a square shape
                 Vector3i basePos = getLastTeamAdded().getBaseZone().getPosition();
                 basePos.y--;
-                WorldBuilder.clearAreaSquare(basePos, 10, world);
+                CompletableFuture<Void> fun = WorldBuilder.clearAreaSquare(basePos, 10, world);
                 basePos.y++;
                 // Create default base
                 ColorHandler.ColorType teamColorType = ColorHandler.getColorType(colorList.get(i));
@@ -143,7 +143,12 @@ public class KOTTMatch {
                 }
 
                 // need to wait for area clear before construct the base, or have a chance to the clear, clear the base
-                if (!WorldBuilder.constructTeamBase(basePos, teamColorType, world)) {
+                AtomicBoolean status = new AtomicBoolean(true);
+                fun.thenRun(() -> {
+                    status.set(WorldBuilder.constructTeamBase(basePos, teamColorType, world));
+                });
+
+                if (!status.get()) {
                     print(playerRef, "[KOTT] Failed to create an team base!");
                     printL("[KOTT Debug] Failed to create an team base!", Level.SEVERE);
                     stop(world.getName());
@@ -283,7 +288,7 @@ public class KOTTMatch {
                 print(commandContext, "[KOTT] Failed to remove temporary world!");
             }
 
-            Universe.get().getWorld(worldName).validateDeleteOnRemove();
+            // Universe.get().getWorld(worldName).validateDeleteOnRemove(); // crashing because the world is null
 
             UUID uuid = UUID.randomUUID();
             worldName = "temp_" + uuid;
