@@ -30,6 +30,10 @@ public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
         // verify if actual entity is inside any zone
         Ref<EntityStore> ref = archetypeChunk.getReferenceTo(index);
         PlayerRef playerRef = ref.getStore().getComponent(ref, PlayerRef.getComponentType());
+
+        if (playerRef != null) {
+
+        }
 /*
         if (playerRef != null) {
 
