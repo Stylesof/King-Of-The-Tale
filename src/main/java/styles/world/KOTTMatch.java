@@ -13,6 +13,7 @@ import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarkersStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.worldstore.WorldMarkersResource;
+import com.hypixel.hytale.server.worldgen.zone.Zone;
 import styles.team.KOTTTeam;
 import styles.util.ColorHandler;
 import styles.util.StringGenerator;
@@ -180,7 +181,8 @@ public class KOTTMatch {
             world.getEntityStore().getStore().addComponent(_playerRef.getReference(), Teleport.getComponentType(), tp);
         }
 
-        printL("[KOTT Debug] Finished KOTT Match creation!");
+        printL("[KOTT Debug] Finished KOTT Match creation! Worldname: " + world.getName());
+        printL("[KOTT Debug] Started KOTT Match");
         setKOTHMatchStatus(true);
     }
 
@@ -343,7 +345,9 @@ public class KOTTMatch {
         return null;
     }
 
+    public KOTTZone getZone() { return this.Zone; }
+
     public static Map<String, KOTTMatch> getMatchesList() { return matchesList; }
 
-    //public Vector3i getMatchStartPos() { return this.matchStartPos; }
+    // public Vector3i getMatchStartPos() { return this.matchStartPos; }
 }

@@ -5,6 +5,8 @@ import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 
 public class KOTTMatchCommand extends AbstractCommandCollection {
     public KOTTMatchCommand(@NonNullDecl String name, @NonNullDecl String description) {
-        super(name, description);
+        super("match", "Match commands");
+
+        this.addSubCommand(new KOTTMatchListCommand());
     }
 }
