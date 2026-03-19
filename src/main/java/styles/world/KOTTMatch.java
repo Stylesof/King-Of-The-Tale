@@ -142,6 +142,7 @@ public class KOTTMatch {
                     return;
                 }
 
+                // need to wait for area clear before construct the base, or have a chance to the clear, clear the base
                 if (!WorldBuilder.constructTeamBase(basePos, teamColorType, world)) {
                     print(playerRef, "[KOTT] Failed to create an team base!");
                     printL("[KOTT Debug] Failed to create an team base!", Level.SEVERE);
