@@ -1,6 +1,7 @@
 package styles.commands;
 
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractCommandCollection;
+import styles.commands.match.KOTTMatchCommand;
 import styles.commands.team.KOTTTeamCommand;
 
 public class KOTTCommand extends AbstractCommandCollection {
@@ -14,6 +15,8 @@ public class KOTTCommand extends AbstractCommandCollection {
         this.addSubCommand(new KOTTJoinCommand());
 
         this.addSubCommand(new KOTTTeamCommand());
+
+        this.addSubCommand(new KOTTMatchCommand());
     }
 
 

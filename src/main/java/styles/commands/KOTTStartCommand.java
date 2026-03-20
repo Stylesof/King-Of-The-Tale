@@ -6,6 +6,7 @@ import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.server.core.command.commands.world.chunk.ChunkLoadCommand;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
+import com.hypixel.hytale.server.core.command.system.arguments.system.DefaultArg;
 import com.hypixel.hytale.server.core.command.system.arguments.system.FlagArg;
 import com.hypixel.hytale.server.core.command.system.arguments.system.OptionalArg;
 import com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg;
@@ -40,24 +41,22 @@ import static styles.util.log.PrintLog.printLog;
  */
 public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
 
-    private final RequiredArg<Integer> team_count;
-    private final RequiredArg<Integer> area_size;
+    private final DefaultArg<Integer> team_count;
+    private final DefaultArg<Integer> area_size;
     private final OptionalArg<String> world_name;
 
     private final OptionalArg<Vector3i> world_pos;
-    //private final OptionalArg<Boolean> clone;
     private final FlagArg safe;
     private final FlagArg loop;
 
     public KOTTStartCommand() {
         super("start", "Create an KOTT game session!");
 
-        this.team_count = this.withRequiredArg("team_qnt", "Quantity of Teams.", ArgTypes.INTEGER);
-        this.area_size = this.withRequiredArg("zone_size", "Area size to conquer (in blocks).", ArgTypes.INTEGER);
+        this.team_count = this.withDefaultArg("team_count", "Count of Teams.", ArgTypes.INTEGER, 1, "(1 Team by default)");
+        this.area_size = this.withDefaultArg("zone_size", "Area size to conquer (in blocks).", ArgTypes.INTEGER, 100, "(100 Zone size by default");
         this.world_name = this.withOptionalArg("world", "World to create the KOTT (leave empty for use the actual).", ArgTypes.STRING);
 
         this.world_pos = this.withOptionalArg("world_pos", "Position of the defined world to spawn the MainZone (Actual position by default).", ArgTypes.VECTOR3I);
-        //this.clone = this.withOptionalArg("clone", "Clone the world before start? (This allow to play without making permanent modifications in the world)", ArgTypes.BOOLEAN);
         this.safe = this.withFlagArg("safe", "Creates the match on a temporary World (Deleted after the end of the match).");
         this.loop = this.withFlagArg("loop", "Restart the match after the end. WIP, after the end of the match, a temporary world is created and started a match on it.");
     }
@@ -74,14 +73,13 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
         String _world_name = world_name.get(commandContext);
 
         Vector3i _world_pos = world_pos.get(commandContext);
-        //Boolean _clone = clone.get(commandContext);
         boolean _safe = safe.get(commandContext);
         boolean _loop = loop.get(commandContext);
 
         // Verify if the inserted world name is valid
         if (_world_name == null) {
             if (!commandContext.isPlayer()) {
-                printL("[KOTT Debug] To use this command as not Player, you need to insert an world!");
+                printL("[KOTT Debug] Error: To use this command as not Player, you need to insert an world!");
                 return CompletableFuture.completedFuture(null);
             }
             _world_name = world.getName();
@@ -90,7 +88,7 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
         // Verify if the inserted pos is valid
         if (_world_pos == null) {
             if (!commandContext.isPlayer()) {
-                printL("[KOTT Debug] To use this command as not Player, you need to insert an position!");
+                printL("[KOTT Debug] Error: To use this command as not Player, you need to insert an position!");
                 return CompletableFuture.completedFuture(null);
             }
             _world_pos = playerRef.getTransform().getPosition().toVector3i();
@@ -103,7 +101,7 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
         }
 
         // Verify number of teams
-        if (_team_count < 2 || _team_count > 5) {
+        if (_team_count < 1 || _team_count > 5) {
             printLog(playerRef, LogTypes.KOTTInvalidTeamCount);
             return CompletableFuture.completedFuture(null);
         }
@@ -114,45 +112,6 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
             printLog(playerRef, LogTypes.KOTTInvalidWorld);
             return CompletableFuture.completedFuture(null);
         }
-
-        /*
-        Lock lock = new ReentrantLock();
-        CompletableFuture<World> fun;
-        if (_safe) {
-            UUID uuid = UUID.randomUUID();
-            String tempWorldName = "temp_" + uuid;
-            fun = Universe.get().addWorld(tempWorldName);
-            //printL("[KOTT Debug] World \"" + tempWorldName + "\" created!");
-        }else {
-            fun = CompletableFuture.completedFuture(_world);
-        }
-
-        if (!KOTTMatch.createMatch(_world.getName())) {
-            printLog(playerRef, LogTypes.KOTTMatchAlreadyRunning, "World name: \"" + _world.getName() + "\"!");
-            return CompletableFuture.completedFuture(null);
-        }
-         */
-
-
-        //KOTTMatch.getMatchesList().get(_world_name).start(
-        //        _world_pos,
-        //        _team_count,
-        //        _area_size,
-        //        _loop,
-          //      _safe,
-        //        playerRef,
-        //        _world,
-       //         commandContext
-        //);KOTTMatch.getMatchesList().get(_world.getName()).start(
-        //                    final_world_pos,
-        //                    _team_count,
-        //                    _area_size,
-        //                    _loop,
-        //                    _safe,
-        //                    playerRef,
-        //                    _world,
-        //                    commandContext
-        //            ));
 
         CompletableFuture<World> fun;
         if (_safe) {
@@ -183,7 +142,6 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
                                 commandContext,
                                 world1
                         );
-                        print(playerRef, "[KOTT] Match created on world: " + world1.getName());
                     });
                 });
                 return;
@@ -205,7 +163,6 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
                         commandContext,
                         _world
                 );
-                print(playerRef, "[KOTT] Match created on world: " + _world.getName());
             });
         });
     }
