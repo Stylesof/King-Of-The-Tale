@@ -1,11 +1,14 @@
 package styles;
 
-import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
+import com.hypixel.hytale.server.core.event.events.player.AddPlayerToWorldEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
+import com.hypixel.hytale.server.core.event.events.player.PlayerInteractEvent;
+import com.hypixel.hytale.server.core.modules.entity.player.PlayerInput;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
+import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import styles.commands.KOTTCommand;
-import styles.events.OnPlayerConnectEvent;
+import styles.events.OnAddPlayerToWorldEvent;
 import styles.events.OnPlayerDisconnectEvent;
 import styles.util.log.LogTypesDebug;
 import styles.world.KOTTMatch;
@@ -29,14 +32,14 @@ public class KOTT extends JavaPlugin {
 
         // this.getEventRegistry().registerGlobal(PlayerConnectEvent.class, OnPlayerConnectEvent::onPlayerConnect);
         this.getEventRegistry().registerGlobal(PlayerDisconnectEvent.class, OnPlayerDisconnectEvent::onPlayerDisconnect);
+        this.getEventRegistry().registerGlobal(AddPlayerToWorldEvent.class, OnAddPlayerToWorldEvent::onAddPlayerToWorld);
 
         this.getEntityStoreRegistry().registerSystem(new EntityTickHandler());
-
     }
 
     @Override
     protected void start() {
-        printL("Started!");
+        printL("[KOTT] KOTT Mod Started!");
     }
 
     @Override

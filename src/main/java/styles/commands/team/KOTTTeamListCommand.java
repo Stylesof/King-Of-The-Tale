@@ -61,7 +61,7 @@ public class KOTTTeamListCommand extends AbstractAsyncPlayerCommand {
         // Verify if has an match active in the world
         KOTTMatch match = KOTTMatch.getMatchesList().get(_word_name);
         if (match == null || !match.getKOTHMatchStatus()){
-            print(commandContext, "[KOTH] There isn't any match happening in the moment!");
+            print(commandContext, "[KOTT] There isn't any match happening in the moment!");
             return CompletableFuture.completedFuture(null);
         }
 

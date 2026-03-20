@@ -46,11 +46,6 @@ public class KOTTJoinCommand extends AbstractAsyncPlayerCommand {
 
         KOTTMatch match = KOTTMatch.getMatchesList().get(_worldName);
 
-        if (!match.getKOTHMatchStatus()) {
-            print(commandContext, "[KOTT] The match was not initialized");
-            return CompletableFuture.completedFuture(null);
-        }
-
         match.join(playerRef);
 
         return CompletableFuture.completedFuture(null);
