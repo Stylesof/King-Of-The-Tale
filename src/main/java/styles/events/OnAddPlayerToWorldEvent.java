@@ -16,16 +16,16 @@ public class OnAddPlayerToWorldEvent {
             KOTTMatch actualMatch = KOTTMatch.getMatchesList().get(world.getName());
 
             for (KOTTMatch match : KOTTMatch.getMatchesList().values()) {
-                if (match.getPlayersInZone().contains(playerRef)) {
+                if (match.getPlayersInZone().containsValue(playerRef)) {
                     for (KOTTTeam team : match.getTeams().values()) {
                         team.getPlayerList().remove(playerRef);
                     }
 
-                    match.getPlayersInZone().remove(playerRef);
+                    match.getPlayersInZone().remove(playerRef.getUuid());
                 }
             }
 
-            if (actualMatch != null) {
+            if (actualMatch != null && playerRef.getReference() != null) {
                 actualMatch.join(playerRef);
             }
         }

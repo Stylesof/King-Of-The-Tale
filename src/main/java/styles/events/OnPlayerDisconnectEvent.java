@@ -20,7 +20,7 @@ public class OnPlayerDisconnectEvent {
             for (World world : Universe.get().getWorlds().values()) { // get all world of the server
                 if (KOTTMatch.getMatchesList().containsKey(world.getName())) { // verify if they have a match happening
                     if(KOTTMatch.getMatchesList().get(world.getName()).getKOTHMatchStatus()) {
-                        KOTTMatch.stop(world.getName()); // if yes, stop the match
+                        KOTTMatch.stop(world.getName(), true); // if yes, stop the match
                     }
                 }
             }
@@ -41,7 +41,7 @@ public class OnPlayerDisconnectEvent {
 
                     if (KOTTMatch.getMatchesList().containsKey(world.getName())) {
                         if (KOTTMatch.getMatchesList().get(world.getName()).getKOTHMatchStatus()) {
-                            KOTTMatch.stop(world.getName());
+                            KOTTMatch.stop(world.getName(), true);
                         }
                     }
                 }

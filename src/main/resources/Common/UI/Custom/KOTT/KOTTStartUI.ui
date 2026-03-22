@@ -1,0 +1,148 @@
+$C = "../Common.ui";
+
+@MaxWidth = 700;
+@MaxHeight = 600;
+
+$C.@DecoratedContainer {
+    Anchor: (Width: @MaxWidth, Height: @MaxHeight);
+    #Title {
+        $C.@Title {
+            @Text = "King Of The Tale"; 
+        }
+    }
+
+    #Content {
+        Group {
+            LayoutMode: Top;
+            Anchor: (Top: 10, Left: 10);
+            Padding: (Vertical: 5);
+
+            // Team Count
+            Group {
+                Anchor: (Height: 50);
+
+                $C.@Subtitle {
+                    @Text = "Choose the team count"; 
+                }
+                $C.@SliderNumberField #TeamCount {
+                    @Anchor = (Left: 0, Width: 380);
+                    Value: 1;
+                    Min: 1;
+                    Max: 5;
+                    NumberFieldContainerAnchor: (Left: 10, Width: 60, Height: 20);
+                }
+            }
+
+            // Zone Radius
+            Group {
+                Anchor: (Height: 50);
+
+                $C.@Subtitle {
+                    @Text = "Choose the area size"; 
+                }
+                $C.@SliderNumberField #ZoneRadius {
+                    @Anchor = (Left: 0, Width: 380);
+                    Value: 100;
+                    Min: 100;
+                    Max: 500;
+                    NumberFieldContainerAnchor: (Left: 10, Width: 60, Height: 20);
+                }
+            }
+
+            // World Name
+            Group {
+                Anchor: (Height: 80);
+
+                $C.@Subtitle {
+                    @Text = "Choose the world"; 
+                }
+                
+                Group {
+                    LayoutMode: Left;
+
+                    $C.@TextField #WorldName {
+                        @Anchor = (Left: 0, Width: 380, Right: 10);
+                        PlaceholderText: "World name...";
+                    }
+
+                    $C.@SmallSecondaryTextButton #UseWorld {
+                        @Text = "Use this world name";
+                    }
+                }
+            }
+
+            // World Pos
+            Group {
+                Anchor: (Height: 80);
+
+                $C.@Subtitle {
+                    @Text = "World start position"; 
+                }
+                
+                Group {
+                    LayoutMode: Left;
+
+                    // X
+                    $C.@NumberField #WorldPosX {
+                        @Anchor = (Width: 90, Left: 0, Right: 10);
+                        Value: 0;
+                    }
+
+                    // Y
+                    $C.@NumberField #WorldPosY {
+                        @Anchor = (Width: 90, Left: 0, Right: 10);
+                        Value: 0;
+                    }
+
+                    // Z
+                    $C.@NumberField #WorldPosZ {
+                        @Anchor = (Width: 90, Left: 0, Right: 10);
+                        Value: 0;
+                    }
+
+                    $C.@SmallSecondaryTextButton #UsePos {
+                        @Text = "Use your position";
+                    }
+                }
+            }
+
+            // Safe
+            Group {
+                Anchor: (Height: 50);
+
+                $C.@CheckBoxWithLabel #Safe {
+                    @Text = "Safe? - Use a temporary world to start? (WIP -> Disabled)";
+                    @Checked = true;
+                    //@CheckBox #Safe {}
+                    @Disabled = true;
+                }
+            }
+
+            // Loop
+            Group {
+                Anchor: (Height: 50);
+
+                $C.@CheckBoxWithLabel #Loop {
+                    @Text = "Loop? - Should be the match in loop? (WIP)";
+                    @Checked = false;
+                }
+            }
+        }
+
+        // Start
+        Group {
+            LayoutMode: Bottom;
+
+            Label #ErrorMessage {
+                Anchor: (Height: 100);
+                Style: (TextColor: #ff0000, FontSize: 14, Alignment: Center);
+                Text: "";
+            }
+
+            $C.@TextButton #Start {
+                @Anchor = (Vertical: 0, Width: 180, Height: 90);
+                @Text = "Start";
+            }
+        }
+    }
+}

@@ -31,7 +31,7 @@ public class PrintLog {
 
         //normal
         logs.put(LogTypes.KOTTInvalidAreaSize,
-                toPlayer + "Invalid area size value! Use: (min: 100, max: 1000) ");
+                toPlayer + "Invalid area size value! Use: (min: 100, max: 500) ");
         logs.put(LogTypes.KOTTInvalidTeamCount,
                 toPlayer + "Invalid team count value! Use: (min: 2, max: 5) ");
         logs.put(LogTypes.KOTTMatchAlreadyRunning,

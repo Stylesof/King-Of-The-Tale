@@ -6,7 +6,6 @@ import styles.commands.team.KOTTTeamCommand;
 
 public class KOTTCommand extends AbstractCommandCollection {
 
-
     public KOTTCommand() {
         super("kott", "King Of The Hytale Minigame");
 
@@ -17,6 +16,8 @@ public class KOTTCommand extends AbstractCommandCollection {
         this.addSubCommand(new KOTTTeamCommand());
 
         this.addSubCommand(new KOTTMatchCommand());
+
+        this.addSubCommand(new KOTTGUICommand());
     }
 
 
