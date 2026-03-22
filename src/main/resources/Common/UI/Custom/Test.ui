@@ -1,8 +1,0 @@
-$Common = "Common.ui";
-
-$Common.@TextButton { @Text = "Meu botao"; }
-$Common.@Container { ... }
-
-Group #test {
-    Button { Anchor: (Width: 80); }
-}
