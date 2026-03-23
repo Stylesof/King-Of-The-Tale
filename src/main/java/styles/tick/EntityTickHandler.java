@@ -9,6 +9,7 @@ import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.math.vector.Transform;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.protocol.ChangeVelocityType;
 import com.hypixel.hytale.server.core.HytaleServer;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.pages.BasicCustomUIPage;
@@ -22,6 +23,8 @@ import com.hypixel.hytale.server.core.modules.entity.player.KnockbackPredictionS
 import com.hypixel.hytale.server.core.modules.entity.player.KnockbackSimulation;
 import com.hypixel.hytale.server.core.modules.entity.teleport.Teleport;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.server.combat.Knockback;
+import com.hypixel.hytale.server.core.modules.physics.component.Velocity;
+import com.hypixel.hytale.server.core.modules.splitvelocity.VelocityConfig;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -64,27 +67,19 @@ public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
 
                                 if (!team.containsPlayer(playerRef)) {
                                     print(playerRef, "You are trespassing enemy base, GET OUT!");
-                                    print(playerRef, "Your pos: " + playerRef.getTransform().getPosition());
+                                    //print(playerRef, "Your pos: " + playerRef.getTransform().getPosition());
 
                                     DamageSystems.executeDamage(playerRef.getReference(), commandBuffer, new Damage(Damage.NULL_SOURCE, DamageCause.OUT_OF_WORLD, 5.0f));
 
-                                    // TODO: (WIP) Push player system
                                     Vector3d enemyPos = playerRef.getTransform().getPosition();
                                     enemyPos = MathHelper.convertVectorToUnitVector(MathHelper.vectorSub(team.getBaseZone().getPosition().toVector3d(), enemyPos), team.getBaseZone().getZoneRadius());
-
-                                    enemyPos.x = -enemyPos.x;
-                                    enemyPos.y = -enemyPos.y;
-                                    enemyPos.z = -enemyPos.z;
-
                                     enemyPos = MathHelper.scalarVector(enemyPos, 10);
 
-                                    KnockbackSimulation kb = new KnockbackSimulation();
-                                    kb.addRequestedVelocity(enemyPos);
-
-                                    //Teleport tp = Teleport.createForPlayer(new Transform(enemyPos));
-                                    commandBuffer.addComponent(playerRef.getReference(), KnockbackSimulation.getComponentType(), kb);
-                                    print(playerRef, "Your pos: " + playerRef.getTransform().getPosition());
-                                    return;
+                                    Vector3d finalEnemyPos = enemyPos;
+                                    world.execute(() -> {
+                                        Velocity vel = commandBuffer.getComponent(playerRef.getReference(), Velocity.getComponentType());
+                                        vel.addInstruction(finalEnemyPos, new VelocityConfig(), ChangeVelocityType.Add);
+                                    });
                                 }
 
                             } else {

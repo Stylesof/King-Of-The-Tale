@@ -41,7 +41,6 @@ public class KOTT extends JavaPlugin {
 
     @Override
     protected void shutdown() {
-        KOTTMatch.CrashStop();
         KOTTMatch.getMatchesList().clear();
 
         super.shutdown();

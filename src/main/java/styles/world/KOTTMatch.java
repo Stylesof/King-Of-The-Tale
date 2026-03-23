@@ -10,14 +10,11 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
-import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarkersStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.worldstore.WorldMarkersResource;
-import com.hypixel.hytale.server.worldgen.zone.Zone;
 import styles.team.KOTTTeam;
 import styles.util.ColorHandler;
-import styles.util.CrashHandler;
 import styles.util.StringGenerator;
 import styles.util.MathHelper;
 import styles.util.log.LogTypes;
@@ -119,8 +116,6 @@ public class KOTTMatch {
         this.isSafe = safe;
 
         this.matchStartPos = startPos;
-
-        updateCrashMatchHandler();
 
         printL("Starting KOTT Match creation...");
         printL("Team Count: " + teamCount);
@@ -301,9 +296,6 @@ public class KOTTMatch {
 
     public static CompletableFuture<Void> stop(@Nonnull String worldName, boolean forceStop, @Nullable CommandContext commandContext) {
         printL("Stopping match...");
-
-        updateCrashMatchHandler();
-
         World world = Universe.get().getWorld(worldName);
         if (world == null) {
             if (commandContext == null || !commandContext.isPlayer()) {
@@ -405,46 +397,6 @@ public class KOTTMatch {
 
             return CompletableFuture.completedFuture(null);
         });
-    }
-
-    public static void updateCrashMatchHandler() {
-        List<KOTTZone> zones = new ArrayList<>();
-        List<KOTTTeamZone> teamZones = new ArrayList<>();
-        for (KOTTMatch match : getMatchesList().values()) {
-            zones.add(match.Zone);
-            for (KOTTTeam team : match.getTeams().values()) {
-                teamZones.add(team.getBaseZone());
-            }
-        }
-        CrashHandler.setValues(getMatchesList().values().stream().toList(), zones, teamZones);
-    }
-
-    public static CompletableFuture<Void> CrashStop() {
-        CompletableFuture<Void> fun = CompletableFuture.completedFuture(null);
-        printL("Crashing...");
-        for (KOTTMatch match : CrashHandler.getCrashMatchHandler().keySet()) {
-            for (KOTTZone zone : CrashHandler.getCrashMatchHandler().values()) {
-                printL("Crashing out world: " + zone.getWorld().getName());
-                if (!Universe.get().isWorldLoadable(zone.getWorld().getName())) {
-                    Universe.get().removeWorld(zone.getWorld().getName());
-                }
-                fun = fun.thenComposeAsync(unused ->
-                        Universe.get().loadWorld(zone.getWorld().getName())
-                                .thenCompose(world -> {
-                                    printL("Removed UserMapMarkers from: " + world.getName());
-                                    UserMapMarkersStore store = world.getChunkStore().getStore().getResource(WorldMarkersResource.getResourceType());
-                                    store.removeUserMapMarker(zone.getZoneMarker().getId());
-                                    return CompletableFuture.completedFuture(null);
-                                })
-                );
-            }
-
-            for (KOTTTeam team : match.getTeams().values()) {
-                //fun = fun.thenCompose(unused -> team.destroyTeamBase());
-            }
-        }
-
-        return fun;
     }
 
     private void addToMatch(@Nonnull PlayerRef playerRef, KOTTTeam team) {
