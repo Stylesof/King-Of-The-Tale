@@ -116,7 +116,7 @@ public class KOTTStartUI extends InteractiveCustomUIPage<KOTTStartUI.Data> {
                 if (this.safe) _world = world;
 
                 World final_world = _world;
-                CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                CompletableFuture.runAsync(() ->
                     KOTTMatch.tryCreateMatch(
                             this.worldPos,
                             this.teamCount,
@@ -125,7 +125,9 @@ public class KOTTStartUI extends InteractiveCustomUIPage<KOTTStartUI.Data> {
                             this.loop,
                             this.playerRef,
                             null,
-                            final_world
+                            final_world,
+                            world,
+                            playerRef.getTransform().getPosition().toVector3i()
                     ).thenApply(worldName -> {
                         if (!KOTTMatch.getMatchesList().get(worldName).getKOTHMatchStatus()) {
                             this.errorMessage = "Failed to create the match!";
@@ -133,10 +135,9 @@ public class KOTTStartUI extends InteractiveCustomUIPage<KOTTStartUI.Data> {
                         }
 
                         return null;
-                    });
-                });
+                    })
+                );
 
-                future.join();
                 close();
                 break;
         }

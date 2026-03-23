@@ -39,15 +39,13 @@ public class KOTTJoinCommand extends AbstractAsyncPlayerCommand {
         String _worldName = this.worldName.get(commandContext);
         if (_worldName == null) _worldName = world.getName();
 
-        if (!KOTTMatch.getMatchesList().containsKey(_worldName)) {
-            print(commandContext, "[KOTT Debug] There isn't a match happening in this world!");
+        KOTTMatch match = KOTTMatch.getMatchesList().get(_worldName);
+        if (match == null) {
+            print(playerRef, "[KOTT] There isn't a match happening in this world!");
             return CompletableFuture.completedFuture(null);
         }
 
-        KOTTMatch match = KOTTMatch.getMatchesList().get(_worldName);
-
         match.join(playerRef);
-
         return CompletableFuture.completedFuture(null);
     }
 }
