@@ -11,7 +11,7 @@ import java.util.logging.Level;
 public class PrintMacros {
 
     public static void print(CommandContext cmdctx, String msg) {
-        if (cmdctx != null) cmdctx.sendMessage(Message.raw(msg));
+        if (cmdctx != null) cmdctx.sendMessage(Message.raw("[KOTT] " + msg));
     }
 
     public static void print(PlayerRef playerRef, String msg) {
@@ -23,7 +23,7 @@ public class PrintMacros {
         HytaleLogger.getLogger().at(level).log(message);
     }
     public static void printL(String message){
-        HytaleLogger.getLogger().at(Level.INFO).log(message);
+        HytaleLogger.getLogger().at(Level.INFO).log("[KOTT Debug] " + message);
     }
 
 }

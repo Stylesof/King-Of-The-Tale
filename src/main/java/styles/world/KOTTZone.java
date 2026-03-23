@@ -1,9 +1,11 @@
 package styles.world;
 
+import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import io.sentry.protocol.User;
@@ -17,8 +19,8 @@ import java.util.List;
 public class KOTTZone {
 
     private final Vector3i zonePosition;
-    private final List<NPCEntity> npcsInZone = new ArrayList<>();
-    private final List<PlayerRef> playersInZone = new ArrayList<>();
+    public final List<NPCEntity> npcsInZone = new ArrayList<>();
+    public final List<PlayerRef> playersInZone = new ArrayList<>();
 
     private final World world;
 
@@ -26,26 +28,28 @@ public class KOTTZone {
 
     private final int zoneRadius;
 
-    public KOTTZone(@Nonnull int zoneRadius, @Nonnull Vector3i zonePosition, @Nonnull World world) { this(zoneRadius, zonePosition, world, null); }
+    public KOTTZone(int zoneRadius, @Nonnull Vector3i zonePosition, @Nonnull World world) { this(zoneRadius, zonePosition, world, null); }
 
-    public KOTTZone(@Nonnull int zoneRadius, @Nonnull Vector3i zonePosition, @Nonnull World world, @Nullable UserMapMarker zoneMarker) {
+    public KOTTZone(int zoneRadius, @Nonnull Vector3i zonePosition, @Nonnull World world, @Nullable UserMapMarker zoneMarker) {
         this.zoneRadius = zoneRadius;
         this.zonePosition = zonePosition;
         this.zoneMarker = zoneMarker;
         this.world = world;
     }
 
-    @Nullable
-    public List<PlayerRef> getPlayersInZone() { return playersInZone; }
+    public void removeFromZone(@Nonnull NPCEntity npcEntity) {
+        npcsInZone.remove(npcEntity);
+    }
 
-    @Nullable
-    public List<NPCEntity> getNpcsInZone() { return npcsInZone; }
+    public void removeFromZone(PlayerRef playerRef) {
+        playersInZone.remove(playerRef);
+    }
+
+    public void addToZone(PlayerRef playerRef) {
+        playersInZone.add(playerRef);
+    }
 
     public Vector3i getPosition() { return this.zonePosition; }
-
-    public boolean hasPlayer(@Nonnull PlayerRef player) { return playersInZone.contains(player); }
-
-    public boolean hasNPC(@Nonnull NPCEntity npc) { return npcsInZone.contains(npc); }
 
     public boolean isInside(@Nonnull Vector3d position) {
 

@@ -27,9 +27,9 @@ public class KOTT extends JavaPlugin {
     protected void setup() {
         this.getCommandRegistry().registerCommand(new KOTTCommand());
 
-        // this.getEventRegistry().registerGlobal(PlayerConnectEvent.class, OnPlayerConnectEvent::onPlayerConnect);
         this.getEventRegistry().registerGlobal(PlayerDisconnectEvent.class, OnPlayerDisconnectEvent::onPlayerDisconnect);
-        this.getEventRegistry().registerGlobal(AddPlayerToWorldEvent.class, OnAddPlayerToWorldEvent::onAddPlayerToWorld);
+        // this.getEventRegistry().registerGlobal(PlayerConnectEvent.class, OnPlayerConnectEvent::onPlayerConnect);
+        //this.getEventRegistry().registerGlobal(AddPlayerToWorldEvent.class, OnAddPlayerToWorldEvent::onAddPlayerToWorld);
 
         this.getEntityStoreRegistry().registerSystem(new EntityTickHandler());
     }
@@ -41,6 +41,7 @@ public class KOTT extends JavaPlugin {
 
     @Override
     protected void shutdown() {
+        KOTTMatch.CrashStop();
         KOTTMatch.getMatchesList().clear();
 
         super.shutdown();

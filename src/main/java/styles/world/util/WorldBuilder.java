@@ -56,7 +56,7 @@ public class WorldBuilder {
         Vector3i min = new Vector3i(pos.x - size, pos.y, pos.z - size); // left down corner
         Vector3i max = new Vector3i(pos.x + size, pos.y + size, pos.z + size);
 
-        return world.getChunkAsync(pos.x, pos.z).thenAccept(WorldChunk::markNeedsSaving).thenRun(() -> {
+        return world.getChunkAsync(pos.x, pos.z).thenAccept(WorldChunk::markNeedsSaving).thenCompose(unused -> {
             for(int y = min.y; y <= max.y; y++){
                 for(int x = min.x; x <= max.x; x++){
                     for(int z = min.z; z <= max.z; z++){
@@ -64,6 +64,8 @@ public class WorldBuilder {
                     }
                 }
             }
+
+            return CompletableFuture.completedFuture(null);
         });
     }
 
@@ -168,7 +170,7 @@ public class WorldBuilder {
         return true;
     }
 
-    public static boolean constructTeamBase(@Nonnull Vector3i spawnLocation, @Nonnull ColorHandler.ColorType teamColor, @Nonnull World world) {
+    public static CompletableFuture<Boolean> constructTeamBase(@Nonnull Vector3i spawnLocation, @Nonnull ColorHandler.ColorType teamColor, @Nonnull World world) {
         String color = switch (teamColor) {
             case WHITE -> "White";
             case GREEN -> "Green";
@@ -193,7 +195,7 @@ public class WorldBuilder {
 
         if (rockShaleBrick == null || rockAquaBrick == null || rockCrystalBlock == null || rockBasaltBrick == null || rockAquaBrickPillarBase == null || rockAquaBrickPillar == null ||
             rockAquaBrickWall == null || rockShaleBrickStairs == null || templeLightBench == null || goldBrickOrnate == null || rockAquaCobbleRoof == null || rockAquaCobbleRoofFlat == null)
-            return false;
+            return CompletableFuture.completedFuture(false);
 
         PointToPoint baseFloor;
         baseFloor = new PointToPoint(-8, -2, -8, 8, -2, 8);
@@ -777,6 +779,6 @@ public class WorldBuilder {
         finalBlock.addCenter(spawnLocation);
         setBlock(finalBlock, rockCrystalBlock, 0, 0, world);
 
-        return true;
+        return CompletableFuture.completedFuture(true);
     }
 }

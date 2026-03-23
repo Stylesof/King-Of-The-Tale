@@ -101,6 +101,6 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
             return CompletableFuture.completedFuture(null);
         }
 
-        return KOTTMatch.tryCreateMatch(_world_pos, _team_count, _zone_radius, _safe, _loop, playerRef, commandContext, _world).thenRun(() -> {});
+        return KOTTMatch.tryCreateMatch(_world_pos, _team_count, _zone_radius, _safe, _loop, playerRef, commandContext, _world, world, playerRef.getTransform().getPosition().toVector3i()).thenRun(() -> {});
     }
 }
