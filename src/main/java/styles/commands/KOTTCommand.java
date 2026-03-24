@@ -18,6 +18,8 @@ public class KOTTCommand extends AbstractCommandCollection {
         this.addSubCommand(new KOTTMatchCommand());
 
         this.addSubCommand(new KOTTGUICommand());
+
+        this.addSubCommand(new KOTTClearMarkersCommand());
     }
 
 

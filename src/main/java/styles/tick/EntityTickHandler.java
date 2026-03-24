@@ -69,11 +69,12 @@ public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
                                     print(playerRef, "You are trespassing enemy base, GET OUT!");
                                     //print(playerRef, "Your pos: " + playerRef.getTransform().getPosition());
 
-                                    DamageSystems.executeDamage(playerRef.getReference(), commandBuffer, new Damage(Damage.NULL_SOURCE, DamageCause.OUT_OF_WORLD, 5.0f));
+                                    DamageSystems.executeDamage(playerRef.getReference(), commandBuffer, new Damage(Damage.NULL_SOURCE, DamageCause.OUT_OF_WORLD, 2.5f));
 
                                     Vector3d enemyPos = playerRef.getTransform().getPosition();
                                     enemyPos = MathHelper.convertVectorToUnitVector(MathHelper.vectorSub(team.getBaseZone().getPosition().toVector3d(), enemyPos), team.getBaseZone().getZoneRadius());
-                                    enemyPos = MathHelper.scalarVector(enemyPos, 10);
+                                    enemyPos = MathHelper.scalarVector(enemyPos, 20);
+                                    enemyPos.y = 0;
 
                                     Vector3d finalEnemyPos = enemyPos;
                                     world.execute(() -> {
