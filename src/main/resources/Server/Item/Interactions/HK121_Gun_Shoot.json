@@ -1,0 +1,22 @@
+{
+  "Type": "LaunchProjectile",
+  "RunTime": 0.1,
+  "Effects": {
+    "ItemAnimationId": "Shoot",
+    "CameraEffect": "Handgun_Shoot",
+    "Particles": [
+      {
+        "SystemId": "RifleShooting",
+        "PositionOffset": {
+          "Z": 0.85,
+          "Y": 0.15
+        },
+        "RotationOffset": {
+          "Pitch": 90
+        },
+        "Color": "#ffffff"
+      }
+    ]
+  },
+  "ProjectileId": "HK121_Bullet"
+}

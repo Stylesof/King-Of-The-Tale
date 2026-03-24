@@ -1,6 +1,7 @@
 package styles.team;
 
 import com.hypixel.hytale.component.AddReason;
+import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3f;
@@ -11,6 +12,7 @@ import com.hypixel.hytale.protocol.RespondToHitUpdate;
 import com.hypixel.hytale.server.core.asset.type.model.config.Model;
 import com.hypixel.hytale.server.core.asset.type.model.config.ModelAsset;
 import com.hypixel.hytale.server.core.modules.entity.component.*;
+import com.hypixel.hytale.server.core.modules.entity.damage.DeathComponent;
 import com.hypixel.hytale.server.core.modules.entity.tracker.NetworkId;
 import com.hypixel.hytale.server.core.modules.interaction.Interactions;
 import com.hypixel.hytale.server.core.modules.physics.component.Velocity;
@@ -48,7 +50,6 @@ public class KOTTTeam {
         this.teamID = id;
         this.displayName = displayName;
         this.baseZone = new KOTTTeamZone(distanceBaseFromZone, basePosition, world, this, zoneMarker);
-        genBots(1);
     }
 
     // Add player to the Team
@@ -92,29 +93,5 @@ public class KOTTTeam {
     public Collection<PlayerRef> getPlayerList() { return playerList; }
 
     public int getPlayerCount() { return playerList.size(); }
-
-    public void genBots(int quantity) {
-        Holder<EntityStore> holder = EntityStore.REGISTRY.newHolder();
-        ModelAsset modelAsset = ModelAsset.getAssetMap().getAsset("Klops_Miner");
-        Model model = Model.createScaledModel(modelAsset, 1.0f);
-
-        Vector3d pos = new Vector3d(baseZone.getPosition());
-        Vector3f rot = new Vector3f(0, 0, 0);
-        TransformComponent transform = new TransformComponent(pos, rot);
-
-        holder.addComponent(TransformComponent.getComponentType(), transform);
-        holder.addComponent(PersistentModel.getComponentType(), new PersistentModel(model.toReference()));
-        holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(model));
-        holder.addComponent(BoundingBox.getComponentType(), new BoundingBox(model.getBoundingBox()));
-        holder.addComponent(NetworkId.getComponentType(), new NetworkId(baseZone.getWorld().getEntityStore().getStore().getExternalData().takeNextNetworkId()));
-        holder.addComponent(PropComponent.getComponentType(), new PropComponent());
-        holder.addComponent(Role);
-
-
-
-        baseZone.getWorld().execute(() -> {
-            baseZone.getWorld().getEntityStore().getStore().addEntity(holder, AddReason.SPAWN);
-        });
-    }
 
 }

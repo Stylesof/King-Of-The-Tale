@@ -58,6 +58,7 @@ public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
             if (world != null) {
                 KOTTMatch match = KOTTMatch.getMatchesList().get(world.getName());
                 if (match != null) {
+
                     if (match.getPlayersInMatch().containsKey(playerRef.getUuid())) {
                         for (KOTTTeam team : match.getTeams().values()) {
                             if (team.getBaseZone().isInside(playerRef.getTransform().getPosition())) {
@@ -81,6 +82,8 @@ public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
                                         Velocity vel = commandBuffer.getComponent(playerRef.getReference(), Velocity.getComponentType());
                                         vel.addInstruction(finalEnemyPos, new VelocityConfig(), ChangeVelocityType.Add);
                                     });
+
+                                    return;
                                 }
 
                             } else {
@@ -91,6 +94,7 @@ public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
                             }
                         }
                     }
+
                 }
             }
         }
