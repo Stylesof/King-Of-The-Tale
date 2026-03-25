@@ -26,7 +26,7 @@
       "Interactions": [
         {
           "Parent": "HK121_Gun_Shoot",
-          "RunTime": 0.05
+          "RunTime": 0.01
         }
       ],
       "Cooldown": {

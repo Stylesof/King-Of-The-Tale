@@ -1,0 +1,37 @@
+{
+  "Type": "Variant",
+  "Reference": "Template_Intelligent",
+  "Modify": {
+    "MaxHealth": 100,
+    "HearingRange": 8,
+    "ViewSector": 270,
+    "WakingPeriod": [
+      0,
+      24
+    ],
+    "DropList": "Empty",
+    "Appearance": "TesteModel",
+    "Weapons": [
+      "Weapon_HK121"
+    ],
+    "Attack": "Gun_Shoot",
+    "CombatBackOffAfterAttack": false,
+    "AttackDistance": 50,
+    "CombatFleeIfTooCloseDistance": 0,
+    "DesiredAttackDistanceRange": [
+      20,
+      50
+    ],
+    "CombatBehaviorDistance": 5,
+    "TargetRange": 30,
+    "LeashMinPlayerDistance": 50,
+    "ViewRange": 100,
+    "AlertedRange": 125
+  },
+  "Parameters": {
+    "NameTranslationKey": {
+      "Value": "Rapaz",
+      "Description": "Translation key for NPC name display"
+    }
+  }
+}
