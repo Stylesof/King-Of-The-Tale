@@ -14,7 +14,7 @@
     "Weapons": [
       "Weapon_HK121"
     ],
-    "Attack": "Gun_Shoot",
+    "Attack": "HK121_Gun_Shoot",
     "CombatBackOffAfterAttack": false,
     "AttackDistance": 70,
     "CombatFleeIfTooCloseDistance": 0,
@@ -30,7 +30,7 @@
   },
   "Parameters": {
     "NameTranslationKey": {
-      "Value": "Rapaz",
+      "Value": "Fighter",
       "Description": "Translation key for NPC name display"
     }
   }
