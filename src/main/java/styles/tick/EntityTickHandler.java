@@ -33,6 +33,7 @@ import styles.KOTT;
 import styles.team.KOTTTeam;
 import styles.util.MathHelper;
 import styles.world.KOTTMatch;
+import styles.world.KOTTZone;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -59,7 +60,10 @@ public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
                 KOTTMatch match = KOTTMatch.getMatchesList().get(world.getName());
                 if (match != null) {
 
-                    if (match.getPlayersInMatch().containsKey(playerRef.getUuid())) {
+                    if (match.getPlayersInMatch().containsKey(playerRef.getUuid()) && match.getKOTHMatchStatus()) {
+                        Vector3d playerPos;
+                        Vector3d areaPos;
+
                         for (KOTTTeam team : match.getTeams().values()) {
                             if (team.getBaseZone().isInside(playerRef.getTransform().getPosition())) {
                                 if (!team.getBaseZone().playersInZone.contains(playerRef)) {
@@ -68,21 +72,19 @@ public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
 
                                 if (!team.containsPlayer(playerRef)) {
                                     print(playerRef, "You are trespassing enemy base, GET OUT!");
-                                    //print(playerRef, "Your pos: " + playerRef.getTransform().getPosition());
 
                                     DamageSystems.executeDamage(playerRef.getReference(), commandBuffer, new Damage(Damage.NULL_SOURCE, DamageCause.OUT_OF_WORLD, 2.5f));
 
-                                    Vector3d enemyPos = playerRef.getTransform().getPosition();
-                                    enemyPos = MathHelper.convertVectorToUnitVector(MathHelper.vectorSub(team.getBaseZone().getPosition().toVector3d(), enemyPos), team.getBaseZone().getZoneRadius());
-                                    enemyPos = MathHelper.scalarVector(enemyPos, 20);
-                                    enemyPos.y = 0;
+                                    playerPos = playerRef.getTransform().getPosition();
+                                    playerPos = MathHelper.convertVectorToUnitVector(MathHelper.vectorSub(team.getBaseZone().getPosition().toVector3d(), playerPos), team.getBaseZone().getZoneRadius());
+                                    playerPos = MathHelper.scalarVector(playerPos, 20);
+                                    playerPos.y = 0;
 
-                                    Vector3d finalEnemyPos = enemyPos;
+                                    Vector3d finalPlayerPos = playerPos;
                                     world.execute(() -> {
                                         Velocity vel = commandBuffer.getComponent(playerRef.getReference(), Velocity.getComponentType());
-                                        vel.addInstruction(finalEnemyPos, new VelocityConfig(), ChangeVelocityType.Add);
+                                        vel.addInstruction(finalPlayerPos, new VelocityConfig(), ChangeVelocityType.Add);
                                     });
-
                                     return;
                                 }
 
@@ -93,8 +95,34 @@ public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
                                 }
                             }
                         }
-                    }
 
+                        if (!match.getZone().isInside(playerRef.getTransform().getPosition())) {
+                            // It's outside the main zone
+                            match.getZone().playersInZone.remove(playerRef);
+
+                            playerPos = playerRef.getTransform().getPosition();
+                            playerPos.y = 0;
+                            areaPos = match.getZone().getPosition().toVector3d();
+                            areaPos.y = 0;
+
+                            // Main Zone radius + space between the base zone + team zone diameter + extra space
+                            double borderSize = match.getZone().getZoneRadius() * 3 + KOTTTeam.distanceBaseFromZone + 20;
+
+                            if (MathHelper.positionDistance(playerPos, areaPos) >= borderSize) {
+                                print(playerRef, "You can't leave the match zone!");
+
+                                // Send player back
+                                playerPos = MathHelper.convertVectorToUnitVector(MathHelper.vectorSub(areaPos, playerPos), borderSize);
+                                playerPos = MathHelper.scalarVector(playerPos, -10);
+
+                                Vector3d finalPlayerPos1 = playerPos;
+                                world.execute(() -> {
+                                    Velocity vel = commandBuffer.getComponent(playerRef.getReference(), Velocity.getComponentType());
+                                    vel.addInstruction(finalPlayerPos1, new VelocityConfig(), ChangeVelocityType.Add);
+                                });
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -105,4 +133,18 @@ public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
     public Query<EntityStore> getQuery() {
         return Query.and(Player.getComponentType(), Query.not(DeathComponent.getComponentType()));
     }
+
+    /*
+    else {
+                            if (!match.getZone().playersInZone.contains(playerRef)) {
+                                match.getZone().playersInZone.add(playerRef);
+                            }
+
+                            // Player is inside the zone
+                            KOTTTeam team = match.getPlayerTeam(playerRef);
+                            if (team != null) {
+                                print(playerRef, "You marked a point for the Team " + team.getDisplayName());
+                            }
+                        }
+     */
 }

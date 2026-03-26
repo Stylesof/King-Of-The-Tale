@@ -34,6 +34,7 @@ import com.hypixel.hytale.server.npc.entities.PathManager;
 import com.hypixel.hytale.server.npc.role.Role;
 import com.hypixel.hytale.server.npc.role.builders.BuilderRoleAbstract;
 import it.unimi.dsi.fastutil.Pair;
+import styles.world.KOTTMatch;
 import styles.world.KOTTTeamZone;
 import styles.world.util.WorldBuilder;
 
@@ -48,7 +49,7 @@ import static styles.util.PrintMacros.printL;
 public class KOTTTeam {
 
     public final UUID teamID;
-    private final Collection<PlayerRef> playerList = new ArrayList<>();
+    private final List<PlayerRef> playerList = new ArrayList<>();
     private final List<NPCEntity> teamBots = new ArrayList<>();
     private final String displayName;
 
@@ -101,7 +102,7 @@ public class KOTTTeam {
 
     public String getDisplayName() { return displayName; }
 
-    public Collection<PlayerRef> getPlayerList() { return playerList; }
+    public List<PlayerRef> getPlayerList() { return playerList; }
 
     public int getPlayerCount() { return playerList.size(); }
 

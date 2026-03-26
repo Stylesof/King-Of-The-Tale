@@ -7,6 +7,7 @@ import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import styles.commands.KOTTCommand;
 import styles.events.OnAddPlayerToWorldEvent;
 import styles.events.OnPlayerDisconnectEvent;
+import styles.tick.KOTTMatchPointTickHandler;
 import styles.util.log.LogTypesDebug;
 import styles.world.KOTTMatch;
 import styles.tick.EntityTickHandler;
@@ -32,6 +33,7 @@ public class KOTT extends JavaPlugin {
         //this.getEventRegistry().registerGlobal(AddPlayerToWorldEvent.class, OnAddPlayerToWorldEvent::onAddPlayerToWorld);
 
         this.getEntityStoreRegistry().registerSystem(new EntityTickHandler());
+        this.getEntityStoreRegistry().registerSystem(new KOTTMatchPointTickHandler());
     }
 
     @Override
