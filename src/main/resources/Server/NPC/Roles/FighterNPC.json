@@ -3,6 +3,7 @@
   "Reference": "Template_Intelligent",
   "Modify": {
     "MaxHealth": 100,
+    "MaxSpeed": 5,
     "HearingRange": 8,
     "ViewSector": 180,
     "WakingPeriod": [
@@ -26,12 +27,26 @@
     "TargetRange": 60,
     "LeashMinPlayerDistance": 50,
     "ViewRange": 100,
-    "AlertedRange": 125
+    "AlertedRange": 125,
+    "CombatStrafeWeight": 10
   },
   "Parameters": {
     "NameTranslationKey": {
       "Value": "Fighter",
       "Description": "Translation key for NPC name display"
     }
-  }
+  },
+  "Instructions": [
+    {
+      "Sensor": {
+        "Type": "Path",
+        "Enabled": true,
+        "Range": 100,
+        "PathType": "TransientPath"
+      },
+      "BodyMotion": {
+        "NodeWidth": 10
+      }
+    }
+  ]
 }
