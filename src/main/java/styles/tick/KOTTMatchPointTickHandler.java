@@ -13,6 +13,7 @@ import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import javax.annotation.Nonnull;
 
 import static styles.util.PrintMacros.print;
+import static styles.util.PrintMacros.printL;
 
 public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
 
@@ -22,17 +23,14 @@ public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
     public void tick(float dt, int index, @Nonnull Store<EntityStore> store) {
         World world = store.getExternalData().getWorld();
 
-        Ticks++;
         float timeInSeconds = (float) Ticks / world.getTps();
 
-
-        for (PlayerRef playerRef : world.getPlayerRefs()) {
-            print(playerRef, "TPS: " + world.getTps());
-            if (timeInSeconds >= 5) {
-                print(playerRef, "Time elapsed: " + timeInSeconds);
-                Ticks = 0;
-            }
+        if (timeInSeconds >= 5) {
+            printL("Passou uns tempo ai");
+            printL("Tick: " + Ticks);
+            Ticks = 0;
         }
 
+        Ticks++;
     }
 }
