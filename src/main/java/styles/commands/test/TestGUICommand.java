@@ -16,6 +16,9 @@ import styles.world.KOTTMatch;
 import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 
+import static styles.util.PrintMacros.print;
+import static styles.util.PrintMacros.printL;
+
 @Deprecated
 public class TestGUICommand extends AbstractAsyncPlayerCommand {
     public TestGUICommand() {
@@ -29,6 +32,7 @@ public class TestGUICommand extends AbstractAsyncPlayerCommand {
         Player player = store.getComponent(ref, Player.getComponentType());
         KOTTMatch match = KOTTMatch.getMatchesList().get(world.getName());
         if (match != null) {
+            print(playerRef, "Adding hud...");
             player.getHudManager().setCustomHud(playerRef, new KOTTPointsUI(playerRef, match));
         }
         return CompletableFuture.completedFuture(null);

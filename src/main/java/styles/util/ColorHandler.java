@@ -2,6 +2,7 @@ package styles.util;
 
 import com.hypixel.hytale.protocol.Color;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -58,7 +59,15 @@ public class ColorHandler {
         return null;
     }
 
+    @Nonnull
     public static String getHexFromColor(ColorType colorType) {
-
+        return switch (colorType) {
+            case WHITE -> "#ffffff";
+            case GREEN -> "#00ff00";
+            case BLUE -> "#0000ff";
+            case YELLOW -> "#ffff00";
+            case CYAN -> "#00ffff";
+            case PURPLE -> "#ff00ff";
+        };
     }
 }

@@ -58,7 +58,7 @@ public class KOTTTeam {
     private final KOTTTeamZone baseZone;
     public static final int distanceBaseFromZone = 100;
 
-    public KOTTTeam(UUID id, String displayName, @Nonnull Vector3i basePosition, @Nonnull World world, @Nullable UserMapMarker zoneMarker) {
+    public KOTTTeam(UUID id, String displayName, @Nonnull Vector3i basePosition, @Nonnull World world, @Nonnull UserMapMarker zoneMarker) {
         this.teamID = id;
         this.displayName = displayName;
         this.baseZone = new KOTTTeamZone(distanceBaseFromZone, basePosition, world, this, zoneMarker);
@@ -75,7 +75,7 @@ public class KOTTTeam {
         return playerList.contains(playerRef);
     }
 
-    public static boolean createTeam(Map<UUID, KOTTTeam> teamListRef, UUID id, String displayName, Vector3i basePosition, @Nonnull World world, @Nullable UserMapMarker zoneMarker) {
+    public static boolean createTeam(Map<UUID, KOTTTeam> teamListRef, UUID id, String displayName, Vector3i basePosition, @Nonnull World world, @Nonnull UserMapMarker zoneMarker) {
 
         if(teamListRef.containsKey(id)){
             printL("[KOTH] There is an Team with that ID already!");

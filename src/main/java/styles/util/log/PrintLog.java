@@ -18,30 +18,27 @@ public class PrintLog {
     private static final Map<LogTypesDebug, String> logsDebug = new HashMap<>();
     private static final Map<LogTypes, String> logs = new HashMap<>();
 
-    private static final String toPlayer = "[KOTT] ";
-    private static final String toServer = "[KOTT Debug] ";
-
     static {
 
         //debug
         logsDebug.put(LogTypesDebug.KOTTLoadFailed,
-                toServer + "Failed to load the KOTH mod! ");
+                "Failed to load the KOTH mod! ");
         logsDebug.put(LogTypesDebug.KOTTLoadSuccess,
-                toServer + "KOTH mod successfuly loaded! ");
+                "KOTH mod successfuly loaded! ");
 
         //normal
         logs.put(LogTypes.KOTTInvalidAreaSize,
-                toPlayer + "Invalid area size value! Use: (min: 100, max: 500) ");
+                "Invalid area size value! Use: (min: 100, max: 500) ");
         logs.put(LogTypes.KOTTInvalidTeamCount,
-                toPlayer + "Invalid team count value! Use: (min: 2, max: 5) ");
+                "Invalid team count value! Use: (min: 2, max: 5) ");
         logs.put(LogTypes.KOTTMatchAlreadyRunning,
-                toPlayer + "Has already an KOTH Match happening in the world ");
+                "Has already an KOTH Match happening in the world ");
         logs.put(LogTypes.KOTTInvalidWorld,
-                toPlayer + "This world doesn't exist! Use \"/world list\" to see all available worlds!");
+                "This world doesn't exist! Use \"/world list\" to see all available worlds!");
         logs.put(LogTypes.KOTTMatchJoin,
-                toPlayer + "You have joined an in progress match! ");
+                "You have joined an in progress match! ");
         logs.put(LogTypes.KOTTMatchStarted,
-                toPlayer + "Successfully started a KOTT match! ");
+                "Successfully started a KOTT match! ");
     }
 
     public static void printLogDebug(LogTypesDebug logTypeDebug) { printL(logsDebug.get(logTypeDebug)); }
