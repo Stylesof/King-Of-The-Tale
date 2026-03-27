@@ -1,0 +1,10 @@
+1. ADD Weapons Shop NPC
+2. ADD Explosive Weapons
+3. (Just an idea) ADD "Vehicles"?
+4. ADD Match End System (Edit the loop parameter)
+5. ADD NPC Bot Team and Enemy
+6. ADD New Weapons
+7. ADD New Armors
+8. FIX NPC Texture
+9. ADD Permission For Commands and GUI
+10. Coming soon...

@@ -57,4 +57,8 @@ public class ColorHandler {
 
         return null;
     }
+
+    public static String getHexFromColor(ColorType colorType) {
+
+    }
 }

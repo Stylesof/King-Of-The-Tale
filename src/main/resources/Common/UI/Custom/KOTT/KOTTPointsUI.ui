@@ -4,35 +4,73 @@ Group {
     LayoutMode: Right;
 
     $C.@Panel {
+        LayoutMode: LeftCenterWrap;
         Anchor: (Width: 300, Height: 130, Bottom: 200, Right: 25);
         Padding: (Left: 4, Top: 15);
-        LayoutMode: LeftCenterWrap;
 
-        Group {
+        Group #Team1 {
+            LayoutMode: MiddleCenter;
             Anchor: (Width: 75, Height: 45, Right: 10, Bottom: 10);
             Background: (Color: #ff0000);
+
+            Visible: false;
+
+            Label  #Team1Label {
+                Style: (OutlineColor: #000000, RenderBold: true); 
+                Text: "";
+            }
         }
 
-        Group {
+        Group #Team2 {
+            LayoutMode: MiddleCenter;
             Anchor: (Width: 75, Height: 45, Right: 10, Bottom: 10);
             Background: (Color: #00ff00);
-            //Visible: false;
+            
+             Visible: false;
+                
+            Label  #Team2Label {
+                Style: (OutlineColor: #000000, RenderBold: true); 
+                Text: "";
+            }
         }
 
-        Group {
+        Group #Team3 {
+            LayoutMode: MiddleCenter;
             Anchor: (Width: 75, Height: 45, Right: 10, Bottom: 10);
             Background: (Color: #0000ff);
-            //Visible: false;
+        
+            Visible: false; 
+
+            Label #Team3Label {
+                Style: (OutlineColor: #000000, RenderBold: true); 
+                Text: "";
+            }
         }
 
-        Group {
+        Group #Team4 {
+            LayoutMode: MiddleCenter;
             Anchor: (Width: 75, Height: 45, Right: 10, Bottom: 10);
             Background: (Color: #fff000);
+
+            Visible: false;
+           
+            Label #Team4Label{
+                Style: (OutlineColor: #000000, RenderBold: true); 
+                Text: "";
+            }
         }
 
-        Group {
+        Group #Team5 {
+            LayoutMode: MiddleCenter;
             Anchor: (Width: 75, Height: 45);
             Background: (Color: #ff00ff);
+            
+            Visible: false;
+            
+            Label #Team5Label{
+                Style: (OutlineColor: #000000, RenderBold: true); 
+                Text: "";
+            }
         }
     }
 }
