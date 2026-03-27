@@ -35,7 +35,7 @@ public class KOTTMatch {
 
     // [World Name] [KOTTMatch]
     private static final Map<String, KOTTMatch> matchesList = new HashMap<>();
-    private boolean KOTHMatchStatus = false;
+    private boolean KOTTMatchStatus = false;
     private boolean isLoop = false;
     private boolean isSafe = false;
     private final Map<UUID, PlayerRef> playersInMatch = new HashMap<>();
@@ -45,12 +45,14 @@ public class KOTTMatch {
     private World Lobby;
     private Vector3i LobbyPos;
 
+    public static final long timeToPoint = 45000;
+
     public static boolean addMatch(String worldName) {
         if (!KOTTMatch.getMatchesList().containsKey(worldName)) {
             KOTTMatch.getMatchesList().put(worldName, new KOTTMatch());
             return true;
         }else {
-            if (!KOTTMatch.getMatchesList().get(worldName).getKOTHMatchStatus()) {
+            if (!KOTTMatch.getMatchesList().get(worldName).getKOTTMatchStatus()) {
                 KOTTMatch.getMatchesList().remove(worldName);
                 KOTTMatch.getMatchesList().put(worldName, new KOTTMatch());
                 return true;
@@ -240,7 +242,7 @@ public class KOTTMatch {
 
                 print(playerRef, "[KOTT] Match created and started on World: " + world.getName());
                 printL("[KOTT Debug] Match created and started on World: " + world.getName());
-                setKOTHMatchStatus(true);
+                setKOTTMatchStatus(true);
             } else {
                 print(playerRef, "Failed to create and start the match on World: " + world.getName());
                 printL("Error: Failed to create and start the match on World: " + world.getName());
@@ -252,7 +254,7 @@ public class KOTTMatch {
     }
 
     public void join(@Nonnull PlayerRef playerRef) {
-        if (!getKOTHMatchStatus()){
+        if (!getKOTTMatchStatus()){
             print(playerRef, "The match was not initialized");
             return;
         }
@@ -313,7 +315,7 @@ public class KOTTMatch {
             return CompletableFuture.completedFuture(null);
         }
         KOTTMatch match = KOTTMatch.getMatchesList().get(worldName);
-        if (match == null || !match.getKOTHMatchStatus()) {
+        if (match == null || !match.getKOTTMatchStatus()) {
             print(commandContext, "[KOTH] The match wasn't started yet!");
             return CompletableFuture.completedFuture(null);
         }
@@ -345,10 +347,10 @@ public class KOTTMatch {
 
         match.Teams.clear();
         match.Zone = null;
-        match.setKOTHMatchStatus(false);
+        match.setKOTTMatchStatus(false);
 
         KOTTMatch.getMatchesList().remove(worldName);
-        print(commandContext, "Stopped the active KOTH match!");
+        print(commandContext, "Stopped the active KOTT match!");
 
         CompletableFuture<World> fun2 = CompletableFuture.completedFuture(null);
         if (match.isLoop && !forceStop) {
@@ -420,12 +422,12 @@ public class KOTTMatch {
         }
     }
 
-    public boolean getKOTHMatchStatus() {
-        return KOTHMatchStatus;
+    public boolean getKOTTMatchStatus() {
+        return KOTTMatchStatus;
     }
 
-    public void setKOTHMatchStatus(boolean state) {
-        KOTHMatchStatus = state;
+    public void setKOTTMatchStatus(boolean state) {
+        KOTTMatchStatus = state;
     }
 
     public Map<UUID, KOTTTeam> getTeams(){ return this.Teams; }
@@ -434,7 +436,7 @@ public class KOTTMatch {
 
     @Nullable
     public KOTTTeam getPlayerTeam(PlayerRef playerRef) {
-        if (getKOTHMatchStatus()) {
+        if (getKOTTMatchStatus()) {
             for (KOTTTeam team : this.Teams.values()) {
                 if (team.containsPlayer(playerRef)) {
                     return team;

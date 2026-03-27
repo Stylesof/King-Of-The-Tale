@@ -25,15 +25,15 @@ import static styles.util.log.PrintLog.printLog;
 public class KOTTTeamListCommand extends AbstractAsyncPlayerCommand {
 
     private final OptionalArg<Integer> showuuid;
-
     private final OptionalArg<String> world_name;
 
     public KOTTTeamListCommand() {
         super("list", "Lists all Teams availables!");
 
         this.showuuid = withOptionalArg("showuuid", "Show the team name + uuid. (1. Name + UUID, 2. UUID Only)", ArgTypes.INTEGER);
-
         this.world_name = withOptionalArg("world", "Specify the world name of the match.", ArgTypes.STRING);
+
+        this.addSubCommand(new KOTTTeamListPointCommand());
     }
 
     /*===========================================================
@@ -60,8 +60,8 @@ public class KOTTTeamListCommand extends AbstractAsyncPlayerCommand {
 
         // Verify if has an match active in the world
         KOTTMatch match = KOTTMatch.getMatchesList().get(_word_name);
-        if (match == null || !match.getKOTHMatchStatus()){
-            print(commandContext, "[KOTT] There isn't any match happening in the moment!");
+        if (match == null || !match.getKOTTMatchStatus()){
+            print(commandContext, "There isn't any match happening in the moment!");
             return CompletableFuture.completedFuture(null);
         }
 

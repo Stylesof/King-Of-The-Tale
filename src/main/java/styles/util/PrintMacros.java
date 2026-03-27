@@ -6,16 +6,22 @@ import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 
 import javax.annotation.Nonnull;
+import java.awt.*;
 import java.util.logging.Level;
 
+/*========================================
+    IN FUTURE I WILL CHANGE THIS FUNCTION
+    AN USE AN NOTIFICATION BASED MESSAGES
+========================================*/
+@Deprecated
 public class PrintMacros {
 
     public static void print(CommandContext cmdctx, String msg) {
-        if (cmdctx != null) cmdctx.sendMessage(Message.raw("[KOTT] " + msg));
+        if (cmdctx != null) cmdctx.sendMessage(Message.join(Message.raw("[KOTT] ").color(Color.GREEN), Message.raw(msg).color(Color.WHITE)));
     }
 
     public static void print(PlayerRef playerRef, String msg) {
-        if (playerRef != null) playerRef.sendMessage(Message.raw(msg));
+        if (playerRef != null) playerRef.sendMessage(Message.join(Message.raw("[KOTT] ").color(Color.GREEN), Message.raw(msg).color(Color.WHITE)));
     }
 
     // PRINT TO THE LOGGER

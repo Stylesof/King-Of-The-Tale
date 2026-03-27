@@ -1,36 +1,52 @@
 package styles.tick;
 
-import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.system.tick.TickingSystem;
-import com.hypixel.hytale.server.core.HytaleServer;
-import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
+import styles.team.KOTTTeam;
+import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
+
+import java.util.UUID;
 
 import static styles.util.PrintMacros.print;
 import static styles.util.PrintMacros.printL;
 
 public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
 
-    private int Ticks = 0;
+    private long start = 0, end = 0;
+
+    public KOTTMatchPointTickHandler() {}
 
     @Override
     public void tick(float dt, int index, @Nonnull Store<EntityStore> store) {
-        World world = store.getExternalData().getWorld();
+        end = System.currentTimeMillis();
 
-        float timeInSeconds = (float) Ticks / world.getTps();
+        if (end - start >= KOTTMatch.timeToPoint) {
+            start = end;
 
-        if (timeInSeconds >= 5) {
-            printL("Passou uns tempo ai");
-            printL("Tick: " + Ticks);
-            Ticks = 0;
+            for (World world : Universe.get().getWorlds().values()) {
+                KOTTMatch match = KOTTMatch.getMatchesList().get(world.getName());
+                if (match != null && match.getKOTTMatchStatus()) {
+                    UUID pointTeam = null;
+                    for (KOTTTeam team : match.getTeams().values()) {
+                        if (pointTeam == null) {
+                            pointTeam = team.teamID;
+                        } else {
+                            if (team.getBaseZone().playersInZone.size() > match.getTeams().get(pointTeam).getBaseZone().playersInZone.size()) {
+                                pointTeam = team.teamID;
+                            }
+                        }
+                    }
+                    if (pointTeam != null) {
+                        printL("Maked point!");
+                        match.getTeams().get(pointTeam).teamPoints++;
+                    }
+                }
+            }
         }
-
-        Ticks++;
     }
 }

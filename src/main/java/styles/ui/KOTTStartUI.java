@@ -129,7 +129,7 @@ public class KOTTStartUI extends InteractiveCustomUIPage<KOTTStartUI.Data> {
                             world,
                             playerRef.getTransform().getPosition().toVector3i()
                     ).thenApply(worldName -> {
-                        if (!KOTTMatch.getMatchesList().get(worldName).getKOTHMatchStatus()) {
+                        if (!KOTTMatch.getMatchesList().get(worldName).getKOTTMatchStatus()) {
                             this.errorMessage = "Failed to create the match!";
                             return null;
                         }

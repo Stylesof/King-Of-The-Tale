@@ -6,39 +6,25 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
-import com.hypixel.hytale.math.vector.Transform;
 import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.ChangeVelocityType;
-import com.hypixel.hytale.server.core.HytaleServer;
 import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.entity.entities.player.pages.BasicCustomUIPage;
-import com.hypixel.hytale.server.core.entity.knockback.KnockbackComponent;
-import com.hypixel.hytale.server.core.entity.knockback.KnockbackSystems;
 import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
 import com.hypixel.hytale.server.core.modules.entity.damage.DamageCause;
 import com.hypixel.hytale.server.core.modules.entity.damage.DamageSystems;
 import com.hypixel.hytale.server.core.modules.entity.damage.DeathComponent;
-import com.hypixel.hytale.server.core.modules.entity.player.KnockbackPredictionSystems;
-import com.hypixel.hytale.server.core.modules.entity.player.KnockbackSimulation;
-import com.hypixel.hytale.server.core.modules.entity.teleport.Teleport;
-import com.hypixel.hytale.server.core.modules.interaction.interaction.config.server.combat.Knockback;
 import com.hypixel.hytale.server.core.modules.physics.component.Velocity;
 import com.hypixel.hytale.server.core.modules.splitvelocity.VelocityConfig;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import styles.KOTT;
 import styles.team.KOTTTeam;
 import styles.util.MathHelper;
 import styles.world.KOTTMatch;
-import styles.world.KOTTZone;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import java.util.concurrent.CompletableFuture;
 
 import static styles.util.PrintMacros.print;
 import static styles.util.PrintMacros.printL;
@@ -60,7 +46,7 @@ public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
                 KOTTMatch match = KOTTMatch.getMatchesList().get(world.getName());
                 if (match != null) {
 
-                    if (match.getPlayersInMatch().containsKey(playerRef.getUuid()) && match.getKOTHMatchStatus()) {
+                    if (match.getPlayersInMatch().containsKey(playerRef.getUuid()) && match.getKOTTMatchStatus()) {
                         Vector3d playerPos;
                         Vector3d areaPos;
 

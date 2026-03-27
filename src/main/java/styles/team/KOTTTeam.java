@@ -53,6 +53,8 @@ public class KOTTTeam {
     private final List<NPCEntity> teamBots = new ArrayList<>();
     private final String displayName;
 
+    public int teamPoints = 0;
+
     private final KOTTTeamZone baseZone;
     public static final int distanceBaseFromZone = 100;
 

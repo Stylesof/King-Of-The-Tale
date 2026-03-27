@@ -1,0 +1,38 @@
+$C = "../Common.ui";
+
+Group {
+    LayoutMode: Right;
+
+    $C.@Panel {
+        Anchor: (Width: 300, Height: 130, Bottom: 200, Right: 25);
+        Padding: (Left: 4, Top: 15);
+        LayoutMode: LeftCenterWrap;
+
+        Group {
+            Anchor: (Width: 75, Height: 45, Right: 10, Bottom: 10);
+            Background: (Color: #ff0000);
+        }
+
+        Group {
+            Anchor: (Width: 75, Height: 45, Right: 10, Bottom: 10);
+            Background: (Color: #00ff00);
+            //Visible: false;
+        }
+
+        Group {
+            Anchor: (Width: 75, Height: 45, Right: 10, Bottom: 10);
+            Background: (Color: #0000ff);
+            //Visible: false;
+        }
+
+        Group {
+            Anchor: (Width: 75, Height: 45, Right: 10, Bottom: 10);
+            Background: (Color: #fff000);
+        }
+
+        Group {
+            Anchor: (Width: 75, Height: 45);
+            Background: (Color: #ff00ff);
+        }
+    }
+}
