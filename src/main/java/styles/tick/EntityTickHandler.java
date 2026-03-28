@@ -9,6 +9,7 @@ import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.protocol.ChangeVelocityType;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.entity.entities.player.hud.CustomUIHud;
 import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
 import com.hypixel.hytale.server.core.modules.entity.damage.DamageCause;
 import com.hypixel.hytale.server.core.modules.entity.damage.DamageSystems;
@@ -20,11 +21,14 @@ import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import styles.team.KOTTTeam;
+import styles.ui.KOTTPointsUI;
 import styles.util.MathHelper;
 import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import java.util.Objects;
 
 import static styles.util.PrintMacros.print;
 import static styles.util.PrintMacros.printL;
@@ -46,13 +50,13 @@ public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
                 KOTTMatch match = KOTTMatch.getMatchesList().get(world.getName());
                 if (match != null) {
 
-                    if (match.getPlayersInMatch().containsKey(playerRef.getUuid()) && match.getKOTTMatchStatus()) {
+                    if (match.getPlayersInMatch().containsKey(playerRef.getUuid()) && match.getKOTTMatchStatus() && match.getCanMarkPoint()) {
                         Vector3d playerPos;
                         Vector3d areaPos;
 
                         for (KOTTTeam team : match.getTeams().values()) {
                             if (team.getBaseZone().isInside(playerRef.getTransform().getPosition())) {
-                                if (!team.getBaseZone().playersInZone.contains(playerRef)) {
+                                if (!team.getBaseZone().getPlayersInZone().contains(playerRef)) {
                                     team.getBaseZone().addToZone(playerRef);
                                 }
 
@@ -75,7 +79,7 @@ public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
                                 }
 
                             } else {
-                                if (team.getBaseZone().playersInZone.contains(playerRef)) {
+                                if (team.getBaseZone().getPlayersInZone().contains(playerRef)) {
                                     team.getBaseZone().removeFromZone(playerRef);
                                     return;
                                 }
@@ -84,7 +88,19 @@ public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
 
                         if (!match.getZone().isInside(playerRef.getTransform().getPosition())) {
                             // It's outside the main zone
-                            match.getZone().playersInZone.remove(playerRef);
+                            match.getZone().getPlayersInZone().remove(playerRef);
+                            world.execute(() -> {
+                            Player player = store.getComponent(Objects.requireNonNull(playerRef.getReference()), Player.getComponentType());
+                                if (player != null) {
+                                    CustomUIHud hud = player.getHudManager().getCustomHud();
+                                    if (hud instanceof KOTTPointsUI kphud) {
+                                        if (kphud.isInZone) {
+                                            player.getHudManager().resetHud(playerRef);
+                                            player.getHudManager().setCustomHud(playerRef, new KOTTPointsUI(playerRef, match, false));
+                                        }
+                                    }
+                                }
+                            });
 
                             playerPos = playerRef.getTransform().getPosition();
                             playerPos.y = 0;
@@ -107,6 +123,23 @@ public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
                                     vel.addInstruction(finalPlayerPos1, new VelocityConfig(), ChangeVelocityType.Add);
                                 });
                             }
+                        } else {
+                            if (!match.getZone().getPlayersInZone().contains(playerRef)) {
+                                match.getZone().addToZone(playerRef);
+                            }
+
+                            world.execute(() -> {
+                                Player player = store.getComponent(Objects.requireNonNull(playerRef.getReference()), Player.getComponentType());
+                                if (player == null) return;
+
+                                CustomUIHud hud = player.getHudManager().getCustomHud();
+                                if (hud instanceof KOTTPointsUI kphud) {
+                                    if (!kphud.isInZone) {
+                                        player.getHudManager().resetHud(playerRef);
+                                        player.getHudManager().setCustomHud(playerRef, new KOTTPointsUI(playerRef, match, true));
+                                    }
+                                }
+                            });
                         }
                     }
                 }

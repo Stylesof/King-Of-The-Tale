@@ -20,7 +20,7 @@ public class KOTTZone {
 
     private final Vector3i zonePosition;
     public final List<NPCEntity> npcsInZone = new ArrayList<>();
-    public final List<PlayerRef> playersInZone = new ArrayList<>();
+    private final List<PlayerRef> playersInZone = new ArrayList<>();
 
     private final World world;
 
@@ -67,4 +67,6 @@ public class KOTTZone {
     public World getWorld() { return this.world; }
 
     public int getZoneRadius() { return this.zoneRadius; }
+
+    public List<PlayerRef> getPlayersInZone() { return this.playersInZone; }
 }

@@ -3,6 +3,23 @@ $C = "../Common.ui";
 Group {
     LayoutMode: Right;
 
+    Group {
+        LayoutMode: Top;
+        Anchor: (Width: 300, Height: 100, Bottom: 260, Right: 10);
+
+        CircularProgressBar #InZoneIcon {
+            Anchor: (Width: 24, Height: 24, Top: 75, Right: 50);
+            Value: 1;
+            Color: #2f2f2f;
+        }
+
+        Label #InZoneLabel {
+            Anchor: (Left: 165);
+            Style: (Alignment: Center, TextColor: #2f2f2f, FontSize: 12);
+            Text: "You are outside the Zone";
+        }
+    }
+
     $C.@Panel {
         LayoutMode: LeftCenterWrap;
         Anchor: (Width: 300, Height: 130, Bottom: 200, Right: 25);

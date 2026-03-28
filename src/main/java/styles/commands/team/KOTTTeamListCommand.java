@@ -10,6 +10,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import styles.commands.points.KOTTTeamPointListCommand;
 import styles.util.log.LogTypes;
 import styles.world.KOTTMatch;
 import styles.team.KOTTTeam;
@@ -33,7 +34,7 @@ public class KOTTTeamListCommand extends AbstractAsyncPlayerCommand {
         this.showuuid = withOptionalArg("showuuid", "Show the team name + uuid. (1. Name + UUID, 2. UUID Only)", ArgTypes.INTEGER);
         this.world_name = withOptionalArg("world", "Specify the world name of the match.", ArgTypes.STRING);
 
-        this.addSubCommand(new KOTTTeamListPointCommand());
+        this.addSubCommand(new KOTTTeamPointListCommand());
     }
 
     /*===========================================================

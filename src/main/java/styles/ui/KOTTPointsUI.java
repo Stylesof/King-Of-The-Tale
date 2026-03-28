@@ -18,39 +18,39 @@ import static styles.util.PrintMacros.printL;
 public class KOTTPointsUI extends CustomUIHud {
 
     private final KOTTMatch match;
+    public boolean isInZone;
 
-    public KOTTPointsUI(@Nonnull PlayerRef playerRef, @Nonnull KOTTMatch match) {
+    public KOTTPointsUI(@Nonnull PlayerRef playerRef, @Nonnull KOTTMatch match, boolean inZone) {
         super(playerRef);
         this.match = match;
+        this.isInZone = inZone;
     }
 
     @Override
     protected void build(@Nonnull UICommandBuilder uiCommandBuilder) {
+        uiCommandBuilder.append("KOTT/KOTTPointsUI.ui");
         setDefaults(uiCommandBuilder);
-    }
-
-    @Override
-    public void update(boolean clear, @Nonnull UICommandBuilder uiCommandBuilder) {
-        setDefaults(uiCommandBuilder);
-        super.update(clear, uiCommandBuilder);
     }
 
     private void setDefaults(UICommandBuilder uiCommandBuilder) {
-        uiCommandBuilder.append("KOTT/KOTTPointsUI.ui");
-
         int i = 1;
-        printL("Trying add, match team list: " + match.getTeams().size());
         for (KOTTTeam team : match.getTeams().values()) {
             uiCommandBuilder.set("#Team" + i + ".Visible", true);
             String colorHex =  ColorHandler.getHexFromColor(Objects.requireNonNull(ColorHandler.getColorType(team.getBaseZone().getZoneMarker().getColorTint())));
             uiCommandBuilder.set("#Team" + i + ".Background.Color", colorHex);
-            uiCommandBuilder.set("#Team" + i + "Label.Text", "0");
+            uiCommandBuilder.set("#Team" + i + "Label.Text", "" + team.teamPoints);
 
-            if (colorHex.equals("#ffffff")) {
+            if (colorHex.equals("#ffffff") || colorHex.equals("#fff000")) {
                 uiCommandBuilder.set("#Team" + i + "Label.Style.TextColor", "#000000");
             }
 
             i++;
+        }
+
+        if (isInZone) {
+            uiCommandBuilder.set("#InZoneIcon.Color", "#00ff00");
+            uiCommandBuilder.set("#InZoneLabel.Style.TextColor", "#00ff00");
+            uiCommandBuilder.set("#InZoneLabel.Text", "You are inside the Zone");
         }
     }
 }

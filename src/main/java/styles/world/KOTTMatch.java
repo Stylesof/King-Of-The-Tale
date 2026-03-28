@@ -5,6 +5,7 @@ import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.Color;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
+import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.teleport.Teleport;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
@@ -14,6 +15,7 @@ import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserM
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarkersStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.worldstore.WorldMarkersResource;
 import styles.team.KOTTTeam;
+import styles.ui.KOTTEndUI;
 import styles.util.ColorHandler;
 import styles.util.StringGenerator;
 import styles.util.MathHelper;
@@ -25,6 +27,8 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import static styles.util.PrintMacros.print;
@@ -44,6 +48,7 @@ public class KOTTMatch {
     private KOTTZone Zone;
     private World Lobby;
     private Vector3i LobbyPos;
+    private boolean canMarkPoint = false;
 
     public static final long timeToPoint = 45000;
 
@@ -242,6 +247,7 @@ public class KOTTMatch {
 
                 print(playerRef, "[KOTT] Match created and started on World: " + world.getName());
                 printL("[KOTT Debug] Match created and started on World: " + world.getName());
+                setCanMarkPoint(true);
                 setKOTTMatchStatus(true);
             } else {
                 print(playerRef, "Failed to create and start the match on World: " + world.getName());
@@ -343,7 +349,7 @@ public class KOTTMatch {
         World finalLobbyWorld = match.Lobby;
         Vector3i finalLobbyPos = match.LobbyPos;
 
-        List<PlayerRef> playerRefList = match.Zone.playersInZone;
+        List<PlayerRef> playerRefList = match.Zone.getPlayersInZone();
 
         match.Teams.clear();
         match.Zone = null;
@@ -401,9 +407,33 @@ public class KOTTMatch {
         });
     }
 
+    public CompletableFuture<Void> end(KOTTTeam winnerTeam) {
+        setCanMarkPoint(false);
+
+        // WIP -> Stop Player damage and Movement
+
+        Executor delayedExecutor = CompletableFuture.delayedExecutor(1, TimeUnit.SECONDS);
+        CompletableFuture<Void> fun = CompletableFuture.completedFuture(null);
+
+        for (int i = 0; i <= 20; i++) {
+            int finalI = i;
+            fun = fun.thenRunAsync(() -> {
+                for (PlayerRef playerRef : getPlayersInMatch().values()) {
+                    Player player = Zone.getWorld().getEntityStore().getStore().getComponent(Objects.requireNonNull(playerRef.getReference()), Player.getComponentType());
+                    if (player != null) {
+                        player.getHudManager().resetHud(playerRef);
+                        player.getHudManager().setCustomHud(playerRef, new KOTTEndUI(playerRef, winnerTeam, 20 - finalI));
+                    }
+                }
+            }, delayedExecutor);
+        }
+
+        return fun;
+    }
+
     private void addToMatch(@Nonnull PlayerRef playerRef, KOTTTeam team) {
         this.playersInMatch.put(playerRef.getUuid(), playerRef);
-        this.Zone.playersInZone.add(playerRef);
+        this.Zone.getPlayersInZone().add(playerRef);
         team.addPlayerRef(playerRef);
     }
 
@@ -425,6 +455,10 @@ public class KOTTMatch {
     public boolean getKOTTMatchStatus() {
         return KOTTMatchStatus;
     }
+
+    public boolean getCanMarkPoint () { return  this.canMarkPoint; }
+
+    public void setCanMarkPoint (boolean state) { this.canMarkPoint = state; }
 
     public void setKOTTMatchStatus(boolean state) {
         KOTTMatchStatus = state;

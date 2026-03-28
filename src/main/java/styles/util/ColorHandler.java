@@ -65,7 +65,7 @@ public class ColorHandler {
             case WHITE -> "#ffffff";
             case GREEN -> "#00ff00";
             case BLUE -> "#0000ff";
-            case YELLOW -> "#ffff00";
+            case YELLOW -> "#fff000";
             case CYAN -> "#00ffff";
             case PURPLE -> "#ff00ff";
         };

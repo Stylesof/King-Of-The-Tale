@@ -1,0 +1,22 @@
+$C = "../Common.ui";
+
+Group {
+    LayoutMode: MiddleCenter;
+
+    Label #WinLabel {
+        Text: "Victory!";
+        Style: (TextColor: #00ff00, FontSize: 100, OutlineColor: #000000);
+    }
+
+    Label #TeamWinlabel {
+        Text: "Team X won the match!";
+        Style: (TextColor: #555599, OutlineColor: #000000);
+    }
+
+    Label #NextMatchLabel {
+        Anchor: (Top: 100);
+        Text: "Wait 20 seconds to start the next match...";
+        Style: (TextColor: #997777, FontSize: 50, OutlineColor: #000000);
+    }
+
+}
