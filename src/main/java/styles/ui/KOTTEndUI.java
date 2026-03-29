@@ -10,26 +10,40 @@ import javax.annotation.Nonnull;
 public class KOTTEndUI extends CustomUIHud {
 
     private final PlayerRef playerRef;
-    private final KOTTTeam winnerTeam;
+    private KOTTTeam winnerTeam;
     private final int timeToNextMatch;
+    private final boolean isLoop;
 
-    public KOTTEndUI(@Nonnull PlayerRef playerRef, KOTTTeam team, int timeToNextMatch) {
+    public KOTTEndUI(@Nonnull PlayerRef playerRef, KOTTTeam team, int timeToNextMatch, boolean isLoop) {
         super(playerRef);
         this.playerRef = playerRef;
         this.winnerTeam = team;
         this.timeToNextMatch = timeToNextMatch;
+        this.isLoop = isLoop;
     }
 
     @Override
     protected void build(@Nonnull UICommandBuilder uiCommandBuilder) {
         uiCommandBuilder.append("KOTT/KOTTEndUI.ui");
 
-        if (!winnerTeam.containsPlayer(playerRef)) {
-            uiCommandBuilder.set("#WinLabel.Text", "Game Over!");
+        if (winnerTeam != null) {
+            if (!winnerTeam.containsPlayer(playerRef)) {
+                uiCommandBuilder.set("#WinLabel.Text", "Game Over!");
+                uiCommandBuilder.set("#WinLabel.Style.TextColor", "#ff0000");
+            }
+
+            uiCommandBuilder.set("#TeamWinLabel.Text", winnerTeam.getDisplayName());
+        } else {
+            uiCommandBuilder.set("#WinLabel.Text", "Match Stopped!");
             uiCommandBuilder.set("#WinLabel.Style.TextColor", "#ff0000");
+
+            uiCommandBuilder.set("#TeamWinLabel.Text", "");
         }
 
-        uiCommandBuilder.set("#TeamWinLabel.Text", winnerTeam.getDisplayName());
-        uiCommandBuilder.set("#NextMatchLabel.Text", "Wait " + timeToNextMatch + " seconds to start the next match...");
+        if (isLoop) {
+            uiCommandBuilder.set("#NextMatchLabel.Text", "Wait " + timeToNextMatch + " seconds to start the next match...");
+        } else {
+            uiCommandBuilder.set("#NextMatchLabel.Text", "Wait " + timeToNextMatch + " seconds to end the match...");
+        }
     }
 }

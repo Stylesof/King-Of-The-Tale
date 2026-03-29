@@ -8,7 +8,7 @@ Group {
         Style: (TextColor: #00ff00, FontSize: 100, OutlineColor: #000000);
     }
 
-    Label #TeamWinlabel {
+    Label #TeamWinLabel {
         Text: "Team X won the match!";
         Style: (TextColor: #555599, OutlineColor: #000000);
     }

@@ -68,7 +68,7 @@ public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
                         }
                     }
 
-                    if (firstTeam == null || teamPlayersCount.get(firstTeam).equals(teamPlayersCount.get(secondTeam))) return;
+                    if (firstTeam == null || teamPlayersCount.get(firstTeam).equals(teamPlayersCount.get(secondTeam))) continue;
 
                     firstTeam.teamPoints++;
                     printL("Team " + firstTeam.getDisplayName() + " marked a point! (" + firstTeam.teamPoints + " / 100)");
@@ -79,6 +79,10 @@ public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
                             player.getHudManager().resetHud(playerRef);
                             player.getHudManager().setCustomHud(playerRef, new KOTTPointsUI(playerRef, match, match.getPlayersInMatch().containsValue(playerRef)));
                         });
+                    }
+
+                    if (firstTeam.teamPoints == 100) {
+                        match.end(firstTeam);
                     }
                 }
             }

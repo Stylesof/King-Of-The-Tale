@@ -12,32 +12,27 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
-
 import java.util.concurrent.CompletableFuture;
 
+import static styles.util.PrintMacros.print;
 import static styles.util.PrintMacros.printL;
 
-public class KOTTStopCommand extends AbstractAsyncPlayerCommand {
-
+public class KOTTEndCommand extends AbstractAsyncPlayerCommand {
     private final OptionalArg<String> world_name;
 
-    public KOTTStopCommand() {
-        super("stop", "Force to end an active KOTH game session in any world!");
+    public KOTTEndCommand() {
+        super("end", "Safe end the match in any world!");
 
         this.world_name = withOptionalArg("world", "World to stop the KOTT match.", ArgTypes.STRING);
     }
 
-    /*===========================================================
-        FUNCTION TO STOP ANY ACTIVE KOTT MATCH RUNNING IN THE
-        DEFINED WORLD
-    /*=========================================================*/
     @Nonnull
     @Override
     protected CompletableFuture<Void> executeAsync(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
         String _word_name = world_name.get(commandContext);
 
         // Verify if the world name is valid
-        if(_word_name == null) {
+        if (_word_name == null) {
             if (!commandContext.isPlayer()) {
                 printL("[KOTT Debug] Error: To use this command as not Player, you need to insert an World name");
                 return CompletableFuture.completedFuture(null);
@@ -45,6 +40,13 @@ public class KOTTStopCommand extends AbstractAsyncPlayerCommand {
             _word_name = world.getName();
         }
 
-        return KOTTMatch.stop(_word_name, true, commandContext);
+        KOTTMatch match = KOTTMatch.getMatchesList().get(_word_name);
+        if (match == null || match.getIsEnding()) {
+            print(playerRef, "There isn't an match happening in this world!");
+            printL("There isn't an match happening in this world!");
+            return CompletableFuture.completedFuture(null);
+        }
+
+        return match.end(null);
     }
 }

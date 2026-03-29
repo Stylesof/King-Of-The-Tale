@@ -24,7 +24,7 @@ public class PrintLog {
         logsDebug.put(LogTypesDebug.KOTTLoadFailed,
                 "Failed to load the KOTH mod! ");
         logsDebug.put(LogTypesDebug.KOTTLoadSuccess,
-                "KOTH mod successfuly loaded! ");
+                "KOTT mod successfuly loaded! ");
 
         //normal
         logs.put(LogTypes.KOTTInvalidAreaSize,
@@ -32,7 +32,7 @@ public class PrintLog {
         logs.put(LogTypes.KOTTInvalidTeamCount,
                 "Invalid team count value! Use: (min: 2, max: 5) ");
         logs.put(LogTypes.KOTTMatchAlreadyRunning,
-                "Has already an KOTH Match happening in the world ");
+                "Has already an KOTT Match happening in the world ");
         logs.put(LogTypes.KOTTInvalidWorld,
                 "This world doesn't exist! Use \"/world list\" to see all available worlds!");
         logs.put(LogTypes.KOTTMatchJoin,

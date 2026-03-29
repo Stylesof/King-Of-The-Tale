@@ -12,8 +12,9 @@ public class KOTTCommand extends AbstractCommandCollection {
         super("kott", "King Of The Hytale Minigame");
 
         this.addSubCommand(new KOTTStartCommand());
-        this.addSubCommand(new KOTTStopCommand());
         this.addSubCommand(new KOTTJoinCommand());
+        this.addSubCommand(new KOTTStopCommand());
+        this.addSubCommand(new KOTTEndCommand());
 
         this.addSubCommand(new KOTTTeamCommand());
 

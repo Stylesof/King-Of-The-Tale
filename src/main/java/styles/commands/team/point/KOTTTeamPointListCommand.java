@@ -1,4 +1,4 @@
-package styles.commands.points;
+package styles.commands.team.point;
 
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
@@ -23,7 +23,7 @@ public class KOTTTeamPointListCommand extends AbstractAsyncPlayerCommand {
     private final OptionalArg<String> worldName;
 
     public KOTTTeamPointListCommand() {
-        super("point", "Show the teams points in the match.");
+        super("list", "Show the teams points in the match.");
 
         this.worldName = withOptionalArg("world", "List point of team in the selected world", ArgTypes.STRING);
     }
