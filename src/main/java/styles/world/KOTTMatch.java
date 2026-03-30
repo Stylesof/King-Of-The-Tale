@@ -55,7 +55,7 @@ public class KOTTMatch {
     private World matchWorld;
     private boolean isEnding = false;
 
-    public static final long timeToPoint = 35000;
+    public static final long timeToPoint = 1000;
 
     public static boolean addMatch(String worldName) {
         if (!KOTTMatch.getMatchesList().containsKey(worldName)) {
@@ -157,7 +157,7 @@ public class KOTTMatch {
         Vector3i baseLocation = new Vector3i(distanceZoneBase, 0, 0);
         baseLocation = MathHelper.vectorSum(baseLocation.toVector3d(), Zone.getPosition().toVector3d()).ceil().toVector3i();
 
-        // Using a pre-defined name template, get an list with random names
+        // Using a pre-defined name template, get a list with random names
         List<String> nameList = StringGenerator.genRandomNameList(teamCount);
         List<Color> colorList = ColorHandler.genRandomColorList(teamCount);
 

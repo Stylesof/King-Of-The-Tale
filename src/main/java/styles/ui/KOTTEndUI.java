@@ -32,7 +32,7 @@ public class KOTTEndUI extends CustomUIHud {
                 uiCommandBuilder.set("#WinLabel.Style.TextColor", "#ff0000");
             }
 
-            uiCommandBuilder.set("#TeamWinLabel.Text", winnerTeam.getDisplayName());
+            uiCommandBuilder.set("#TeamWinLabel.Text", "The Team " + winnerTeam.getDisplayName() + " won the match!");
         } else {
             uiCommandBuilder.set("#WinLabel.Text", "Match Stopped!");
             uiCommandBuilder.set("#WinLabel.Style.TextColor", "#ff0000");

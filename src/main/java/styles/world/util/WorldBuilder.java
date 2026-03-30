@@ -35,8 +35,6 @@ public class WorldBuilder {
             start = MathHelper.vectorSum(start, center);
             end = MathHelper.vectorSum(end, center);
         }
-        //public Vector3i getStart() { return start; }
-        //public Vector3i getEnd() { return end; }
     }
 
     public static class Point {

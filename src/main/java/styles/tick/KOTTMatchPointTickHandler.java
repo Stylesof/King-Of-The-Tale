@@ -18,21 +18,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static styles.util.PrintMacros.printL;
 
 public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
 
-    private long start, end;
-
-    public KOTTMatchPointTickHandler() { start = System.currentTimeMillis(); }
+    private AtomicLong start = new AtomicLong(System.currentTimeMillis()), end = new AtomicLong();
 
     @Override
     public void tick(float dt, int index, @Nonnull Store<EntityStore> store) {
-        end = System.currentTimeMillis();
+        end.set(System.currentTimeMillis());
 
-        if (end - start >= KOTTMatch.timeToPoint) {
-            start = end;
+        if (end.get() - start.get() >= KOTTMatch.timeToPoint) {
+            if (!start.compareAndSet(start.get(), end.get())) return;
 
             for (World world : Universe.get().getWorlds().values()) {
                 KOTTMatch match = KOTTMatch.getMatchesList().get(world.getName());

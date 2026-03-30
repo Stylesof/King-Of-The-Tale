@@ -30,7 +30,7 @@
   },
   "Parameters": {
     "NameTranslationKey": {
-      "Value": "Rapaz",
+      "Value": "FighterNPC",
       "Description": "Translation key for NPC name display"
     }
   }
