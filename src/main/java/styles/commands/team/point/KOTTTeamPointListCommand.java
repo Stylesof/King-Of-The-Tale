@@ -43,7 +43,7 @@ public class KOTTTeamPointListCommand extends AbstractAsyncPlayerCommand {
         KOTTMatch match = KOTTMatch.getMatchesList().get(_worldName);
         if (match != null) {
             if (match.getKOTTMatchStatus()) {
-                for (KOTTTeam team : match.getTeams().values()) {
+                for (KOTTTeam team : match.getTeams()) {
                     print(playerRef, team.getDisplayName() + ": (" + team.teamPoints + "/100) points");
                 }
             } else {

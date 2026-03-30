@@ -37,7 +37,6 @@ public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
             for (World world : Universe.get().getWorlds().values()) {
                 KOTTMatch match = KOTTMatch.getMatchesList().get(world.getName());
                 if (match != null && match.getKOTTMatchStatus() && match.getCanMarkPoint()) {
-
                     // get team with more players in area
                     Map<KOTTTeam, Integer> teamPlayersCount = new HashMap<>(); // player count per team
                     KOTTTeam firstTeam = null, secondTeam = null;
@@ -76,7 +75,7 @@ public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
                     for (PlayerRef playerRef : match.getPlayersInMatch().values()) {
                         world.execute(() -> {
                             Player player = world.getEntityStore().getStore().getComponent(Objects.requireNonNull(playerRef.getReference()), Player.getComponentType());
-                            player.getHudManager().resetHud(playerRef);
+                            //player.getHudManager().resetHud(playerRef);
                             player.getHudManager().setCustomHud(playerRef, new KOTTPointsUI(playerRef, match, match.getPlayersInMatch().containsValue(playerRef)));
                         });
                     }

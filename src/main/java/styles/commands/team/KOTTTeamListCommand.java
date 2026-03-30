@@ -70,7 +70,7 @@ public class KOTTTeamListCommand extends AbstractAsyncPlayerCommand {
 
         print(commandContext, "Teams:");
         int i = 0;
-        for(KOTTTeam team : match.getTeams().values()){
+        for(KOTTTeam team : match.getTeams()){
             String message = i + ": ";
 
             if(show == 1){

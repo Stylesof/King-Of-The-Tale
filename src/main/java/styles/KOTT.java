@@ -1,13 +1,15 @@
 package styles;
 
-import com.hypixel.hytale.server.core.event.events.player.AddPlayerToWorldEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
+import com.hypixel.hytale.server.core.modules.entity.damage.DamageEventSystem;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import styles.commands.KOTTCommand;
-import styles.events.OnAddPlayerToWorldEvent;
+import styles.events.ECS_DamageEvent;
+import styles.events.ECS_OnDamageBlockEvent;
 import styles.events.OnPlayerDisconnectEvent;
 import styles.tick.KOTTMatchPointTickHandler;
+import styles.tick.KOTTMatchZoneCompassTickHandler;
 import styles.util.log.LogTypesDebug;
 import styles.world.KOTTMatch;
 import styles.tick.EntityTickHandler;
@@ -34,6 +36,10 @@ public class KOTT extends JavaPlugin {
 
         this.getEntityStoreRegistry().registerSystem(new EntityTickHandler());
         this.getEntityStoreRegistry().registerSystem(new KOTTMatchPointTickHandler());
+        this.getEntityStoreRegistry().registerSystem(new KOTTMatchZoneCompassTickHandler());
+
+        this.getEntityStoreRegistry().registerSystem(new ECS_OnDamageBlockEvent());
+        this.getEntityStoreRegistry().registerSystem(new ECS_DamageEvent());
     }
 
     @Override

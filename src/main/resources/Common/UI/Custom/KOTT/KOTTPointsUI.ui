@@ -7,10 +7,11 @@ Group {
         LayoutMode: Top;
         Anchor: (Width: 300, Height: 100, Bottom: 260, Right: 10);
 
-        CircularProgressBar #InZoneIcon {
+        Sprite #InZoneIcon {
             Anchor: (Width: 24, Height: 24, Top: 75, Right: 50);
-            Value: 1;
-            Color: #2f2f2f;
+            TexturePath: "../Pages/RespawnPointArrow.png";
+            Frame: (Width: 32, Height: 32, PerRow: 1, Count: 1);
+            Angle: 0.0;
         }
 
         Label #InZoneLabel {

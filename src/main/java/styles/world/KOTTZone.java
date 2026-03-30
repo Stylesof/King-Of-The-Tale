@@ -1,14 +1,11 @@
 package styles.world;
 
-import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
-import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
-import io.sentry.protocol.User;
 import styles.util.MathHelper;
 
 import javax.annotation.Nonnull;
@@ -21,11 +18,8 @@ public class KOTTZone {
     private final Vector3i zonePosition;
     public final List<NPCEntity> npcsInZone = new ArrayList<>();
     private final List<PlayerRef> playersInZone = new ArrayList<>();
-
     private final World world;
-
     private final UserMapMarker zoneMarker;
-
     private final int zoneRadius;
 
     public KOTTZone(int zoneRadius, @Nonnull Vector3i zonePosition, @Nonnull World world) { this(zoneRadius, zonePosition, world, null); }

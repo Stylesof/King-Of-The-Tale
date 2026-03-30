@@ -151,7 +151,7 @@ public class KOTTMatch {
 
         float angleBetweenBases = 360.0f / teamCount;
         float startAngle = 0.0f;
-        int distanceZoneBase = zoneRadius * 2 + KOTTTeam.distanceBaseFromZone;
+        int distanceZoneBase = zoneRadius + KOTTTeamZone.baseRadius + KOTTTeam.distanceBaseFromZone;
 
         // Calculates the first base position
         Vector3i baseLocation = new Vector3i(distanceZoneBase, 0, 0);
@@ -248,15 +248,12 @@ public class KOTTMatch {
 
                     join(_playerRef);
                     KOTTTeam team = getPlayerTeam(_playerRef);
-                    //KOTTTeam team = (KOTTTeam) Teams.values().toArray()[j++];
-                    //team.addPlayerRef(playerRef);
-                    //this.playersInMatch.put(_playerRef.getUuid(), _playerRef);
-
-                    Transform transform = _playerRef.getTransform();
-                    if (team.getBaseZone() == null) {
-                        printL("Invalid Team Base!");
+                    if (team == null || team.getBaseZone() == null) {
+                        printL("Invalid Team!");
                         continue;
                     }
+
+                    Transform transform = _playerRef.getTransform();
                     transform.setPosition(team.getBaseZone().getPosition().toVector3d());
                     Teleport tp = Teleport.createForPlayer(transform);
                     world.getEntityStore().getStore().addComponent(_playerRef.getReference(), Teleport.getComponentType(), tp);
@@ -269,10 +266,12 @@ public class KOTTMatch {
                         printL("Invalid Player!");
                         continue;
                     }
-                    PlayerRespawnPointData[] respawnPointData = { new PlayerRespawnPointData(pos, pos.toVector3d(), "Team " + team.getDisplayName() + " Respawn") };
-                    player.getPlayerConfigData().getPerWorldData(world.getName()).setRespawnPoints(respawnPointData);
 
-                    player.getHudManager().setCustomHud(_playerRef, new KOTTPointsUI(_playerRef, this, false));
+                    world.execute(() -> {
+                        PlayerRespawnPointData[] respawnPointData = { new PlayerRespawnPointData(pos, pos.toVector3d(), "Team " + team.getDisplayName() + " Respawn") };
+                        player.getPlayerConfigData().getPerWorldData(world.getName()).setRespawnPoints(respawnPointData);
+                        player.getHudManager().setCustomHud(_playerRef, new KOTTPointsUI(_playerRef, this, false));
+                    });
 
                     print(_playerRef, "[KOTT] You are from the Team " + team.getDisplayName());
                 }
@@ -361,7 +360,7 @@ public class KOTTMatch {
 
         UserMapMarkersStore store = world.getChunkStore().getStore().getResource(WorldMarkersResource.getResourceType());
 
-        for (KOTTTeam team : match.getTeams().values()) {
+        for (KOTTTeam team : match.getTeams()) {
             if (team.getBaseZone().getZoneMarker() != null) {
                 printL(match.Zone.getWorld().getName() + ": Removing UserMapMarker from Team: " + team.getDisplayName() + "...");
                 store.removeUserMapMarker(team.getBaseZone().getZoneMarker().getId());
@@ -501,7 +500,7 @@ public class KOTTMatch {
         KOTTMatchStatus = state;
     }
 
-    public Map<UUID, KOTTTeam> getTeams(){ return this.Teams; }
+    public List<KOTTTeam> getTeams(){ return this.Teams.values().stream().toList(); }
 
     public KOTTTeam getLastTeamAdded() { return this.Teams.lastEntry().getValue(); }
 
@@ -523,6 +522,9 @@ public class KOTTMatch {
     public KOTTZone getZone() { return this.Zone; }
 
     public static Map<String, KOTTMatch> getMatchesList() { return matchesList; }
+
+    @Nullable
+    public static KOTTMatch getMatch(String worldName) { return getMatchesList().get(worldName); }
 
     // public Vector3i getMatchStartPos() { return this.matchStartPos; }
 }

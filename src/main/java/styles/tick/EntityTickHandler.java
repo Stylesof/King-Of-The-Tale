@@ -54,7 +54,7 @@ public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
                         Vector3d playerPos;
                         Vector3d areaPos;
 
-                        for (KOTTTeam team : match.getTeams().values()) {
+                        for (KOTTTeam team : match.getTeams()) {
                             if (team.getBaseZone().isInside(playerRef.getTransform().getPosition())) {
                                 if (!team.getBaseZone().getPlayersInZone().contains(playerRef)) {
                                     team.getBaseZone().addToZone(playerRef);
@@ -140,6 +140,7 @@ public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
                                     }
                                 }
                             });
+
                         }
                     }
                 }

@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 public class KOTTTeamZone extends KOTTZone {
 
     private final KOTTTeam owner;
+    public final static int baseRadius = 100;
 
     public KOTTTeamZone(int zoneRadius, @Nonnull Vector3i zonePosition, @Nonnull World world, KOTTTeam owner, @Nonnull UserMapMarker zoneMarker) {
         super(zoneRadius, zonePosition, world, zoneMarker);
