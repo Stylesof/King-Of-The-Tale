@@ -31,10 +31,7 @@ public class KOTTPointsUI extends CustomUIHud {
     @Override
     protected void build(@Nonnull UICommandBuilder uiCommandBuilder) {
         uiCommandBuilder.append("KOTT/KOTTPointsUI.ui");
-        setDefaults(uiCommandBuilder);
-    }
 
-    private void setDefaults(UICommandBuilder uiCommandBuilder) {
         int i = 1;
         for (KOTTTeam team : match.getTeams()) {
             uiCommandBuilder.set("#Team" + i + ".Visible", true);

@@ -8,6 +8,7 @@
 - GUI HUD (Scoreboard, play menu) (EXTRA)
 - Animation and Sounds for guns
 - Create a after start match menu
+- Create a NOT Admin start match menu
 - Add option to generate enemies on the zone
 - Add NPC Bots that spawn on the team bases and run to zone
 - Add a money system, that let deposit and withdraw to hand

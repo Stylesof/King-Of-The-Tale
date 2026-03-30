@@ -6,6 +6,8 @@ import styles.commands.team.KOTTTeamCommand;
 import styles.commands.test.TestCommand;
 import styles.commands.test.TestGUICommand;
 
+import static styles.util.PrintMacros.printL;
+
 public class KOTTCommand extends AbstractCommandCollection {
 
     public KOTTCommand() {
@@ -25,9 +27,10 @@ public class KOTTCommand extends AbstractCommandCollection {
         this.addSubCommand(new KOTTClearMarkersCommand());
 
         // === FOR TEST ===
-        this.addSubCommand(new TestCommand());
-        this.addSubCommand(new TestGUICommand());
+        String var = System.getProperty("DEBUG");
+        if (var != null) {
+            this.addSubCommand(new TestCommand());
+            this.addSubCommand(new TestGUICommand());
+        }
     }
-
-
 }
