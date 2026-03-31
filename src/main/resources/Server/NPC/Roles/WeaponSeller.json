@@ -2,15 +2,12 @@
   "Type": "Generic",
   "Parameters": {
     "Invulnerable": {
-      "Value": false,
-      "Description": "Whether this NPC is invulnerable."
+      "Value": true
     }
   },
   "StartState": "Idle",
   "DisplayNames": [
-    "Klops Merchant",
-    "Traveling Trader",
-    "Wandering Merchant"
+    "Weapon Seller"
   ],
   "DefaultNPCAttitude": "Ignore",
   "DefaultPlayerAttitude": "Neutral",
@@ -26,7 +23,6 @@
   "Invulnerable": {
     "Compute": "Invulnerable"
   },
-  "KnockbackScale": 0.5,
   "MotionControllerList": [
     {
       "Type": "Walk",

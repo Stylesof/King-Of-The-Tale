@@ -1,45 +1,14 @@
 package styles.team;
 
-import com.hypixel.hytale.builtin.path.path.PatrolPath;
-import com.hypixel.hytale.builtin.path.path.TransientPath;
-import com.hypixel.hytale.component.AddReason;
-import com.hypixel.hytale.component.Component;
-import com.hypixel.hytale.component.Holder;
-import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
-import com.hypixel.hytale.protocol.ChangeVelocityType;
-import com.hypixel.hytale.protocol.MovementDirection;
-import com.hypixel.hytale.protocol.RespondToHitUpdate;
-import com.hypixel.hytale.server.core.asset.type.model.config.Model;
-import com.hypixel.hytale.server.core.asset.type.model.config.ModelAsset;
-import com.hypixel.hytale.server.core.modules.entity.component.*;
-import com.hypixel.hytale.server.core.modules.entity.damage.DeathComponent;
-import com.hypixel.hytale.server.core.modules.entity.tracker.NetworkId;
-import com.hypixel.hytale.server.core.modules.interaction.Interactions;
-import com.hypixel.hytale.server.core.modules.physics.component.Velocity;
-import com.hypixel.hytale.server.core.modules.splitvelocity.VelocityConfig;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
-import com.hypixel.hytale.server.core.universe.world.npc.INonPlayerCharacter;
-import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
-import com.hypixel.hytale.server.npc.NPCPlugin;
-import com.hypixel.hytale.server.npc.commands.NPCPathCommand;
-import com.hypixel.hytale.server.npc.corecomponents.movement.BodyMotionWander;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
-import com.hypixel.hytale.server.npc.entities.PathManager;
-import com.hypixel.hytale.server.npc.role.Role;
-import com.hypixel.hytale.server.npc.role.builders.BuilderRoleAbstract;
-import it.unimi.dsi.fastutil.Pair;
-import styles.world.KOTTMatch;
-import styles.world.KOTTTeamZone;
+import styles.world.zone.KOTTTeamZone;
 import styles.world.util.WorldBuilder;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 

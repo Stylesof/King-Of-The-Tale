@@ -8,6 +8,8 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import styles.config.KOTTConfig;
+import styles.player.KOTTMoney;
 import styles.team.KOTTTeam;
 import styles.ui.KOTTPointsUI;
 import styles.world.KOTTMatch;
@@ -18,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static styles.util.PrintMacros.printL;
@@ -76,6 +79,18 @@ public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
                             Player player = world.getEntityStore().getStore().getComponent(Objects.requireNonNull(playerRef.getReference()), Player.getComponentType());
                             //player.getHudManager().resetHud(playerRef);
                             player.getHudManager().setCustomHud(playerRef, new KOTTPointsUI(playerRef, match, match.getPlayersInMatch().containsValue(playerRef)));
+
+                            if (match.getZone().getPlayersInZone().contains(playerRef)) {
+                                KOTTMoney money = world.getEntityStore().getStore().getComponent(playerRef.getReference(), KOTTMoney.getComponentType());
+                                if (money == null) {
+                                    money = new KOTTMoney();
+                                    money.moneyQuantity += 10;
+                                    world.getEntityStore().getStore().addComponent(playerRef.getReference(), KOTTMoney.getComponentType(), money);
+                                } else {
+                                    money.moneyQuantity += 10;
+                                }
+                                KOTTConfig.getKottConfig().addToPlayerMoneyList(playerRef.getUsername(), 10.0f);
+                            }
                         });
                     }
 

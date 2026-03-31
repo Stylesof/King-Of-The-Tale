@@ -172,6 +172,9 @@ public class KOTTStartUI extends InteractiveCustomUIPage<KOTTStartUI.Data> {
     }
 
     public static class Data {
+        private String key;
+        private String value;
+
         public static final BuilderCodec<Data> CODEC = BuilderCodec.builder(Data.class, Data::new)
                 // TEAM COUNT
                 .append(new KeyedCodec<>("@TeamCount", Codec.INTEGER), (data, value) -> {
@@ -249,8 +252,5 @@ public class KOTTStartUI extends InteractiveCustomUIPage<KOTTStartUI.Data> {
                 .add()
 
                 .build();
-
-        private String key;
-        private String value;
     }
 }

@@ -23,6 +23,8 @@ import styles.util.StringGenerator;
 import styles.util.MathHelper;
 import styles.util.log.LogTypes;
 import styles.world.util.WorldBuilder;
+import styles.world.zone.KOTTTeamZone;
+import styles.world.zone.KOTTZone;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -55,7 +57,7 @@ public class KOTTMatch {
     private World matchWorld;
     private boolean isEnding = false;
 
-    public static final long timeToPoint = 1000;
+    public static final long timeToPoint = 35000;
 
     public static boolean addMatch(String worldName) {
         if (!KOTTMatch.getMatchesList().containsKey(worldName)) {

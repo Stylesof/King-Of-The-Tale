@@ -11,20 +11,19 @@ import styles.world.KOTTMatch;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class KOTTMatchZoneCompassTickHandler extends TickingSystem<EntityStore> {
 
-    private long start, end;
-
-    public KOTTMatchZoneCompassTickHandler() { start = System.currentTimeMillis(); }
+    private AtomicLong start = new AtomicLong(System.currentTimeMillis()), end = new AtomicLong();
 
     @Override
     public void tick(float dt, int index, @Nonnull Store<EntityStore> store) {
-        end = System.currentTimeMillis();
+        end.set(System.currentTimeMillis());
 
-        if (end - start >= 100) {
+        if (end.get() - start.get() >= 100) {
             // update icon after 0.1 second
-            start = System.currentTimeMillis();
+            if (!start.compareAndSet(start.get(), end.get())) return;
 
             CompletableFuture.runAsync(() -> {
                 for (KOTTMatch match : KOTTMatch.getMatchesList().values()) {

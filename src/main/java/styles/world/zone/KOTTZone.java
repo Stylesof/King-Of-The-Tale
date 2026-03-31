@@ -1,4 +1,4 @@
-package styles.world;
+package styles.world.zone;
 
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;

@@ -1278,7 +1278,7 @@
     {
       "Model": "NPC/FighterNPC_Model.blockymodel",
       "Texture": "NPC/FighterNPC_Texture.png",
-      "GradientSet": "Colored_Cotton",
+      "GradientSet": "Skin",
       "GradientId": "02"
     },
     {
@@ -1315,5 +1315,5 @@
       "Y": 0.4
     }
   },
-  "Texture": "Characters/Player_Textures/Player_Greyscale.png"
+  "Texture": "NPC/FighterNPC_Texture.png"
 }

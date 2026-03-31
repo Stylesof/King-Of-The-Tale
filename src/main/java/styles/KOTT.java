@@ -1,13 +1,20 @@
 package styles;
 
+import com.hypixel.hytale.component.Component;
+import com.hypixel.hytale.component.ComponentType;
+import com.hypixel.hytale.server.core.HytaleServer;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
 import com.hypixel.hytale.server.core.modules.entity.damage.DamageEventSystem;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.hypixel.hytale.server.core.util.Config;
 import styles.commands.KOTTCommand;
+import styles.config.KOTTConfig;
 import styles.events.ECS_DamageEvent;
 import styles.events.ECS_OnDamageBlockEvent;
 import styles.events.OnPlayerDisconnectEvent;
+import styles.player.KOTTMoney;
 import styles.tick.KOTTMatchPointTickHandler;
 import styles.tick.KOTTMatchZoneCompassTickHandler;
 import styles.util.log.LogTypesDebug;
@@ -21,9 +28,14 @@ import static styles.util.log.PrintLog.printLogDebug;
 
 public class KOTT extends JavaPlugin {
 
+    public static KOTT instance;
+    public ComponentType<EntityStore, KOTTMoney> kottMoneyComponent;
+    public final Config<KOTTConfig> kottConfig = this.withConfig("KOTTConfig", KOTTConfig.CODEC);
+
     public KOTT(@Nonnull JavaPluginInit init) {
         super(init);
         printLogDebug(LogTypesDebug.KOTTLoadSuccess);
+        instance = this;
     }
 
     @Override
@@ -31,8 +43,6 @@ public class KOTT extends JavaPlugin {
         this.getCommandRegistry().registerCommand(new KOTTCommand());
 
         this.getEventRegistry().registerGlobal(PlayerDisconnectEvent.class, OnPlayerDisconnectEvent::onPlayerDisconnect);
-        // this.getEventRegistry().registerGlobal(PlayerConnectEvent.class, OnPlayerConnectEvent::onPlayerConnect);
-        //this.getEventRegistry().registerGlobal(AddPlayerToWorldEvent.class, OnAddPlayerToWorldEvent::onAddPlayerToWorld);
 
         this.getEntityStoreRegistry().registerSystem(new EntityTickHandler());
         this.getEntityStoreRegistry().registerSystem(new KOTTMatchPointTickHandler());
@@ -40,6 +50,14 @@ public class KOTT extends JavaPlugin {
 
         this.getEntityStoreRegistry().registerSystem(new ECS_OnDamageBlockEvent());
         this.getEntityStoreRegistry().registerSystem(new ECS_DamageEvent());
+
+        this.kottMoneyComponent = this.getEntityStoreRegistry().registerComponent(
+                KOTTMoney.class,
+                "KOTTMoneyComponent",
+                KOTTMoney.CODEC
+        );
+
+        kottConfig.save();
     }
 
     @Override

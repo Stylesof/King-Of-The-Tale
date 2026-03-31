@@ -11,7 +11,6 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import styles.team.KOTTTeam;
 import styles.world.KOTTMatch;
-import styles.world.KOTTTeamZone;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
