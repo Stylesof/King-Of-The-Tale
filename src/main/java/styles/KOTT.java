@@ -1,10 +1,7 @@
 package styles;
 
-import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
-import com.hypixel.hytale.server.core.HytaleServer;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
-import com.hypixel.hytale.server.core.modules.entity.damage.DamageEventSystem;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -28,9 +25,10 @@ import static styles.util.log.PrintLog.printLogDebug;
 
 public class KOTT extends JavaPlugin {
 
-    public static KOTT instance;
+    private static KOTT instance;
+
     public ComponentType<EntityStore, KOTTMoney> kottMoneyComponent;
-    public final Config<KOTTConfig> kottConfig = this.withConfig("KOTTConfig", KOTTConfig.CODEC);
+    public final Config<KOTTConfig> kottConfigRef = this.withConfig("KOTTConfig", KOTTConfig.CODEC);
 
     public KOTT(@Nonnull JavaPluginInit init) {
         super(init);
@@ -57,7 +55,7 @@ public class KOTT extends JavaPlugin {
                 KOTTMoney.CODEC
         );
 
-        kottConfig.save();
+        kottConfigRef.save();
     }
 
     @Override
@@ -71,4 +69,6 @@ public class KOTT extends JavaPlugin {
 
         super.shutdown();
     }
+
+    public static KOTT getInstance() { return instance; }
 }

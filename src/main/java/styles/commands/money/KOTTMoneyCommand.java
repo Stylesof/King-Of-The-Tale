@@ -3,6 +3,7 @@ package styles.commands.money;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
+import com.hypixel.hytale.server.core.command.system.arguments.system.DefaultArg;
 import com.hypixel.hytale.server.core.command.system.arguments.system.OptionalArg;
 import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractAsyncPlayerCommand;
@@ -10,11 +11,14 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import styles.KOTT;
 import styles.config.KOTTConfig;
 import styles.player.KOTTMoney;
 
 import javax.annotation.Nonnull;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 import static styles.util.PrintMacros.print;
 
@@ -22,6 +26,7 @@ public class KOTTMoneyCommand extends AbstractAsyncPlayerCommand {
     public KOTTMoneyCommand() {
         super("money", "Manage player(s) money!");
 
+        this.addSubCommand(new KOTTMoneyListCommand());
         this.addSubCommand(new KOTTMoneyClearCommand());
     }
 
@@ -41,19 +46,32 @@ public class KOTTMoneyCommand extends AbstractAsyncPlayerCommand {
 
 
     public static class KOTTMoneyListCommand extends AbstractAsyncPlayerCommand {
+
+        private final DefaultArg<String> filter;
+
         public KOTTMoneyListCommand() {
-            super("list", "List all player(s) by money using filters!");
+            super("list", "List all player(s) by money using filters! Use \"/kott money filters\" to see all available filters");
+
+            this.filter = this.withDefaultArg("filter", "Filter used to show values.", ArgTypes.STRING, "moneyhl", "Filter by money size High to Low");
         }
 
         @Nonnull
         @Override
         protected CompletableFuture<Void> executeAsync(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-
-            CompletableFuture<Void> fun = CompletableFuture.completedFuture(null);
-
+            var fun = KOTT.getInstance().kottConfigRef.load().thenCompose((var) -> {
 
 
-            return fun;
+                String _filter = this.filter.get(commandContext);
+                assert  _filter != null;
+
+                switch (_filter) {
+                    case "moneyhl":
+
+                        break;
+                }
+            });
+
+            return CompletableFuture.completedFuture(null);
         }
     }
 

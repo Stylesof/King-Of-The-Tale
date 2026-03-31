@@ -34,7 +34,7 @@ public class ECS_DamageEvent extends EntityEventSystem<EntityStore, Damage> {
         KOTTMatch match = KOTTMatch.getMatch(world.getName());
         if (match != null) {
             for (KOTTTeam teams : match.getTeams()) {
-                if (teams.getBaseZone().isInside(playerRef.getTransform().getPosition())) {
+                if (teams.getBaseZone().isInside(playerRef.getTransform().getPosition()) || match.getIsEnding()) {
                     world.execute(() -> {
                         EntityStatMap statMap = store.getComponent(playerRef.getReference(), EntityStatMap.getComponentType());
                         if (statMap != null) {

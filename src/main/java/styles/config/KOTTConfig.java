@@ -19,20 +19,12 @@ public class KOTTConfig {
                     (data, value) -> data.playerMoneyList = value,
                     (data) -> data.playerMoneyList)
             .add()
-            .build();
-
-    public static KOTTConfig getKottConfig() {
-        return KOTT.instance.kottConfig.get();
-    }
-
-    public static void saveKOTTConfig() {
-        KOTT.instance.kottConfig.save();
-    }
+    .build();
 
     public void addToPlayerMoneyList(String username, float money) {
         KOTTConfig config = getKottConfig();
         config.playerMoneyList.put(username, money);
-        KOTT.instance.kottConfig.save();
+        KOTT.getInstance().kottConfigRef.save();
     }
 
     public void removeFromPlayerMoneyList(@Nonnull String username) {
@@ -45,6 +37,16 @@ public class KOTTConfig {
             }
         }
 
+    }
+
+    public Map<String, Float> getPlayerMoneyList() { return this.playerMoneyList; }
+
+    public static KOTTConfig getKottConfig() {
+        return KOTT.getInstance().kottConfigRef.get();
+    }
+
+    public static void saveKOTTConfig() {
+        KOTT.getInstance().kottConfigRef.save();
     }
 
     public void clearPlayerMoneyList() {

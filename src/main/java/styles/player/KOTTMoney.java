@@ -32,7 +32,7 @@ public class KOTTMoney implements Component<EntityStore> {
     }
 
     public static ComponentType<EntityStore, KOTTMoney> getComponentType() {
-        return KOTT.instance.kottMoneyComponent;
+        return KOTT.getInstance().kottMoneyComponent;
     }
 
     @Nullable

@@ -42,36 +42,24 @@ public class KOTTMatch {
 
     // [World Name] [KOTTMatch]
     private static final Map<String, KOTTMatch> matchesList = new HashMap<>();
+    public static final long timeToPoint = 35000;
+
     private boolean KOTTMatchStatus = false;
+    private boolean canMarkPoint = false;
     private boolean isLoop = false;
     private boolean isSafe = false;
-    private final Map<UUID, PlayerRef> playersInMatch = new HashMap<>();
     private final LinkedHashMap<UUID, KOTTTeam> Teams = new LinkedHashMap<>();
+    private final Map<UUID, PlayerRef> playersInMatch = new HashMap<>();
+    private World Lobby;
     private Vector3i matchStartPos = new Vector3i();
     private KOTTZone Zone;
-    private World Lobby;
-    private Vector3i LobbyPos;
-    private boolean canMarkPoint = false;
+    private Vector3i LobbyPos; // A 'home' to use when the match stops
+
     private PlayerRef host;
     private CommandContext commandContextHost;
     private World matchWorld;
-    private boolean isEnding = false;
 
-    public static final long timeToPoint = 35000;
-
-    public static boolean addMatch(String worldName) {
-        if (!KOTTMatch.getMatchesList().containsKey(worldName)) {
-            KOTTMatch.getMatchesList().put(worldName, new KOTTMatch());
-            return true;
-        }else {
-            if (!KOTTMatch.getMatchesList().get(worldName).getKOTTMatchStatus()) {
-                KOTTMatch.getMatchesList().remove(worldName);
-                KOTTMatch.getMatchesList().put(worldName, new KOTTMatch());
-                return true;
-            }
-        }
-        return false;
-    }
+    private boolean isEnding = false; // It's in process to end
 
     public static CompletableFuture<String> tryCreateMatch(@Nonnull Vector3i startPos, int teamCount, int zoneRadius, boolean safe, boolean loop, @Nullable PlayerRef playerRef, @Nullable CommandContext commandContext, @Nonnull World world, @Nonnull World lobbyWorld, @Nonnull Vector3i lobbyPos) {
         // Verify area size
@@ -87,15 +75,8 @@ public class KOTTMatch {
         }
 
         String tempWorldName = world.getName();
-
-        CompletableFuture<World> fun;
-        if (safe) {
-            UUID uuid = UUID.randomUUID();
-            tempWorldName = String.format("%.13s", "temp_" + uuid);
-            fun = Universe.get().addWorld(tempWorldName);
-        } else {
-            fun = CompletableFuture.completedFuture(world);
-        }
+        CompletableFuture<World> fun = CompletableFuture.completedFuture(world);
+        // TODO: Safe Treatment
 
         boolean matchAdded = addMatch(tempWorldName);
         if (!matchAdded) {
@@ -103,10 +84,9 @@ public class KOTTMatch {
             return CompletableFuture.completedFuture(null);
         }
 
-        String finalTempWorldName = tempWorldName;
-        return fun.thenCompose(world1 -> world1.getChunkAsync(startPos.x, startPos.z)
+        return fun.thenCompose(_world -> _world.getChunkAsync(startPos.x, startPos.z)
                 .thenCompose(worldChunk -> {
-                    KOTTMatch.getMatchesList().get(world1.getName()).start(
+                    KOTTMatch.getMatchesList().get(_world.getName()).start(
                             startPos,
                             teamCount,
                             zoneRadius,
@@ -114,29 +94,24 @@ public class KOTTMatch {
                             loop,
                             playerRef,
                             commandContext,
-                            world1,
+                            _world,
                             lobbyWorld,
                             lobbyPos
                     );
-                    return CompletableFuture.completedFuture(world1.getName());
+                    return CompletableFuture.completedFuture(_world.getName());
                 })
-        ).thenApply(unused -> finalTempWorldName);
+        ).thenApply(unused -> tempWorldName);
     }
 
     private CompletableFuture<Void> start(@Nonnull Vector3i startPos, int teamCount, int zoneRadius, boolean safe, boolean loop, @Nullable PlayerRef playerRef, @Nullable CommandContext commandContext, @Nonnull World world, @Nonnull World lobbyWorld, @Nonnull Vector3i lobbyPos) {
+        this.matchWorld = world;
+        this.matchStartPos = startPos;
         this.Lobby = lobbyWorld;
         this.LobbyPos = lobbyPos;
         this.isLoop = loop;
         this.isSafe = safe;
-        if (playerRef != null) {
-            this.host = playerRef;
-        }
-        if (commandContext != null) {
-            this.commandContextHost = commandContext;
-        }
-        this.matchWorld = world;
-
-        this.matchStartPos = startPos;
+        if (playerRef != null) this.host = playerRef;
+        if (commandContext != null) this.commandContextHost = commandContext;
 
         printL("Starting KOTT Match creation...");
         printL("Team Count: " + teamCount);
@@ -207,7 +182,8 @@ public class KOTTMatch {
 
                 // Clear area and construct base
                 Vector3i basePos = getLastTeamAdded().getBaseZone().getPosition();
-                basePos.y--;
+                basePos.y--; // the base spawn inside ground
+
                 KOTTTeam team = getLastTeamAdded();
                 fun = fun.thenCompose(status -> {
                     if (!status) return CompletableFuture.completedFuture(false);
@@ -244,7 +220,6 @@ public class KOTTMatch {
                 printL("Finished KOTT Match creation! World name: " + world.getName());
                 print(playerRef, "Sending players to the base...");
 
-                int j = 0;
                 for (PlayerRef _playerRef : world.getPlayerRefs()) {
                     if (_playerRef.getReference() == null) continue;
 
@@ -291,8 +266,22 @@ public class KOTTMatch {
         }).thenRun(() -> {});
     }
 
+    public static boolean addMatch(String worldName) {
+        if (!KOTTMatch.getMatchesList().containsKey(worldName)) {
+            KOTTMatch.getMatchesList().put(worldName, new KOTTMatch());
+            return true;
+        }else {
+            if (!KOTTMatch.getMatchesList().get(worldName).getKOTTMatchStatus()) {
+                KOTTMatch.getMatchesList().remove(worldName);
+                KOTTMatch.getMatchesList().put(worldName, new KOTTMatch());
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void join(@Nonnull PlayerRef playerRef) {
-        if (!getKOTTMatchStatus()){
+        if (!getKOTTMatchStatus() && !getIsEnding()){
             print(playerRef, "The match was not initialized");
             return;
         }
@@ -308,7 +297,8 @@ public class KOTTMatch {
                     chosenTeam = team;
                 }
             } else {
-                print(playerRef, "The player is already on a Team!");
+                addToMatch(playerRef, team);
+                print(playerRef, "Failed to add to the match! Player already in a team!");
                 return;
             }
         }
@@ -316,14 +306,16 @@ public class KOTTMatch {
         addToMatch(playerRef, chosenTeam);
 
         Teleport tp = Teleport.createForPlayer(chosenTeam.getBaseZone().getWorld(), new Transform(chosenTeam.getBaseZone().getPosition().toVector3d()));
-        Universe.get().getWorld(playerRef.getWorldUuid())
-                .getEntityStore()
-                .getStore()
-                .addComponent(
-                        playerRef.getReference(),
-                        Teleport.getComponentType(),
-                        tp
-        );
+        if (playerRef.getWorldUuid() != null) {
+            Universe.get().getWorld(playerRef.getWorldUuid())
+                    .getEntityStore()
+                    .getStore()
+                    .addComponent(
+                            playerRef.getReference(),
+                            Teleport.getComponentType(),
+                            tp
+                    );
+        }
 
         print(playerRef, "You joined the match into the Team " + chosenTeam.getDisplayName());
         printL("Player " + playerRef.getUsername() + " has joined into the Team " + chosenTeam.getDisplayName());
@@ -331,11 +323,8 @@ public class KOTTMatch {
 
     // MATCH STOP
     public static CompletableFuture<Void> stop(@Nonnull String worldName) { return stop(worldName, false, null, false); }
-
     public static CompletableFuture<Void> stop(@Nonnull String worldName, boolean forceStop) { return stop(worldName, forceStop, null, false); }
-
     public static CompletableFuture<Void> stop(@Nonnull String worldName, boolean forceStop, @Nullable CommandContext commandContext) { return stop(worldName, forceStop, commandContext, false); }
-
     public static CompletableFuture<Void> stop(@Nonnull String worldName, boolean forceStop, @Nullable CommandContext commandContext, boolean serverStop) {
         printL("Stopping match...");
         World world = Universe.get().getWorld(worldName);
@@ -396,8 +385,6 @@ public class KOTTMatch {
         World finalLobbyWorld = match.Lobby;
         Vector3i finalLobbyPos = match.LobbyPos;
 
-        //List<PlayerRef> playerRefList = match.Zone.getPlayersInZone();
-
         match.Teams.clear();
         match.Zone = null;
         match.setKOTTMatchStatus(false);
@@ -408,7 +395,6 @@ public class KOTTMatch {
 
         // NEW LOOP SYSTEM
         // IF NO SAFE IT WILL GET RANDOM POS IN THE WORLD TO RE-START THE MATCH
-
         return CompletableFuture.runAsync(() -> {
            if (finalZoneLoop) {
                Random random = new Random();
@@ -436,7 +422,6 @@ public class KOTTMatch {
         setCanMarkPoint(false);
         setKOTTMatchStatus(false);
         isEnding = true;
-        // WIP -> Stop Player damage and Movement
 
         CompletableFuture<Boolean> fun = CompletableFuture.completedFuture(true);
         for (int i = 0; i <= 20; i++) {
@@ -461,7 +446,6 @@ public class KOTTMatch {
             }).thenCompose((var) -> CompletableFuture.supplyAsync(() -> var, CompletableFuture.delayedExecutor(1, TimeUnit.SECONDS)));
         }
 
-        //if (this.matchWorld == null) return CompletableFuture.completedFuture(null);
         return fun.thenCompose((var) -> {
             if (var)
                 stop(this.matchWorld.getName(), false);
@@ -480,9 +464,9 @@ public class KOTTMatch {
             if (match.getPlayersInMatch().containsValue(playerRef)) {
                 for (KOTTTeam team : match.Teams.values()) {
                     if (team.containsPlayer(playerRef)) {
-                        team.removeFromTeam(playerRef);
-                        match.Zone.removeFromZone(playerRef);
                         match.playersInMatch.remove(playerRef.getUuid());
+                        match.Zone.removeFromZone(playerRef);
+                        team.removeFromTeam(playerRef);
                         return;
                     }
                 }
@@ -504,7 +488,7 @@ public class KOTTMatch {
 
     public List<KOTTTeam> getTeams(){ return this.Teams.values().stream().toList(); }
 
-    public KOTTTeam getLastTeamAdded() { return this.Teams.lastEntry().getValue(); }
+    private KOTTTeam getLastTeamAdded() { return this.Teams.lastEntry().getValue(); }
 
     @Nullable
     public KOTTTeam getPlayerTeam(PlayerRef playerRef) {
