@@ -84,12 +84,12 @@ public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
                                 KOTTMoney money = world.getEntityStore().getStore().getComponent(playerRef.getReference(), KOTTMoney.getComponentType());
                                 if (money == null) {
                                     money = new KOTTMoney();
-                                    money.moneyQuantity += 10;
                                     world.getEntityStore().getStore().addComponent(playerRef.getReference(), KOTTMoney.getComponentType(), money);
-                                } else {
-                                    money.moneyQuantity += 10;
                                 }
-                                KOTTConfig.getKottConfig().addToPlayerMoneyList(playerRef.getUsername(), 10.0f);
+
+                                money.moneyQuantity += 10;
+
+                                KOTTConfig.getKottConfig().addToPlayerMoneyList(playerRef.getUsername(), money.moneyQuantity);
                             }
                         });
                     }

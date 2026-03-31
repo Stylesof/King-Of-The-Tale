@@ -29,6 +29,7 @@ public class KOTTGUICommand extends AbstractAsyncPlayerCommand {
             print(playerRef, "There is a match already started");
             return CompletableFuture.completedFuture(null);
         }
+
         Player player = store.getComponent(ref, Player.getComponentType());
         player.getPageManager().openCustomPage(ref, store, new KOTTStartUI(playerRef, world));
 
