@@ -1,6 +1,8 @@
 package styles;
 
 import com.hypixel.hytale.component.ComponentType;
+import com.hypixel.hytale.server.core.event.events.player.AddPlayerToWorldEvent;
+import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
@@ -10,6 +12,7 @@ import styles.commands.KOTTCommand;
 import styles.config.KOTTConfig;
 import styles.events.ECS_DamageEvent;
 import styles.events.ECS_OnDamageBlockEvent;
+import styles.events.OnPlayerConnectEvent;
 import styles.events.OnPlayerDisconnectEvent;
 import styles.player.KOTTMoney;
 import styles.tick.KOTTMatchPointTickHandler;
@@ -38,8 +41,11 @@ public class KOTT extends JavaPlugin {
 
     @Override
     protected void setup() {
+        kottConfigRef.load().thenCompose((var) -> kottConfigRef.save());
+
         this.getCommandRegistry().registerCommand(new KOTTCommand());
 
+        this.getEventRegistry().registerGlobal(PlayerConnectEvent.class, OnPlayerConnectEvent::onPlayerConnect);
         this.getEventRegistry().registerGlobal(PlayerDisconnectEvent.class, OnPlayerDisconnectEvent::onPlayerDisconnect);
 
         this.getEntityStoreRegistry().registerSystem(new EntityTickHandler());
@@ -55,7 +61,6 @@ public class KOTT extends JavaPlugin {
                 KOTTMoney.CODEC
         );
 
-        kottConfigRef.save();
     }
 
     @Override

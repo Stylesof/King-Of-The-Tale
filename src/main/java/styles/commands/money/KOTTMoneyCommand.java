@@ -52,24 +52,20 @@ public class KOTTMoneyCommand extends AbstractAsyncPlayerCommand {
         public KOTTMoneyListCommand() {
             super("list", "List all player(s) by money using filters! Use \"/kott money filters\" to see all available filters");
 
-            this.filter = this.withDefaultArg("filter", "Filter used to show values.", ArgTypes.STRING, "moneyhl", "Filter by money size High to Low");
+            this.filter = this.withDefaultArg("filter", "Filter used to show values.", ArgTypes.STRING, "MONEY_HIGHER", "Filter by money size High to Low");
         }
 
         @Nonnull
         @Override
         protected CompletableFuture<Void> executeAsync(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-            var fun = KOTT.getInstance().kottConfigRef.load().thenCompose((var) -> {
+            String _filter = this.filter.get(commandContext);
+            assert  _filter != null;
 
-
-                String _filter = this.filter.get(commandContext);
-                assert  _filter != null;
-
-                switch (_filter) {
-                    case "moneyhl":
-
-                        break;
-                }
-            });
+            Map<String, Float> playerMoneyList = KOTTMoney.getPlayerMoneyMap(_filter);
+            int i = 1;
+            for (String name : playerMoneyList.keySet()) {
+                print(playerRef, i + ". " + name + ": $" + playerMoneyList.get(name));
+            }
 
             return CompletableFuture.completedFuture(null);
         }

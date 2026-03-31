@@ -8,38 +8,42 @@ import styles.KOTT;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class KOTTConfig {
 
-    private Map<String, Float> playerMoneyList = new HashMap<>();
+    public Map<String, Float> getPlayerMoneyMap = new LinkedHashMap<>();
 
     public static final BuilderCodec<KOTTConfig> CODEC = BuilderCodec.builder(KOTTConfig.class, KOTTConfig::new)
             .append(new KeyedCodec<>("PlayerMoneyList", new MapCodec<>(Codec.FLOAT, HashMap<String, Float>::new)),
-                    (data, value) -> data.playerMoneyList = value,
-                    (data) -> data.playerMoneyList)
+                    (data, value) -> data.getPlayerMoneyMap = value,
+                    (data) -> data.getPlayerMoneyMap)
             .add()
     .build();
 
     public void addToPlayerMoneyList(String username, float money) {
         KOTTConfig config = getKottConfig();
-        config.playerMoneyList.put(username, money);
+
+        Map<String, Float> playerMoneyMap2 = new LinkedHashMap<>(getPlayerMoneyMap);
+        playerMoneyMap2.put(username, money);
+        config.getPlayerMoneyMap = playerMoneyMap2;
         KOTT.getInstance().kottConfigRef.save();
     }
 
     public void removeFromPlayerMoneyList(@Nonnull String username) {
         KOTTConfig config = getKottConfig();
-        for(String _username : config.playerMoneyList.keySet()) {
+        for(String _username : config.getPlayerMoneyMap.keySet()) {
             if (_username.equals(username)) {
-                config.playerMoneyList.remove(username);
+                Map<String, Float> playerMoneyMap2 = new LinkedHashMap<>(getPlayerMoneyMap);
+                playerMoneyMap2.remove(username);
+                config.getPlayerMoneyMap = playerMoneyMap2;
                 saveKOTTConfig();
                 return;
             }
         }
 
     }
-
-    public Map<String, Float> getPlayerMoneyList() { return this.playerMoneyList; }
 
     public static KOTTConfig getKottConfig() {
         return KOTT.getInstance().kottConfigRef.get();
@@ -51,7 +55,7 @@ public class KOTTConfig {
 
     public void clearPlayerMoneyList() {
         KOTTConfig config = getKottConfig();
-        config.playerMoneyList.clear();
+        config.getPlayerMoneyMap.clear();
         saveKOTTConfig();
     }
 }
