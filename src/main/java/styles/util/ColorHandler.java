@@ -1,10 +1,10 @@
 package styles.util;
 
-import com.hypixel.hytale.protocol.Color;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class ColorHandler {
 

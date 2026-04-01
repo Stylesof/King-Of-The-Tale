@@ -159,7 +159,7 @@ public class KOTTMatch {
                 zoneMarker2.setPosition(baseLocation.x, baseLocation.z);
                 zoneMarker2.setName("Team " + nameList.get(i) + " Base");
                 zoneMarker2.setIcon("UserD.png");
-                zoneMarker2.setColorTint(colorList.get(i));
+                zoneMarker2.setColorTint(new com.hypixel.hytale.protocol.Color((byte) colorList.get(i).getRed(), (byte) colorList.get(i).getGreen(), (byte) colorList.get(i).getBlue()));
 
             // Create %teamCount% teams
             MessageHandler.printLog("Starting Team creation...");
@@ -177,7 +177,6 @@ public class KOTTMatch {
                 // Get the ColorType from a color Team
                 ColorHandler.ColorType teamColorType = ColorHandler.getColorType(colorList.get(i));
                 if (teamColorType == null) {
-                    print(playerRef, "Failed to find team colorType!");
                     MessageHandler.printLog("Failed to find team colorType!");
                     stop(world.getName());
                     return CompletableFuture.completedFuture(null);
@@ -195,13 +194,25 @@ public class KOTTMatch {
                         basePos.y++;
                         return WorldBuilder.constructTeamBase(basePos, teamColorType, world).thenCompose(status2 -> {
                             if(!status2) {
-                                print(playerRef, "Failed to create the team base!");
+                                printNotification(
+                                        playerRef,
+                                        "Failed to create Team Base!",
+                                        "",
+                                        ItemTypes.MITHRIL_SWORD,
+                                        NotificationTypes.ERROR
+                                );
                                 MessageHandler.printLog("Error: Failed to create the team base!", Level.SEVERE);
                                 stop(world.getName());
                                 return CompletableFuture.completedFuture(false);
                             }
 
-                            print(playerRef, "Created base of Team \"" + team.getDisplayName() + "\". (X: " + basePos.x + ", Y: " + basePos.y + ", Z: " + basePos.z + ")");
+                            printNotification(
+                                    playerRef,
+                                    "Created Team Base!",
+                                    "Created base of Team \"" + team.getDisplayName() + "\". (X: " + basePos.x + ", Y: " + basePos.y + ", Z: " + basePos.z + ")",
+                                    ItemTypes.MITHRIL_SWORD,
+                                    NotificationTypes.SUCCESS
+                            );
                             MessageHandler.printLog("Created base of Team \"" + team.getDisplayName() + "\". (X: " + basePos.x + ", Y: " + basePos.y + ", Z: " + basePos.z + ")");
                             return CompletableFuture.completedFuture(true);
                         });
@@ -210,7 +221,13 @@ public class KOTTMatch {
 
                 i++;
             } else {
-                print(commandContext, "[KOTT] Failed to create the team: " + nameList.get(i));
+                printNotification(
+                        playerRef,
+                        "Failed to create team!",
+                        "Failed to create the Team " + nameList.get(i),
+                        ItemTypes.MITHRIL_SWORD,
+                        NotificationTypes.ERROR
+                );
                 MessageHandler.printLog("Error: Failed to create the team: " + nameList.get(i));
                 stop(world.getName());
                 return CompletableFuture.completedFuture(null);
@@ -221,7 +238,13 @@ public class KOTTMatch {
             if (status) {
                 setKOTTMatchStatus(true);
                 MessageHandler.printLog("Finished KOTT Match creation! World name: " + world.getName());
-                print(playerRef, "Sending players to the base...");
+                printNotification(
+                        playerRef,
+                        "Sending players to the base...",
+                        "",
+                        ItemTypes.MITHRIL_SWORD,
+                        NotificationTypes.WARNING
+                );
 
                 for (PlayerRef _playerRef : world.getPlayerRefs()) {
                     if (_playerRef.getReference() == null) continue;
@@ -252,20 +275,22 @@ public class KOTTMatch {
                         player.getPlayerConfigData().getPerWorldData(world.getName()).setRespawnPoints(respawnPointData);
                         player.getHudManager().setCustomHud(_playerRef, new KOTTPointsUI(_playerRef, this, false));
                     });
-
-                    print(_playerRef, "[KOTT] You are from the Team " + team.getDisplayName());
                 }
 
-                NotificationUtil.sendNotification(
-                        playerRef.getPacketHandler(),
-                        Message.raw("Match created!").color(Color.GREEN),
-                        Message.raw("Match created on World: " + world.getName() + "!").color(Color.GREEN),
-                        Icons.get(ItemTypes.MITHRIL_SWORD)
+                printNotification(
+                            playerRef,
+                            "Match created!",
+                            "Match created on World: " + world.getName() + "!",
+                            ItemTypes.MITHRIL_SWORD,
+                            NotificationTypes.SUCCESS
                 );
                 MessageHandler.printLog("[KOTT Debug] Match created and started on World: " + world.getName());
                 setCanMarkPoint(true);
             } else {
-                print(playerRef, "Failed to create and start the match on World: " + world.getName());
+                NotificationUtil.sendNotification(
+                        playerRef.getPacketHandler(),
+                        Message.raw(""),
+                        Message.raw(""));
                 MessageHandler.printLog("Error: Failed to create and start the match on World: " + world.getName());
                 stop(world.getName(), true);
             }
@@ -290,7 +315,13 @@ public class KOTTMatch {
 
     public void join(@Nonnull PlayerRef playerRef) {
         if (!getKOTTMatchStatus() && !getIsEnding()){
-            print(playerRef, "The match was not initialized");
+            printNotification(
+                    playerRef,
+                    "Failed to Join!",
+                    "The match wasn't initialized",
+                    ItemTypes.MITHRIL_SWORD,
+                    NotificationTypes.WARNING
+            );
             return;
         }
 
@@ -306,7 +337,13 @@ public class KOTTMatch {
                 }
             } else {
                 addToMatch(playerRef, team);
-                print(playerRef, "Failed to add to the match! Player already in a team!");
+                printNotification(
+                        playerRef,
+                        "Failed to Join!",
+                        "The player is already in a Team",
+                        ItemTypes.MITHRIL_SWORD,
+                        NotificationTypes.ERROR
+                );
                 return;
             }
         }
@@ -325,7 +362,13 @@ public class KOTTMatch {
                     );
         }
 
-        print(playerRef, "You joined the match into the Team " + chosenTeam.getDisplayName());
+        printNotification(
+                playerRef,
+                "You joined the Team " + chosenTeam.getDisplayName() + "!",
+                "",
+                ItemTypes.MITHRIL_SWORD,
+                NotificationTypes.SUCCESS
+        );
         MessageHandler.printLog("Player " + playerRef.getUsername() + " has joined into the Team " + chosenTeam.getDisplayName());
     }
 
