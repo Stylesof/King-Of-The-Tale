@@ -9,8 +9,8 @@ import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
 
-import static styles.util.PrintMacros.print;
-import static styles.util.PrintMacros.printL;
+import static styles.util.MessageHandler.printChat;
+import static styles.util.MessageHandler.printLog;
 
 public class OnPlayerDisconnectEvent {
     // SingleplayerModule.getUuid() == null -> It's a server hosted (not player hosted)
@@ -26,13 +26,13 @@ public class OnPlayerDisconnectEvent {
                 if (evt.getDisconnectReason().getServerDisconnectReason().equals("Stopping server!")) {
                     PlayerRef playerRef = evt.getPlayerRef();
                     if (playerRef.getWorldUuid() == null) {
-                        printL("[KOTT Debug] Fatal error! Invalid World UUID for the player");
+                        printLog("[KOTT Debug] Fatal error! Invalid World UUID for the player");
                         return;
                     }
 
                     World world = Universe.get().getWorld(playerRef.getWorldUuid());
                     if (world == null) {
-                        printL("[KOTT Debug] Fatal error! Invalid World for the player");
+                        printLog("[KOTT Debug] Fatal error! Invalid World for the player");
                         return;
                     }
 

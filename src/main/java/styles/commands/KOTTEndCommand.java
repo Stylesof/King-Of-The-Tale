@@ -14,8 +14,8 @@ import styles.world.KOTTMatch;
 import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 
-import static styles.util.PrintMacros.print;
-import static styles.util.PrintMacros.printL;
+import static styles.util.MessageHandler.printChat;
+import static styles.util.MessageHandler.printLog;
 
 public class KOTTEndCommand extends AbstractAsyncPlayerCommand {
     private final OptionalArg<String> world_name;
@@ -34,7 +34,7 @@ public class KOTTEndCommand extends AbstractAsyncPlayerCommand {
         // Verify if the world name is valid
         if (_word_name == null) {
             if (!commandContext.isPlayer()) {
-                printL("[KOTT Debug] Error: To use this command as not Player, you need to insert an World name");
+                printLog("[KOTT Debug] Error: To use this command as not Player, you need to insert an World name");
                 return CompletableFuture.completedFuture(null);
             }
             _word_name = world.getName();
@@ -43,7 +43,7 @@ public class KOTTEndCommand extends AbstractAsyncPlayerCommand {
         KOTTMatch match = KOTTMatch.getMatchesList().get(_word_name);
         if (match == null || match.getIsEnding()) {
             print(playerRef, "There isn't an match happening in this world!");
-            printL("There isn't an match happening in this world!");
+            printLog("There isn't an match happening in this world!");
             return CompletableFuture.completedFuture(null);
         }
 

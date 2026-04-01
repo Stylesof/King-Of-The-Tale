@@ -15,7 +15,7 @@ import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
 
-import static styles.util.PrintMacros.print;
+import static styles.util.MessageHandler.printChat;
 
 public class KOTTScoreBoardUI extends InteractiveCustomUIPage<KOTTScoreBoardUI.Data> {
 

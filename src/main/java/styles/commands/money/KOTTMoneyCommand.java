@@ -11,16 +11,14 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import styles.KOTT;
 import styles.config.KOTTConfig;
 import styles.player.KOTTMoney;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
 
-import static styles.util.PrintMacros.print;
+import static styles.util.MessageHandler.printChat;
 
 public class KOTTMoneyCommand extends AbstractAsyncPlayerCommand {
     public KOTTMoneyCommand() {

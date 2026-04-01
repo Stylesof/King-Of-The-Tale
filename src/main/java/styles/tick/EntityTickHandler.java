@@ -30,8 +30,8 @@ import javax.annotation.Nullable;
 
 import java.util.Objects;
 
-import static styles.util.PrintMacros.print;
-import static styles.util.PrintMacros.printL;
+import static styles.util.MessageHandler.printChat;
+import static styles.util.MessageHandler.printLog;
 
 public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
 

@@ -16,7 +16,7 @@ import styles.world.KOTTMatch;
 import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 
-import static styles.util.PrintMacros.print;
+import static styles.util.MessageHandler.printChat;
 
 public class KOTTTeamPointListCommand extends AbstractAsyncPlayerCommand {
 

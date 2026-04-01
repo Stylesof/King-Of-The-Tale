@@ -15,8 +15,8 @@ import styles.world.KOTTMatch;
 import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 
-import static styles.util.PrintMacros.print;
-import static styles.util.PrintMacros.printL;
+import static styles.util.MessageHandler.printChat;
+import static styles.util.MessageHandler.printLog;
 
 public class KOTTJoinCommand extends AbstractAsyncPlayerCommand {
 
@@ -32,7 +32,7 @@ public class KOTTJoinCommand extends AbstractAsyncPlayerCommand {
     @Override
     protected CompletableFuture<Void> executeAsync(@NonNullDecl CommandContext commandContext, @NonNullDecl Store<EntityStore> store, @NonNullDecl Ref<EntityStore> ref, @NonNullDecl PlayerRef playerRef, @NonNullDecl World world) {
         if (!commandContext.isPlayer()) {
-            printL("[KOTT Debug] Command only for players!");
+            printLog("[KOTT Debug] Command only for players!");
             return CompletableFuture.completedFuture(null);
         }
 

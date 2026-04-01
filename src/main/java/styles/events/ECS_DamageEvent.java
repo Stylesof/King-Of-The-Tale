@@ -1,6 +1,5 @@
 package styles.events;
 
-import com.hypixel.hytale.component.Archetype;
 import com.hypixel.hytale.component.ArchetypeChunk;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Store;
@@ -20,7 +19,7 @@ import styles.world.KOTTMatch;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static styles.util.PrintMacros.print;
+import static styles.util.MessageHandler.printChat;
 
 public class ECS_DamageEvent extends EntityEventSystem<EntityStore, Damage> {
     public ECS_DamageEvent() {

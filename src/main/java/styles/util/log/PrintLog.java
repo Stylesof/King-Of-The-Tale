@@ -1,12 +1,13 @@
 package styles.util.log;
 
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import styles.util.MessageHandler;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static styles.util.PrintMacros.print;
-import static styles.util.PrintMacros.printL;
+import static styles.util.MessageHandler.printChat;
+import static styles.util.MessageHandler.printLog;
 
 public class PrintLog {
 
@@ -19,7 +20,6 @@ public class PrintLog {
     private static final Map<LogTypes, String> logs = new HashMap<>();
 
     static {
-
         //debug
         logsDebug.put(LogTypesDebug.KOTTLoadFailed,
                 "Failed to load the KOTH mod! ");
@@ -41,7 +41,7 @@ public class PrintLog {
                 "Successfully started a KOTT match! ");
     }
 
-    public static void printLogDebug(LogTypesDebug logTypeDebug) { printL(logsDebug.get(logTypeDebug)); }
+    public static void printLogDebug(LogTypesDebug logTypeDebug) { MessageHandler.printLog(logsDebug.get(logTypeDebug)); }
 
     public static void printLog(PlayerRef playerRef, LogTypes logType, String extra) {
         print(playerRef, logs.get(logType) + extra);

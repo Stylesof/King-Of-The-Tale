@@ -6,19 +6,15 @@ import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractAsyncPlayerCommand;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import styles.ui.KOTTEndUI;
-import styles.ui.KOTTPointsUI;
-import styles.ui.KOTTStartUI;
-import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 
-import static styles.util.PrintMacros.print;
-import static styles.util.PrintMacros.printL;
+import static styles.util.MessageHandler.printChat;
+import static styles.util.MessageHandler.printLog;
 
 @Deprecated
 public class TestGUICommand extends AbstractAsyncPlayerCommand {

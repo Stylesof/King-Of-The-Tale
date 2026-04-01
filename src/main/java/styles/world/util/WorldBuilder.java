@@ -1,15 +1,12 @@
 package styles.world.util;
 
-import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.RotationTuple;
-import com.hypixel.hytale.server.core.command.commands.world.chunk.ChunkLoadCommand;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
 import com.hypixel.hytale.server.core.universe.world.connectedblocks.ConnectedBlocksUtil;
-import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import styles.util.ColorHandler;
 import styles.util.MathHelper;
 import styles.world.util.filter.BlockFilter;
@@ -19,7 +16,7 @@ import javax.annotation.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
-import static styles.util.PrintMacros.printL;
+import static styles.util.MessageHandler.printLog;
 
 public class WorldBuilder {
 
@@ -132,7 +129,7 @@ public class WorldBuilder {
         for (int i = 0; i < size; i++) world.setBlock(point.pos.x, ++point.pos.y, point.pos.z, pillarBlockType.getId());
         WorldChunk chunk = world.getChunk(ChunkUtil.indexChunkFromBlock(point.pos.x, point.pos.z));
         if (chunk == null) {
-            printL("[KOTT Debug] Invalid chunk!");
+            printLog("[KOTT Debug] Invalid chunk!");
             return;
         }
         chunk.setBlock(point.pos.x, ++point.pos.y, point.pos.z, BlockType.getAssetMap().getIndex(pillarBaseType.getId()), pillarBaseType, 8, 0, 0);
@@ -143,7 +140,7 @@ public class WorldBuilder {
     public static boolean setBlock(@Nonnull Point point, @Nonnull BlockType blockType, int rotation, int filler, World world) {
         WorldChunk chunk = world.getChunk(ChunkUtil.indexChunkFromBlock(point.pos.x, point.pos.z));
         if (chunk == null) {
-            printL("[KOTT Debug] Invalid chunk!");
+            printLog("[KOTT Debug] Invalid chunk!");
             return false;
         }
 
@@ -152,7 +149,7 @@ public class WorldBuilder {
         chunk.getChunkAccessor().performBlockUpdate(point.pos.x, point.pos.y, point.pos.y);
 
         if (chunk.getBlockChunk() == null) {
-            printL("[KOTT Debug] Invalid block chunk!");
+            printLog("[KOTT Debug] Invalid block chunk!");
             return false;
         }
 

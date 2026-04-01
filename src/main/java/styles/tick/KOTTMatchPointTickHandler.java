@@ -3,7 +3,6 @@ package styles.tick;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.system.tick.TickingSystem;
 import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -19,11 +18,9 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static styles.util.PrintMacros.printL;
+import static styles.util.MessageHandler.printLog;
 
 public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
 
@@ -72,7 +69,7 @@ public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
                     if (firstTeam == null || teamPlayersCount.get(firstTeam).equals(teamPlayersCount.get(secondTeam))) continue;
 
                     firstTeam.teamPoints++;
-                    printL("Team " + firstTeam.getDisplayName() + " marked a point! (" + firstTeam.teamPoints + " / 100)");
+                    printLog("Team " + firstTeam.getDisplayName() + " marked a point! (" + firstTeam.teamPoints + " / 100)");
 
                     for (PlayerRef playerRef : match.getPlayersInMatch().values()) {
                         world.execute(() -> {

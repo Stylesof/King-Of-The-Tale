@@ -19,8 +19,8 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import static styles.util.PrintMacros.print;
-import static styles.util.PrintMacros.printL;
+import static styles.util.MessageHandler.printChat;
+import static styles.util.MessageHandler.printLog;
 
 @Deprecated
 public class TestCommand extends AbstractAsyncPlayerCommand {

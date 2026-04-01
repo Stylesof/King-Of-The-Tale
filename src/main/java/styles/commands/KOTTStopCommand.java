@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
 
 import java.util.concurrent.CompletableFuture;
 
-import static styles.util.PrintMacros.printL;
+import static styles.util.MessageHandler.printLog;
 
 public class KOTTStopCommand extends AbstractAsyncPlayerCommand {
 
@@ -39,7 +39,7 @@ public class KOTTStopCommand extends AbstractAsyncPlayerCommand {
         // Verify if the world name is valid
         if(_word_name == null) {
             if (!commandContext.isPlayer()) {
-                printL("[KOTT Debug] Error: To use this command as not Player, you need to insert an World name");
+                printLog("[KOTT Debug] Error: To use this command as not Player, you need to insert an World name");
                 return CompletableFuture.completedFuture(null);
             }
             _word_name = world.getName();

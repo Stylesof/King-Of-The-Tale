@@ -15,7 +15,7 @@ import styles.world.KOTTMatch;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static styles.util.PrintMacros.printL;
+import static styles.util.MessageHandler.printLog;
 
 public class ECS_OnDamageBlockEvent extends EntityEventSystem<EntityStore, DamageBlockEvent> {
     public ECS_OnDamageBlockEvent() {

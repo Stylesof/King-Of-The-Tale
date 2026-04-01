@@ -23,8 +23,8 @@ import javax.annotation.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
-import static styles.util.PrintMacros.print;
-import static styles.util.PrintMacros.printL;
+import static styles.util.MessageHandler.printChat;
+import static styles.util.MessageHandler.printLog;
 
 public class KOTTStartUI extends InteractiveCustomUIPage<KOTTStartUI.Data> {
 

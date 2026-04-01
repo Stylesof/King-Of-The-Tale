@@ -8,10 +8,9 @@ package styles.events;
 import com.hypixel.hytale.server.core.event.events.player.AddPlayerToWorldEvent;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
-import styles.team.KOTTTeam;
 import styles.world.KOTTMatch;
 
-import static styles.util.PrintMacros.print;
+import static styles.util.MessageHandler.printChat;
 
 @Deprecated
 public class OnAddPlayerToWorldEvent {

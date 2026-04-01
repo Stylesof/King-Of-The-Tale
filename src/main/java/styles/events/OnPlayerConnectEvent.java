@@ -15,9 +15,7 @@ public class OnPlayerConnectEvent {
             KOTTMoney money = playerRef.getHolder().getComponent(KOTTMoney.getComponentType());
             if (money == null) {
                 money = new KOTTMoney();
-                money.moneyQuantity = moneyQnt;
                 evt.getHolder().addComponent(KOTTMoney.getComponentType(), money);
-                playerRef.getHolder().addComponent(KOTTMoney.getComponentType(), money);
             }
 
             money.moneyQuantity = moneyQnt;

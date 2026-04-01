@@ -12,8 +12,8 @@ import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-import static styles.util.PrintMacros.print;
-import static styles.util.PrintMacros.printL;
+import static styles.util.MessageHandler.printChat;
+import static styles.util.MessageHandler.printLog;
 
 public class KOTTTeam {
 
@@ -47,7 +47,7 @@ public class KOTTTeam {
     public static boolean createTeam(Map<UUID, KOTTTeam> teamListRef, UUID id, String displayName, Vector3i basePosition, @Nonnull World world, @Nonnull UserMapMarker zoneMarker) {
 
         if(teamListRef.containsKey(id)){
-            printL("[KOTH] There is an Team with that ID already!");
+            printLog("[KOTH] There is an Team with that ID already!");
             return false;
         }else{
             teamListRef.put(id, new KOTTTeam(id, displayName, basePosition, world, zoneMarker));

@@ -19,7 +19,7 @@ import styles.world.KOTTMatch;
 import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 
-import static styles.util.PrintMacros.print;
+import static styles.util.MessageHandler.printChat;
 import static styles.util.log.PrintLog.printLog;
 
 public class KOTTTeamCommand extends AbstractCommandCollection {

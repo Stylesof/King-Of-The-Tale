@@ -7,7 +7,7 @@ import styles.commands.team.KOTTTeamCommand;
 import styles.commands.test.TestCommand;
 import styles.commands.test.TestGUICommand;
 
-import static styles.util.PrintMacros.printL;
+import static styles.util.MessageHandler.printLog;
 
 public class KOTTCommand extends AbstractCommandCollection {
 

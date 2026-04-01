@@ -2,36 +2,27 @@ package styles.commands;
 
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
-import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3i;
-import com.hypixel.hytale.server.core.command.commands.world.chunk.ChunkLoadCommand;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.arguments.system.DefaultArg;
 import com.hypixel.hytale.server.core.command.system.arguments.system.FlagArg;
 import com.hypixel.hytale.server.core.command.system.arguments.system.OptionalArg;
-import com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg;
 import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractAsyncPlayerCommand;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
-import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
-import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import styles.util.MessageHandler;
 import styles.util.log.LogTypes;
 import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
 
-import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-import static styles.util.PrintMacros.print;
-import static styles.util.PrintMacros.printL;
+import static styles.util.MessageHandler.printChat;
+import static styles.util.MessageHandler.printLog;
 import static styles.util.log.PrintLog.printLog;
 
 /*
@@ -79,7 +70,7 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
         // Verify if the inserted world name is valid
         if (_world_name == null) {
             if (!commandContext.isPlayer()) {
-                printL("[KOTT Debug] Error: To use this command as not Player, you need to insert an world!");
+                MessageHandler.printLog("[KOTT Debug] Error: To use this command as not Player, you need to insert an world!");
                 return CompletableFuture.completedFuture(null);
             }
             _world_name = world.getName();
@@ -88,7 +79,7 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
         // Verify if the inserted pos is valid
         if (_world_pos == null) {
             if (!commandContext.isPlayer()) {
-                printL("[KOTT Debug] Error: To use this command as not Player, you need to insert an position!");
+                MessageHandler.printLog("[KOTT Debug] Error: To use this command as not Player, you need to insert an position!");
                 return CompletableFuture.completedFuture(null);
             }
             _world_pos = playerRef.getTransform().getPosition().toVector3i();

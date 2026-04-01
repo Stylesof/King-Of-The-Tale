@@ -12,8 +12,8 @@ import styles.world.KOTTMatch;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
-import static styles.util.PrintMacros.print;
-import static styles.util.PrintMacros.printL;
+import static styles.util.MessageHandler.printChat;
+import static styles.util.MessageHandler.printLog;
 
 public class KOTTPointsUI extends CustomUIHud {
 
