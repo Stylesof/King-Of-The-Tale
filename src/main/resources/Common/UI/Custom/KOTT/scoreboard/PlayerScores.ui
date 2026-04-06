@@ -1,0 +1,20 @@
+$C = "../Common.ui";
+
+Group {
+    LayoutMode: Left;
+    Anchor: (Bottom: 5, Left: 10, Right: 10, Height: 75);
+
+    Background: #2c4971;
+
+    Group #Content {
+        Anchor: (Left: 15, Top: 5, Bottom: 5, Width: 200);
+
+        Label {
+            Text: "Styles_";
+            Style: (
+                FontSize: 18,
+                VerticalAlignment: Center
+            );
+        }
+    }
+}

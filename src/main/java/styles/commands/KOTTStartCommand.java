@@ -19,11 +19,11 @@ import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
 
+import java.awt.*;
 import java.util.concurrent.CompletableFuture;
 
 import static styles.util.MessageHandler.printChat;
 import static styles.util.MessageHandler.printLog;
-import static styles.util.log.PrintLog.printLog;
 
 /*
     SOME PROBLEMS TO CLONE WORLDS, SO INSTEAD OF CLONING,
@@ -79,7 +79,7 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
         // Verify if the inserted pos is valid
         if (_world_pos == null) {
             if (!commandContext.isPlayer()) {
-                MessageHandler.printLog("[KOTT Debug] Error: To use this command as not Player, you need to insert an position!");
+                printLog("To use this command as non-player, you need to insert an position!");
                 return CompletableFuture.completedFuture(null);
             }
             _world_pos = playerRef.getTransform().getPosition().toVector3i();
@@ -88,7 +88,7 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
         // Verify if the world is valid
         World _world = Universe.get().getWorld(_world_name);
         if (_world == null) {
-            printLog(playerRef, LogTypes.KOTTInvalidWorld);
+            printChat(playerRef, LogTypes.KOTTInvalidWorld, Color.RED);
             return CompletableFuture.completedFuture(null);
         }
 

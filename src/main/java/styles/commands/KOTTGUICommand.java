@@ -31,7 +31,6 @@ public class KOTTGUICommand extends AbstractAsyncPlayerCommand {
             return CompletableFuture.completedFuture(null);
         }
 
-
         if (KOTTMatch.getMatchesList().containsKey(world.getName())) {
             printChat(playerRef, "There is a match already started");
             return CompletableFuture.completedFuture(null);
@@ -39,7 +38,11 @@ public class KOTTGUICommand extends AbstractAsyncPlayerCommand {
 
         Player player = store.getComponent(ref, Player.getComponentType());
         if (player != null) {
-            player.getPageManager().openCustomPage(ref, store, new KOTTStartUI(playerRef, world));
+            if (KOTTMatch.getMatch(world.getName()) == null) {
+                player.getPageManager().openCustomPage(ref, store, new KOTTStartUI(playerRef, world));
+            } else {
+
+            }
         }
 
         return CompletableFuture.completedFuture(null);

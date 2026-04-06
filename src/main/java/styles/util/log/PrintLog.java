@@ -2,7 +2,6 @@ package styles.util.log;
 
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import styles.util.MessageHandler;
-import styles.util.Tuple;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +9,7 @@ import java.util.Map;
 import static styles.util.MessageHandler.*;
 
 @Deprecated (
-        forRemoval = false
+        forRemoval = true
 )
 public class PrintLog {
 

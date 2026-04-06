@@ -25,6 +25,7 @@ import styles.util.ColorHandler;
 import styles.util.MessageHandler;
 import styles.util.StringGenerator;
 import styles.util.MathHelper;
+import styles.util.item.ItemTypes;
 import styles.util.log.LogTypes;
 import styles.world.util.WorldBuilder;
 import styles.world.zone.KOTTTeamZone;
@@ -39,7 +40,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import static styles.util.MessageHandler.*;
-import static styles.util.log.PrintLog.printLog;
 
 public class KOTTMatch {
 
@@ -67,13 +67,13 @@ public class KOTTMatch {
     public static CompletableFuture<String> tryCreateMatch(@Nonnull Vector3i startPos, int teamCount, int zoneRadius, boolean safe, boolean loop, @Nullable PlayerRef playerRef, @Nullable CommandContext commandContext, @Nonnull World world, @Nonnull World lobbyWorld, @Nonnull Vector3i lobbyPos) {
         // Verify area size
         if (zoneRadius < 100 || zoneRadius > 500) {
-            printLog(playerRef, LogTypes.KOTTInvalidAreaSize);
+            printChat(playerRef, LogTypes.KOTTInvalidAreaSize, java.awt.Color.red);
             return CompletableFuture.completedFuture(null);
         }
 
         // Verify number of teams
         if (teamCount < 1 || teamCount > 5) {
-            printLog(playerRef, LogTypes.KOTTInvalidTeamCount);
+            printChat(playerRef, LogTypes.KOTTInvalidTeamCount, java.awt.Color.RED);
             return CompletableFuture.completedFuture(null);
         }
 
@@ -83,7 +83,7 @@ public class KOTTMatch {
 
         boolean matchAdded = addMatch(tempWorldName);
         if (!matchAdded) {
-            printLog(playerRef, LogTypes.KOTTMatchAlreadyRunning, "World name: \"" + tempWorldName + "\"!");
+            printChat(playerRef, LogTypes.KOTTMatchAlreadyRunning, java.awt.Color.RED);
             return CompletableFuture.completedFuture(null);
         }
 

@@ -26,7 +26,6 @@ import styles.tick.EntityTickHandler;
 import javax.annotation.Nonnull;
 
 import static styles.util.MessageHandler.printLog;
-import static styles.util.log.PrintLog.printLogDebug;
 
 public class KOTT extends JavaPlugin {
 
@@ -41,7 +40,7 @@ public class KOTT extends JavaPlugin {
 
     public KOTT(@Nonnull JavaPluginInit init) {
         super(init);
-        printLogDebug(LogTypesDebug.KOTTLoadSuccess);
+        printLog(LogTypesDebug.KOTTLoadSuccess);
         instance = this;
     }
 

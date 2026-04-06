@@ -30,16 +30,12 @@ public class KOTTScoreBoardUI extends InteractiveCustomUIPage<KOTTScoreBoardUI.D
 
     @Override
     public void build(@NonNullDecl Ref<EntityStore> ref, @NonNullDecl UICommandBuilder uiCommandBuilder, @NonNullDecl UIEventBuilder uiEventBuilder, @NonNullDecl Store<EntityStore> store) {
-        KOTTMatch match = KOTTMatch.getMatch(world.getName());
-        if (match != null) {
-            uiCommandBuilder.append("KOTT/KOTTScoreBoard.ui");
+        uiCommandBuilder.append("KOTT/KOTTScoreBoard.ui");
 
-            for (PlayerRef _playerRef : match.getPlayersInMatch().values()) {
-                uiCommandBuilder.append("#Players", "KOTT/scoreboard/PlayerScores.ui");
-            }
-        } else {
-            printChat(playerRef, "There isn't a match happening right now!");
+        for (int i = 0; i < 50; i++) {
+            uiCommandBuilder.append("#Content #List", "KOTT/scoreboard/PlayerScores.ui");
         }
+
     }
 
     public static class Data {

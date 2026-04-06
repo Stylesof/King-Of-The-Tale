@@ -26,13 +26,13 @@ public class OnPlayerDisconnectEvent {
                 if (evt.getDisconnectReason().getServerDisconnectReason().equals("Stopping server!")) {
                     PlayerRef playerRef = evt.getPlayerRef();
                     if (playerRef.getWorldUuid() == null) {
-                        printLog("[KOTT Debug] Fatal error! Invalid World UUID for the player");
+                        printLog("ERROR: Invalid World UUID for the player!");
                         return;
                     }
 
                     World world = Universe.get().getWorld(playerRef.getWorldUuid());
                     if (world == null) {
-                        printLog("[KOTT Debug] Fatal error! Invalid World for the player");
+                        printLog("ERROR: Invalid World for the player!");
                         return;
                     }
 

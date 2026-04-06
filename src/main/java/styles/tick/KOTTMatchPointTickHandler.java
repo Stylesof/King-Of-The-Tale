@@ -9,6 +9,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import styles.player.component.KOTTMoney;
 import styles.team.KOTTTeam;
 import styles.util.MessageHandler;
+import styles.util.item.ItemTypes;
 import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
@@ -82,7 +83,7 @@ public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
                                         playerRef,
                                         "Marked Point!",
                                         "Team " + finalFirstTeam.getDisplayName() + " marked a point!",
-                                        MessageHandler.ItemTypes.MITHRIL_SWORD,
+                                        ItemTypes.MITHRIL_SWORD,
                                         MessageHandler.NotificationTypes.SUCCESS
                                 );
                             }

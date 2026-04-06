@@ -10,6 +10,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import styles.util.MessageHandler;
+import styles.util.item.ItemTypes;
 import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;

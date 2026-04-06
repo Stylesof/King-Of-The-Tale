@@ -1,7 +1,74 @@
 $C = "../Common.ui";
 
+@Separator = Group {
+    Anchor: (Left: 10, Width: 2);
+    Background: #1071ad;
+};
+
+@DefaultScoreLabel = Label {
+    Text: "";
+    Style: (
+        VerticalAlignment: Center,
+        HorizontalAlignment: Start  
+    );
+};
+
 $C.@DecoratedContainer {
+    Anchor: (Top: 100, Bottom: 100, Right: 300, Left: 300);
 
-    
+    #Title {
+        $C.@Title {
+            @Text = "Scoreboard"; 
+        }
+    }
 
+    #Content {
+        Group {
+            LayoutMode: Left;
+            Anchor: (Top: 0, Left: 10, Right: 10, Height: 50);
+
+            Background: #1b3860;
+
+            // player team | player name | player kills | player deaths
+            Group {
+                Anchor: (Left: 10, Width: 100);
+                @DefaultScoreLabel {
+                    Text: "Team";
+                }
+            }
+
+            @Separator {}
+
+            Group {
+                Anchor: (Left: 10, Right: 10, Width: 700);
+                @DefaultScoreLabel {
+                    Text: "Player Name";
+                }
+            }
+
+            @Separator {}
+
+            Group {
+                Anchor: (Left: 10, Right: 10, Width: 50);
+                @DefaultScoreLabel {
+                    Text: "Kills";
+                }
+            }
+
+            @Separator {}
+
+            Group {
+                Anchor: (Left: 10, Right: 10, Width: 50);
+                @DefaultScoreLabel {
+                    Text: "Deaths";
+                }
+            }
+        }
+
+        Group #List {
+            Anchor: (Top: 0, Left: 0, Bottom: 50);
+            LayoutMode: TopScrolling;
+            ScrollbarStyle: $C.@DefaultScrollbarStyle;
+        }
+    }
 }

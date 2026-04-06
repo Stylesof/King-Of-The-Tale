@@ -9,6 +9,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import styles.ui.KOTTEndUI;
+import styles.ui.KOTTScoreBoardUI;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
@@ -28,7 +29,7 @@ public class TestGUICommand extends AbstractAsyncPlayerCommand {
 
         world.execute(() -> {
             Player player = store.getComponent(ref, Player.getComponentType());
-            player.getHudManager().setCustomHud(playerRef, new KOTTEndUI(playerRef, null, 2, false));
+            player.getPageManager().openCustomPage(ref, store, new KOTTScoreBoardUI(playerRef, world));
         });
 
         return CompletableFuture.completedFuture(null);
