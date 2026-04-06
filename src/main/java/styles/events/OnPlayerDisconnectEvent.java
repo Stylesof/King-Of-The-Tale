@@ -15,7 +15,7 @@ import static styles.util.MessageHandler.printLog;
 public class OnPlayerDisconnectEvent {
     // SingleplayerModule.getUuid() == null -> It's a server hosted (not player hosted)
     public static void onPlayerDisconnect(@Nonnull PlayerDisconnectEvent evt) {
-        if (SingleplayerModule.getUsername().equals(evt.getPlayerRef().getUsername())) { // host quit
+        if (SingleplayerModule.getUsername() != null && SingleplayerModule.getUsername().equals(evt.getPlayerRef().getUsername())) { // host quit
             for (World world : Universe.get().getWorlds().values()) { // get all world of the server
                 if (KOTTMatch.getMatchesList().containsKey(world.getName())) { // verify if they have a match happening
                     KOTTMatch.stop(world.getName(), true, null, true);

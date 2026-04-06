@@ -3,6 +3,7 @@ package styles.world;
 import com.hypixel.hytale.math.vector.Transform;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.protocol.Color;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
@@ -16,6 +17,7 @@ import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserM
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarkersStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.worldstore.WorldMarkersResource;
 import com.hypixel.hytale.server.core.util.NotificationUtil;
+import styles.player.component.InvulnerabilityComponent;
 import styles.team.KOTTTeam;
 import styles.ui.KOTTEndUI;
 import styles.ui.KOTTPointsUI;
@@ -30,8 +32,6 @@ import styles.world.zone.KOTTZone;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
-import java.awt.color.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -125,7 +125,7 @@ public class KOTTMatch {
             zoneMarker.setPosition(startPos.x, startPos.z);
             zoneMarker.setName("Attack Zone");
             zoneMarker.setIcon("UserF.png");
-            zoneMarker.setColorTint(new Color((byte) 255, (byte) 0, (byte) 0));
+            zoneMarker.setColorTint(new com.hypixel.hytale.protocol.Color((byte) 255, (byte) 0, (byte) 0));
         Zone = new KOTTZone(zoneRadius, startPos, world, zoneMarker);
         userMapMarkerStore.addUserMapMarker(Zone.getZoneMarker());
 
@@ -147,7 +147,7 @@ public class KOTTMatch {
         while (i < teamCount) {
             baseLocation = WorldBuilder.alignVectorToWorldSurface(baseLocation, world); // get the highest position of floor before sky
             if (baseLocation == null) {
-                print(commandContext, "Failed to define Base Position, try in another place!");
+                printChat(commandContext, "Failed to define Base Position, try in another place!");
                 MessageHandler.printLog("ERROR: Invalid Base position!");
                 stop(world.getName());
                 return CompletableFuture.completedFuture(null);
@@ -159,7 +159,7 @@ public class KOTTMatch {
                 zoneMarker2.setPosition(baseLocation.x, baseLocation.z);
                 zoneMarker2.setName("Team " + nameList.get(i) + " Base");
                 zoneMarker2.setIcon("UserD.png");
-                zoneMarker2.setColorTint(new com.hypixel.hytale.protocol.Color((byte) colorList.get(i).getRed(), (byte) colorList.get(i).getGreen(), (byte) colorList.get(i).getBlue()));
+                zoneMarker2.setColorTint(new Color(colorList.get(i).red, colorList.get(i).green, colorList.get(i).blue));
 
             // Create %teamCount% teams
             MessageHandler.printLog("Starting Team creation...");
@@ -176,11 +176,6 @@ public class KOTTMatch {
 
                 // Get the ColorType from a color Team
                 ColorHandler.ColorType teamColorType = ColorHandler.getColorType(colorList.get(i));
-                if (teamColorType == null) {
-                    MessageHandler.printLog("Failed to find team colorType!");
-                    stop(world.getName());
-                    return CompletableFuture.completedFuture(null);
-                }
 
                 // Clear area and construct base
                 Vector3i basePos = getLastTeamAdded().getBaseZone().getPosition();
@@ -237,6 +232,7 @@ public class KOTTMatch {
         return fun.thenCompose(status -> {
             if (status) {
                 setKOTTMatchStatus(true);
+
                 MessageHandler.printLog("Finished KOTT Match creation! World name: " + world.getName());
                 printNotification(
                         playerRef,
@@ -273,10 +269,14 @@ public class KOTTMatch {
                     world.execute(() -> {
                         PlayerRespawnPointData[] respawnPointData = { new PlayerRespawnPointData(pos, pos.toVector3d(), "Team " + team.getDisplayName() + " Respawn") };
                         player.getPlayerConfigData().getPerWorldData(world.getName()).setRespawnPoints(respawnPointData);
-                        player.getHudManager().setCustomHud(_playerRef, new KOTTPointsUI(_playerRef, this, false));
+                        KOTTPointsUI newHud = new KOTTPointsUI(_playerRef, this);
+                        player.getHudManager().setCustomHud(_playerRef, newHud);
+                        newHud.initializeThreadUpdate();
+                        world.getEntityStore().getStore().addComponent(_playerRef.getReference(), InvulnerabilityComponent.getComponentType(), new InvulnerabilityComponent());
                     });
                 }
 
+                MessageHandler.printLog("Match created and started on World: " + world.getName());
                 printNotification(
                             playerRef,
                             "Match created!",
@@ -284,14 +284,15 @@ public class KOTTMatch {
                             ItemTypes.MITHRIL_SWORD,
                             NotificationTypes.SUCCESS
                 );
-                MessageHandler.printLog("[KOTT Debug] Match created and started on World: " + world.getName());
+
                 setCanMarkPoint(true);
             } else {
+                MessageHandler.printLog("Error: Failed to create and start the match on World: " + world.getName());
                 NotificationUtil.sendNotification(
                         playerRef.getPacketHandler(),
                         Message.raw(""),
                         Message.raw(""));
-                MessageHandler.printLog("Error: Failed to create and start the match on World: " + world.getName());
+
                 stop(world.getName(), true);
             }
 
@@ -385,18 +386,18 @@ public class KOTTMatch {
                 return CompletableFuture.completedFuture(null);
             }
             MessageHandler.printLog("Trying to stop a match on a invalid world!", Level.WARNING);
-            print(commandContext, "Invalid World!");
+            printChat(commandContext, "Invalid World!");
             return CompletableFuture.completedFuture(null);
         }
 
         if (!KOTTMatch.getMatchesList().containsKey(worldName)) {
             MessageHandler.printLog("There isn't a match happening in this world!", Level.WARNING);
-            print(commandContext, "There isn't a match happening in this world!");
+            printChat(commandContext, "There isn't a match happening in this world!");
             return CompletableFuture.completedFuture(null);
         }
         KOTTMatch match = KOTTMatch.getMatchesList().get(worldName);
         if (match == null || (!match.getKOTTMatchStatus() && serverStop)) {
-            print(commandContext, "The match wasn't started yet!");
+            printChat(commandContext, "The match wasn't started yet!");
             return CompletableFuture.completedFuture(null);
         }
 
@@ -418,6 +419,7 @@ public class KOTTMatch {
                 if (player != null) {
                     player.getHudManager().resetHud(playerRef);
                 }
+                world.getEntityStore().getStore().removeComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType());
             });
         }
         MessageHandler.printLog("Removed players CustomHUDs...");
@@ -557,6 +559,8 @@ public class KOTTMatch {
     public Map<UUID, PlayerRef> getPlayersInMatch() { return this.playersInMatch; }
 
     public KOTTZone getZone() { return this.Zone; }
+
+    public World getMatchWorld() { return this.matchWorld; }
 
     public static Map<String, KOTTMatch> getMatchesList() { return matchesList; }
 

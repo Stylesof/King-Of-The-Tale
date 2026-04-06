@@ -38,7 +38,7 @@ public class KOTTScoreBoardUI extends InteractiveCustomUIPage<KOTTScoreBoardUI.D
                 uiCommandBuilder.append("#Players", "KOTT/scoreboard/PlayerScores.ui");
             }
         } else {
-            print(playerRef, "There isn't a match happening right now!");
+            printChat(playerRef, "There isn't a match happening right now!");
         }
     }
 

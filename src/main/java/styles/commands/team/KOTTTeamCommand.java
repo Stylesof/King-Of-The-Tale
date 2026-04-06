@@ -68,7 +68,7 @@ public class KOTTTeamCommand extends AbstractCommandCollection {
             // Verify if has a match active in the world
             KOTTMatch match = KOTTMatch.getMatchesList().get(_word_name);
             if (match == null || !match.getKOTTMatchStatus()){
-                print(commandContext, "There isn't any match happening in the moment!");
+                printChat(commandContext, "There isn't any match happening in the moment!");
                 return CompletableFuture.completedFuture(null);
             }
 
@@ -77,7 +77,7 @@ public class KOTTTeamCommand extends AbstractCommandCollection {
                 show = this.showuuid.get(commandContext);
             }
 
-            print(commandContext, "Teams:");
+            printChat(commandContext, "Teams:");
             int i = 0;
             for(KOTTTeam team : match.getTeams()){
                 String message = i + ": ";
@@ -91,9 +91,9 @@ public class KOTTTeamCommand extends AbstractCommandCollection {
                 }
 
                 if(team.containsPlayer(playerRef)){
-                    print(commandContext, message + " (your team)");
+                    printChat(commandContext, message + " (your team)");
                 }else{
-                    print(commandContext, message);
+                    printChat(commandContext, message);
                 }
 
                 i++;

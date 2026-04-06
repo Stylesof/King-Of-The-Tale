@@ -2,25 +2,23 @@ package styles.tick;
 
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.system.tick.TickingSystem;
-import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import styles.config.KOTTConfig;
-import styles.player.KOTTMoney;
+import styles.player.component.KOTTMoney;
 import styles.team.KOTTTeam;
-import styles.ui.KOTTPointsUI;
+import styles.util.MessageHandler;
 import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static styles.util.MessageHandler.printLog;
+import static styles.util.MessageHandler.printNotification;
 
 public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
 
@@ -38,15 +36,14 @@ public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
                 if (match != null && match.getKOTTMatchStatus() && match.getCanMarkPoint()) {
                     // get team with more players in area
                     Map<KOTTTeam, Integer> teamPlayersCount = new HashMap<>(); // player count per team
-                    KOTTTeam firstTeam = null, secondTeam = null;
+                    KOTTTeam firstTeam = null, secondTeam = null; // get the first and second team with most players in area
                     for (PlayerRef playerRef : match.getZone().getPlayersInZone()) {
                         if (!teamPlayersCount.containsKey(match.getPlayerTeam(playerRef))) {
                             teamPlayersCount.put(match.getPlayerTeam(playerRef), 0);
                         }
 
                         int playerCount = teamPlayersCount.get(match.getPlayerTeam(playerRef));
-                        teamPlayersCount.put(match.getPlayerTeam(playerRef), playerCount + 1);
-                        playerCount += 1;
+                        teamPlayersCount.put(match.getPlayerTeam(playerRef), ++playerCount);
 
                         if (firstTeam == null) {
                             firstTeam = match.getPlayerTeam(playerRef);
@@ -71,22 +68,23 @@ public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
                     firstTeam.teamPoints++;
                     printLog("Team " + firstTeam.getDisplayName() + " marked a point! (" + firstTeam.teamPoints + " / 100)");
 
+                    KOTTTeam finalFirstTeam = firstTeam;
                     for (PlayerRef playerRef : match.getPlayersInMatch().values()) {
                         world.execute(() -> {
-                            Player player = world.getEntityStore().getStore().getComponent(Objects.requireNonNull(playerRef.getReference()), Player.getComponentType());
-                            //player.getHudManager().resetHud(playerRef);
-                            player.getHudManager().setCustomHud(playerRef, new KOTTPointsUI(playerRef, match, match.getPlayersInMatch().containsValue(playerRef)));
-
-                            if (match.getZone().getPlayersInZone().contains(playerRef)) {
-                                KOTTMoney money = world.getEntityStore().getStore().getComponent(playerRef.getReference(), KOTTMoney.getComponentType());
-                                if (money == null) {
-                                    money = new KOTTMoney();
-                                    world.getEntityStore().getStore().addComponent(playerRef.getReference(), KOTTMoney.getComponentType(), money);
+                            if (playerRef.getReference() != null) {
+                                if (match.getZone().getPlayersInZone().contains(playerRef)) {
+                                    if (finalFirstTeam.containsPlayer(playerRef)){
+                                        KOTTMoney.addMoneyToPlayer(playerRef, 10);
+                                    }
                                 }
 
-                                money.moneyQuantity += 10;
-
-                                KOTTConfig.getKottConfig().addToPlayerMoneyList(playerRef.getUsername(), money.moneyQuantity);
+                                printNotification(
+                                        playerRef,
+                                        "Marked Point!",
+                                        "Team " + finalFirstTeam.getDisplayName() + " marked a point!",
+                                        MessageHandler.ItemTypes.MITHRIL_SWORD,
+                                        MessageHandler.NotificationTypes.SUCCESS
+                                );
                             }
                         });
                     }

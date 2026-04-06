@@ -41,7 +41,7 @@ public class KOTTJoinCommand extends AbstractAsyncPlayerCommand {
 
         KOTTMatch match = KOTTMatch.getMatchesList().get(_worldName);
         if (match == null) {
-            print(playerRef, "[KOTT] There isn't a match happening in this world!");
+            printChat(playerRef, "[KOTT] There isn't a match happening in this world!");
             return CompletableFuture.completedFuture(null);
         }
 

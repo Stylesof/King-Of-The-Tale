@@ -15,6 +15,7 @@ import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 
 import static styles.util.MessageHandler.printChat;
+import static styles.util.MessageHandler.printLog;
 
 public class KOTTGUICommand extends AbstractAsyncPlayerCommand {
     public KOTTGUICommand() {
@@ -25,13 +26,21 @@ public class KOTTGUICommand extends AbstractAsyncPlayerCommand {
     @Override
     protected CompletableFuture<Void> executeAsync(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
 
+        if (!commandContext.isPlayer()) {
+            printLog("Command to player only!");
+            return CompletableFuture.completedFuture(null);
+        }
+
+
         if (KOTTMatch.getMatchesList().containsKey(world.getName())) {
-            print(playerRef, "There is a match already started");
+            printChat(playerRef, "There is a match already started");
             return CompletableFuture.completedFuture(null);
         }
 
         Player player = store.getComponent(ref, Player.getComponentType());
-        player.getPageManager().openCustomPage(ref, store, new KOTTStartUI(playerRef, world));
+        if (player != null) {
+            player.getPageManager().openCustomPage(ref, store, new KOTTStartUI(playerRef, world));
+        }
 
         return CompletableFuture.completedFuture(null);
     }

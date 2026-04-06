@@ -34,7 +34,7 @@ public class KOTTTeamPointListCommand extends AbstractAsyncPlayerCommand {
         String _worldName = this.worldName.get(commandContext);
 
         if (_worldName != null && Universe.get().getWorld(_worldName) == null) {
-            print(playerRef, "Invalid world!");
+            printChat(playerRef, "Invalid world!");
             return CompletableFuture.completedFuture(null);
         } else if (_worldName == null) {
             _worldName = world.getName();
@@ -44,13 +44,13 @@ public class KOTTTeamPointListCommand extends AbstractAsyncPlayerCommand {
         if (match != null) {
             if (match.getKOTTMatchStatus()) {
                 for (KOTTTeam team : match.getTeams()) {
-                    print(playerRef, team.getDisplayName() + ": (" + team.teamPoints + "/100) points");
+                    printChat(playerRef, team.getDisplayName() + ": (" + team.teamPoints + "/100) points");
                 }
             } else {
-                print(playerRef, "The match haven't started yet!");
+                printChat(playerRef, "The match haven't started yet!");
             }
         }else {
-            print(playerRef, "There isn't any matching happening in this World!");
+            printChat(playerRef, "There isn't any matching happening in this World!");
         }
 
         return CompletableFuture.completedFuture(null);

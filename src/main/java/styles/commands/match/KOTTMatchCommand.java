@@ -32,10 +32,10 @@ public class KOTTMatchCommand extends AbstractCommandCollection {
         @Nonnull
         @Override
         protected CompletableFuture<Void> executeAsync(@NonNullDecl CommandContext commandContext, @NonNullDecl Store<EntityStore> store, @NonNullDecl Ref<EntityStore> ref, @NonNullDecl PlayerRef playerRef, @NonNullDecl World world) {
-            print(playerRef, "[KOTT] Available matches:");
+            printChat(playerRef, "Available matches:");
             int i = 1;
             for (String worldName : KOTTMatch.getMatchesList().keySet()) {
-                print(playerRef, i + ". World: " + worldName);
+                printChat(playerRef, i + ". World: " + worldName);
                 i++;
             }
 

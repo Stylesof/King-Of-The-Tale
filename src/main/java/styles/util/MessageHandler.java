@@ -30,22 +30,25 @@ public class MessageHandler {
         WARNING,
         ERROR
     }
+
     private static Color getNotficationTitleColor(NotificationTypes type) {
         return switch (type){
-            case SUCCESS -> Color.getColor("#00FF00");
-            case WARNING -> Color.getColor("#FFFF00");
-            case ERROR -> Color.getColor("#FF0000");
+            case SUCCESS -> Color.green;
+            case WARNING -> Color.yellow;
+            case ERROR -> Color.red;
         };
     }
-    private static Color getNotificationSubTitleColor(NotificationTypes type) {
+
+    private static String getNotificationSubTitleColor(NotificationTypes type) {
         return switch (type) {
-            case SUCCESS -> Color.getColor("#228B22");
-            case WARNING -> Color.getColor("#8B8B22");
-            case ERROR -> Color.getColor("8B2222");
+            case SUCCESS -> "#228B22";
+            case WARNING -> "#8B8B22";
+            case ERROR -> "#8B2222";
         };
     }
+
     public static void printNotification(PlayerRef playerRef, String title, String subTitle, ItemTypes icon, NotificationTypes type) {
-        if (playerRef == null) return;;
+        if (playerRef == null) return;
         NotificationUtil.sendNotification(
                 playerRef.getPacketHandler(),
                 Message.raw(title).color(getNotficationTitleColor(type)),

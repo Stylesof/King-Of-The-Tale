@@ -1,9 +1,8 @@
 package styles.events;
 
-import com.hypixel.hytale.server.core.event.events.player.AddPlayerToWorldEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import styles.player.KOTTMoney;
+import styles.player.component.KOTTMoney;
 
 public class OnPlayerConnectEvent {
     public static void onPlayerConnect(PlayerConnectEvent evt) {
@@ -18,7 +17,7 @@ public class OnPlayerConnectEvent {
                 evt.getHolder().addComponent(KOTTMoney.getComponentType(), money);
             }
 
-            money.moneyQuantity = moneyQnt;
+            money.moneyQuantity = Math.max(moneyQnt, 0.0f);
         }
     }
 }

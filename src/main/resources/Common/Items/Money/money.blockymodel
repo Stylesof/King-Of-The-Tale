@@ -1,0 +1,58 @@
+{
+  "nodes": [
+    {
+      "id": "1",
+      "name": "Money",
+      "position": {"x": 0, "y": 0, "z": 0},
+      "orientation": {"x": -0.70581, "y": 0.03665, "z": -0.02218, "w": 0.7071},
+      "shape": {
+        "type": "box",
+        "offset": {"x": 0.5, "y": 7, "z": 4},
+        "stretch": {"x": 1, "y": 1, "z": 1},
+        "settings": {
+          "isPiece": false,
+          "size": {"x": 1, "y": 14, "z": 8},
+          "isStaticBox": true
+        },
+        "textureLayout": {
+          "back": {
+            "offset": {"x": 0, "y": 15},
+            "mirror": {"x": true, "y": true},
+            "angle": 90
+          },
+          "right": {
+            "offset": {"x": 0, "y": 0},
+            "mirror": {"x": false, "y": false},
+            "angle": 0
+          },
+          "front": {
+            "offset": {"x": 0, "y": 16},
+            "mirror": {"x": true, "y": true},
+            "angle": 90
+          },
+          "left": {
+            "offset": {"x": 8, "y": 0},
+            "mirror": {"x": false, "y": false},
+            "angle": 0
+          },
+          "top": {
+            "offset": {"x": 8, "y": 16},
+            "mirror": {"x": false, "y": false},
+            "angle": 90
+          },
+          "bottom": {
+            "offset": {"x": 0, "y": 17},
+            "mirror": {"x": false, "y": true},
+            "angle": 90
+          }
+        },
+        "unwrapMode": "custom",
+        "visible": true,
+        "doubleSided": false,
+        "shadingMode": "flat"
+      }
+    }
+  ],
+  "format": "prop",
+  "lod": "auto"
+}

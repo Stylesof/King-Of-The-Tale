@@ -35,7 +35,7 @@ public class TestCommand extends AbstractAsyncPlayerCommand {
         TransientPath paths = new TransientPath();
         paths.addWaypoint(new Vector3d(0, 80, 0), new Vector3f(0, 0, 0));
 
-        print(playerRef, "Creating bot...");
+        printChat(playerRef, "Creating bot...");
         Pair<Ref<EntityStore>, INonPlayerCharacter> npc = NPCPlugin.get().spawnNPC(
                 store,
                 "FighterNPC",
@@ -45,11 +45,11 @@ public class TestCommand extends AbstractAsyncPlayerCommand {
         );
 
         if (npc != null) {
-            print(playerRef, "Bot created!");
+            printChat(playerRef, "Bot created!");
             NPCEntity npcComponent = store.getComponent(npc.first(), Objects.requireNonNull(NPCEntity.getComponentType()));
             npcComponent.getPathManager().setTransientPath(paths);
             if (npcComponent.getPathManager().isFollowingPath()) {
-                print(playerRef, "Bot following path...");
+                printChat(playerRef, "Bot following path...");
             }
         }
 

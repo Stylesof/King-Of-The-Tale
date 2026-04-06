@@ -2,13 +2,16 @@ package styles.util.log;
 
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import styles.util.MessageHandler;
+import styles.util.Tuple;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static styles.util.MessageHandler.printChat;
-import static styles.util.MessageHandler.printLog;
+import static styles.util.MessageHandler.*;
 
+@Deprecated (
+        forRemoval = false
+)
 public class PrintLog {
 
     /*
@@ -28,9 +31,9 @@ public class PrintLog {
 
         //normal
         logs.put(LogTypes.KOTTInvalidAreaSize,
-                "Invalid area size value! Use: (min: 100, max: 500) ");
+                "Invalid Area Size! Use: (min: 100, max: 500)");
         logs.put(LogTypes.KOTTInvalidTeamCount,
-                "Invalid team count value! Use: (min: 2, max: 5) ");
+                "Invalid Team Count! Use: (min: 2, max: 5)");
         logs.put(LogTypes.KOTTMatchAlreadyRunning,
                 "Has already an KOTT Match happening in the world ");
         logs.put(LogTypes.KOTTInvalidWorld,
@@ -44,10 +47,10 @@ public class PrintLog {
     public static void printLogDebug(LogTypesDebug logTypeDebug) { MessageHandler.printLog(logsDebug.get(logTypeDebug)); }
 
     public static void printLog(PlayerRef playerRef, LogTypes logType, String extra) {
-        print(playerRef, logs.get(logType) + extra);
+        printChat(playerRef, logs.get(logType) + extra);
     }
 
     public static void printLog(PlayerRef playerRef, LogTypes logType) {
-        print(playerRef, logs.get(logType));
+        printChat(playerRef, logs.get(logType));
     }
 }

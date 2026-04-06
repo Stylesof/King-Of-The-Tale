@@ -13,6 +13,7 @@ import com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntitySta
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import styles.player.component.InvulnerabilityComponent;
 import styles.team.KOTTTeam;
 import styles.world.KOTTMatch;
 
@@ -28,18 +29,25 @@ public class ECS_DamageEvent extends EntityEventSystem<EntityStore, Damage> {
 
     @Override
     public void handle(int i, @Nonnull ArchetypeChunk<EntityStore> archetypeChunk, @Nonnull Store<EntityStore> store, @Nonnull CommandBuffer<EntityStore> commandBuffer, @Nonnull Damage damage) {
-        PlayerRef playerRef = commandBuffer.getComponent(archetypeChunk.getReferenceTo(store.getStoreIndex()), PlayerRef.getComponentType());
+        PlayerRef playerRef = commandBuffer.getComponent(archetypeChunk.getReferenceTo(i), PlayerRef.getComponentType());
         World world = commandBuffer.getExternalData().getWorld();
         KOTTMatch match = KOTTMatch.getMatch(world.getName());
-        if (match != null) {
+        if (match != null && playerRef != null && playerRef.getReference() != null) {
             for (KOTTTeam teams : match.getTeams()) {
                 if (teams.getBaseZone().isInside(playerRef.getTransform().getPosition()) || match.getIsEnding()) {
                     world.execute(() -> {
-                        EntityStatMap statMap = store.getComponent(playerRef.getReference(), EntityStatMap.getComponentType());
-                        if (statMap != null) {
-                            statMap.maximizeStatValue(DefaultEntityStatTypes.getHealth());
+                        InvulnerabilityComponent ic = store.getComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType());
+                        if (ic != null) {
+                            if (ic.getActiveStatus()) {
+                                EntityStatMap statMap = store.getComponent(playerRef.getReference(), EntityStatMap.getComponentType());
+                                if (statMap != null) {
+                                    statMap.maximizeStatValue(DefaultEntityStatTypes.getHealth());
+                                }
+                            }
                         }
+
                     });
+
                 }
             }
         }

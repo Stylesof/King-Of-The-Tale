@@ -1,4 +1,4 @@
-package styles.player;
+package styles.player.component;
 
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
@@ -7,6 +7,9 @@ import com.hypixel.hytale.codec.codecs.map.MapCodec;
 import com.hypixel.hytale.codec.validation.Validators;
 import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.Universe;
+import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import styles.KOTT;
 
@@ -16,6 +19,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static styles.util.MessageHandler.printChat;
 
 public class KOTTMoney implements Component<EntityStore> {
     public float moneyQuantity;
@@ -98,6 +103,23 @@ public class KOTTMoney implements Component<EntityStore> {
         }
 
         return sortedMap;
+    }
+
+    public static void addMoneyToPlayer(@Nonnull PlayerRef playerRef, int quantity) {
+        World world = Universe.get().getWorld(playerRef.getWorldUuid());
+        KOTTMoney money = world.getEntityStore().getStore().getComponent(playerRef.getReference(), KOTTMoney.getComponentType());
+        if (money == null) {
+            money = new KOTTMoney();
+            world.getEntityStore().getStore().addComponent(playerRef.getReference(), KOTTMoney.getComponentType(), money);
+        }
+
+        money.moneyQuantity += quantity;
+
+        KOTTMoneySaveFile.getKottConfig().addToPlayerMoneyList(playerRef.getUsername(), money.moneyQuantity);
+    }
+
+    public static void removeMoneyFromPlayer(@Nonnull PlayerRef playerRef, int quantity) {
+        addMoneyToPlayer(playerRef, -quantity);
     }
 
     @Nullable

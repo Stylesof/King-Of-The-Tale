@@ -1,0 +1,19 @@
+{
+  "TranslationProperties": {
+    "Name": "Money",
+    "Description": "1 Money currency, used to trade!"
+  },
+   "Id": "Money",
+  "Icon": "Icons/ItemsGenerated/Weapon_Gun.png",
+  "Model": "Items/Money/money.blockymodel",
+  "Texture": "Items/Money/money_texture.png",
+  "Quality": "Common",
+  "PlayerAnimationsId": "Item",
+  "MaxStack": 100000000,
+  "IconProperties": {
+    "Scale": 2
+  },
+  "Categories": [
+    "Items.Example"
+  ]
+}

@@ -9,13 +9,13 @@ import com.hypixel.hytale.server.core.command.system.basecommands.AbstractAsyncP
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import styles.util.MessageHandler;
 import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 
-import static styles.util.MessageHandler.printChat;
-import static styles.util.MessageHandler.printLog;
+import static styles.util.MessageHandler.*;
 
 public class KOTTEndCommand extends AbstractAsyncPlayerCommand {
     private final OptionalArg<String> world_name;
@@ -42,7 +42,13 @@ public class KOTTEndCommand extends AbstractAsyncPlayerCommand {
 
         KOTTMatch match = KOTTMatch.getMatchesList().get(_word_name);
         if (match == null || match.getIsEnding()) {
-            print(playerRef, "There isn't an match happening in this world!");
+            printNotification(
+                    playerRef,
+                    "Failed to stop the match!",
+                    "This world has not a valid match!",
+                    ItemTypes.MITHRIL_SWORD,
+                    NotificationTypes.ERROR
+            );
             printLog("There isn't an match happening in this world!");
             return CompletableFuture.completedFuture(null);
         }

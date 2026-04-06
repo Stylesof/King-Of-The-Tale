@@ -1,8 +1,9 @@
 package styles.util;
 
+import com.hypixel.hytale.protocol.Color;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class ColorHandler {
         Colors.put(ColorType.GREEN     , new Color((byte) 0  , (byte) 255 ,(byte) 0));   // GREEN
         Colors.put(ColorType.BLUE      , new Color((byte) 0  , (byte) 0   ,(byte) 255)); // BLUE
         Colors.put(ColorType.YELLOW    , new Color((byte) 255, (byte) 255 ,(byte) 0));   // YELLOW
-        Colors.put(ColorType.CYAN, new Color((byte) 0  , (byte) 255 ,(byte) 255));       // CYAN
+        Colors.put(ColorType.CYAN      , new Color((byte) 0  , (byte) 255 ,(byte) 255));       // CYAN
         Colors.put(ColorType.PURPLE    , new Color((byte) 255, (byte) 0   ,(byte) 255)); // PURPLE
 
     }
@@ -48,15 +49,17 @@ public class ColorHandler {
         return res;
     }
 
-    @Nullable
+    @Nonnull
     public static ColorType getColorType(Color color) {
         for (ColorType type : Colors.keySet()) {
-            if (Colors.get(type) == color) {
-                return  type;
+            Color _color = Colors.get(type);
+
+            if (_color.red == color.red && _color.green == color.green && _color.blue == color.blue) {
+                return type;
             }
         }
 
-        return null;
+        return ColorType.WHITE;
     }
 
     @Nonnull
@@ -65,7 +68,7 @@ public class ColorHandler {
             case WHITE -> "#ffffff";
             case GREEN -> "#00ff00";
             case BLUE -> "#0000ff";
-            case YELLOW -> "#fff000";
+            case YELLOW -> "#ffff00";
             case CYAN -> "#00ffff";
             case PURPLE -> "#ff00ff";
         };
