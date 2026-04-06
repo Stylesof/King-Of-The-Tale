@@ -1,7 +1,7 @@
 $C = "../Common.ui";
 
 @Separator = Group {
-    Anchor: (Left: 10, Width: 2);
+    Anchor: (Width: 2);
     Background: #1071ad;
 };
 
@@ -31,7 +31,7 @@ $C.@DecoratedContainer {
 
             // player team | player name | player kills | player deaths
             Group {
-                Anchor: (Left: 10, Width: 100);
+                Anchor: (Width: 100, Right: 10, Left: 10);
                 @DefaultScoreLabel {
                     Text: "Team";
                 }
@@ -40,7 +40,7 @@ $C.@DecoratedContainer {
             @Separator {}
 
             Group {
-                Anchor: (Left: 10, Right: 10, Width: 700);
+                Anchor: (Width: 875, Left: 10, Right: 10);
                 @DefaultScoreLabel {
                     Text: "Player Name";
                 }
@@ -49,7 +49,7 @@ $C.@DecoratedContainer {
             @Separator {}
 
             Group {
-                Anchor: (Left: 10, Right: 10, Width: 50);
+                Anchor: (Width: 100, Left: 10, Right: 10);
                 @DefaultScoreLabel {
                     Text: "Kills";
                 }
@@ -58,9 +58,18 @@ $C.@DecoratedContainer {
             @Separator {}
 
             Group {
-                Anchor: (Left: 10, Right: 10, Width: 50);
+                Anchor: (Width: 100, Left: 10, Right: 10);
                 @DefaultScoreLabel {
                     Text: "Deaths";
+                }
+            }
+
+            @Separator {}
+        
+            Group {
+                Anchor: (Width: 50, Left: 10, Right: 10);
+                @DefaultScoreLabel {
+                    Text: "K/D";
                 }
             }
         }

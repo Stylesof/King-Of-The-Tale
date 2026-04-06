@@ -1,4 +1,17 @@
-$C = "../Common.ui";
+$C = "../../Common.ui";
+
+@EditedSeparator = Group {
+    Anchor: (Width: 2);
+    Background: #0a405a;
+};
+
+@DefaultScoreLabel = Label {
+    Text: "";
+    Style: (
+        VerticalAlignment: Center,
+        HorizontalAlignment: Center  
+    );
+};
 
 Group {
     LayoutMode: Left;
@@ -6,15 +19,49 @@ Group {
 
     Background: #2c4971;
 
-    Group #Content {
-        Anchor: (Left: 15, Top: 5, Bottom: 5, Width: 200);
+    Group {
+        Anchor: (Width: 100, Height: 50, Right: 10, Left: 10);
+        Background: #ff0000;
+    }
 
+    @EditedSeparator {}
+
+    Group {
+        Anchor: (Width: 875, Left: 10, Right: 10);
         Label {
-            Text: "Styles_";
+            Text: "Styles_ DNVE";
             Style: (
-                FontSize: 18,
-                VerticalAlignment: Center
+                VerticalAlignment: Center,
+                HorizontalAlignment: Start
             );
         }
     }
+
+    @EditedSeparator {}
+
+    Group {
+        Anchor: (Width: 100, Left: 10, Right: 10);
+        @DefaultScoreLabel {
+            Text: "78";
+        }
+    }
+
+    @EditedSeparator {}
+
+    Group {
+        Anchor: (Width: 100, Left: 10, Right: 10);
+        @DefaultScoreLabel {
+            Text: "5";
+        }
+    }
+
+    @EditedSeparator {}
+
+    Group {
+        Anchor: (Width: 50, Left: 10, Right: 10);
+        @DefaultScoreLabel {
+            Text: "15.6";
+        }
+    }
+    
 }
