@@ -48,9 +48,11 @@ public class TestCommand extends AbstractAsyncPlayerCommand {
             printChat(playerRef, "Bot created!");
             NPCEntity npcComponent = store.getComponent(npc.first(), NPCEntity.getComponentType());
             npcComponent.getPathManager().setTransientPath(paths);
-            if (npcComponent.getPathManager().isFollowingPath()) {
-                printChat(playerRef, "Bot following path...");
-            }
+
+            /*
+                Create waypoints preset in Zone, and for every *time* reset, and wait again,
+                and finally re-set the transientPath and set to the npc
+             */
         }
 
         return CompletableFuture.completedFuture(null);

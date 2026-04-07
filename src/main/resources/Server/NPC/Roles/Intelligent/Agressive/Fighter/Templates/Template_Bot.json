@@ -769,48 +769,6 @@
                     "MaxRelSpeed": 1.00
                   }
                 },
-
-                {
-                  "$Comment": "Re-Follow the path if not alerted and if it's outside the main zone",
-                  "Enabled": {
-                    "Compute": "FollowPatrolPath"
-                  },
-                  "Sensor": {
-                      "Type": "Not",
-                      "Sensor": {
-                        "Type": "State",
-                        "State": "Alerted"
-                      }
-                  },
-                  "Interactions": [
-                    {
-                      "Continue": true,
-                      "ActionsBlocking": true,
-                      "Actions": [
-                        {
-                          "Type": "Timeout",
-                          "Delay": [
-                            20,
-                            15
-                          ]
-                        }
-                      ],
-                      "Sensor": {
-                        "Type": "Path",
-                        "Path": {
-                          "Compute": "PatrolPathName"
-                        },
-                        "Range": 1000
-                      },
-                      "BodyMotion": {
-                        "Type": "Path",
-                        "MinRelSpeed": 0.50,
-                        "MaxRelSpeed": 1.00
-                      }
-                    }
-                  ]
-                },
-
                 {
                   "$Comment": "Patrol behavior is always run if enabled. We use the .Default state explicitly so that we can skip down to random behaviors on .Break.",
                   "Enabled": {

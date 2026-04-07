@@ -1,6 +1,6 @@
 {
   "Type": "Variant",
-  "Reference": "Template_Bot",
+  "Reference": "Template_Intelligent",
   "Modify": {
     "MaxHealth": 100,
     "MaxSpeed": 5,
