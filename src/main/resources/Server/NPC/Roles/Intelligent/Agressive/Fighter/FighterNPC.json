@@ -1,6 +1,6 @@
 {
   "Type": "Variant",
-  "Reference": "Template_Intelligent",
+  "Reference": "Template_Bot",
   "Modify": {
     "MaxHealth": 100,
     "MaxSpeed": 5,
@@ -28,25 +28,14 @@
     "LeashMinPlayerDistance": 50,
     "ViewRange": 100,
     "AlertedRange": 125,
-    "CombatStrafeWeight": 10
+    "CombatStrafeWeight": 10,
+    "Patrol": true,
+    "FollowPatrolPath": true
   },
   "Parameters": {
     "NameTranslationKey": {
       "Value": "Fighter",
       "Description": "Translation key for NPC name display"
     }
-  },
-  "Instructions": [
-    {
-      "Sensor": {
-        "Type": "Path",
-        "Enabled": true,
-        "Range": 100,
-        "PathType": "TransientPath"
-      },
-      "BodyMotion": {
-        "NodeWidth": 10
-      }
-    }
-  ]
+  }
 }

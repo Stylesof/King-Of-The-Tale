@@ -46,7 +46,7 @@ public class TestCommand extends AbstractAsyncPlayerCommand {
 
         if (npc != null) {
             printChat(playerRef, "Bot created!");
-            NPCEntity npcComponent = store.getComponent(npc.first(), Objects.requireNonNull(NPCEntity.getComponentType()));
+            NPCEntity npcComponent = store.getComponent(npc.first(), NPCEntity.getComponentType());
             npcComponent.getPathManager().setTransientPath(paths);
             if (npcComponent.getPathManager().isFollowingPath()) {
                 printChat(playerRef, "Bot following path...");
