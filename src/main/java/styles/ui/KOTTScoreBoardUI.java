@@ -3,6 +3,7 @@ package styles.ui;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.protocol.Color;
 import com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime;
 import com.hypixel.hytale.protocol.packets.interface_.CustomUICommand;
 import com.hypixel.hytale.server.core.entity.entities.Player;
@@ -34,9 +35,20 @@ public class KOTTScoreBoardUI extends CustomUIPage {
     public void build(@NonNullDecl Ref<EntityStore> ref, @NonNullDecl UICommandBuilder uiCommandBuilder, @NonNullDecl UIEventBuilder uiEventBuilder, @NonNullDecl Store<EntityStore> store) {
         uiCommandBuilder.append("KOTT/KOTTScoreBoard.ui");
 
-        for (int i = 0; i < 10; i++) {
+        int i = 0;
+        for (PlayerRef _playerRef : match.getPlayersInMatch().values()) {
+            if (match.getPlayerTeam(_playerRef) == null) continue;
+
+            Color teamColor = match.getPlayerTeam(_playerRef).getTeamColor();
+            String playerName = _playerRef.getUsername();
+            int kills = match.getScoreBoard().getPlayersKillCount().get(_playerRef);
+            int deaths = match.getScoreBoard().getPlayersDeathCount().get(_playerRef);
+
             uiCommandBuilder.append("#Content #List", "KOTT/scoreboard/PlayerScores.ui");
-            uiCommandBuilder.set("#Content #List[" + i + "] #TeamColor.Background", "#00FF00"); // WORKS
+            uiCommandBuilder.set("#Content #List[" +  i + "] #TeamColor.Background", teamColor.toString());
+            uiCommandBuilder.set("#Content #List[" + i + "] #PlayerName #NameLabel.Text", playerName);
+            uiCommandBuilder.set("#Content #List[" + i + "] #Deaths.Background", "#00FF00");
+            uiCommandBuilder.set("#Content #List[" + i + "] #TeamColor.Background", "#00FF00");
         }
     }
 

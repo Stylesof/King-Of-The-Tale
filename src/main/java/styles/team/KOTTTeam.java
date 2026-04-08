@@ -1,6 +1,7 @@
 package styles.team;
 
 import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.protocol.Color;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
@@ -22,6 +23,8 @@ public class KOTTTeam {
     private final List<NPCEntity> teamBots = new ArrayList<>();
     private final String displayName;
 
+    private final Color teamColor;
+
     public int teamPoints = 0;
 
     private final KOTTTeamZone baseZone;
@@ -31,6 +34,7 @@ public class KOTTTeam {
         this.teamID = id;
         this.displayName = displayName;
         this.baseZone = new KOTTTeamZone(distanceBaseFromZone, basePosition, world, this, zoneMarker);
+        this.teamColor = this.baseZone.getZoneMarker().getColorTint();
 
         genBots(1);
     }
@@ -76,6 +80,9 @@ public class KOTTTeam {
     public List<PlayerRef> getPlayerList() { return playerList; }
 
     public int getPlayerCount() { return playerList.size(); }
+
+    @Nonnull
+    public Color getTeamColor() { return this.teamColor; }
 
     public void genBots(int count) {
     }

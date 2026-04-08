@@ -10,12 +10,14 @@ import java.util.Map;
 public class KOTTScoreboard {
     private Map<PlayerRef, Integer> PlayersKillCount;
     private Map<PlayerRef, Integer> PlayersDeathCount;
+    private int playerCount = 0;
 
     public void addKills(PlayerRef playerRef, int quantity) {
         if (this.PlayersKillCount.containsKey(playerRef)) {
             this.PlayersKillCount.put(playerRef, this.PlayersKillCount.get(playerRef) + quantity);
         } else {
             this.PlayersKillCount.put(playerRef, quantity);
+            playerCount++;
         }
     }
 
@@ -24,10 +26,13 @@ public class KOTTScoreboard {
             this.PlayersDeathCount.put(playerRef, this.PlayersDeathCount.get(playerRef) + 1);
         } else {
             this.PlayersDeathCount.put(playerRef, 1);
+            playerCount++;
         }
     }
 
     public Map<PlayerRef, Integer> getPlayersKillCount() { return this.PlayersKillCount; }
 
     public Map<PlayerRef, Integer> getPlayersDeathCount() { return this.PlayersDeathCount; }
+
+    public int getPlayerCount() { return this.playerCount; }
 }

@@ -2,6 +2,7 @@ package styles.world.zone;
 
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.protocol.Color;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
@@ -24,7 +25,7 @@ public class KOTTZone {
 
     public KOTTZone(int zoneRadius, @Nonnull Vector3i zonePosition, @Nonnull World world) { this(zoneRadius, zonePosition, world, null); }
 
-    public KOTTZone(int zoneRadius, @Nonnull Vector3i zonePosition, @Nonnull World world, @Nullable UserMapMarker zoneMarker) {
+    public KOTTZone(int zoneRadius, @Nonnull Vector3i zonePosition, @Nonnull World world, @Nonnull UserMapMarker zoneMarker) {
         this.zoneRadius = zoneRadius;
         this.zonePosition = zonePosition;
         this.zoneMarker = zoneMarker;

@@ -577,5 +577,5 @@ public class KOTTMatch {
     @Nullable
     public static KOTTMatch getMatch(String worldName) { return getMatchesList().get(worldName); }
 
-    // public Vector3i getMatchStartPos() { return this.matchStartPos; }
+    public KOTTScoreboard getScoreBoard() { return this.scoreBoard; }
 }

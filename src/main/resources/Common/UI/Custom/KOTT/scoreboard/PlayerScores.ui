@@ -28,7 +28,7 @@ Group #PlayerData {
 
     Group #PlayerName {
         Anchor: (Width: 875, Left: 10, Right: 10);
-        Label {
+        Label #NameLabel {
             Text: "Styles_ DNVE";
             Style: (
                 VerticalAlignment: Center,
