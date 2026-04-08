@@ -756,17 +756,16 @@
                   "Enabled": {
                     "Compute": "FollowPatrolPath"
                   },
-                  "Sensor": {
+                  "Sensor": 
+                  {
                     "Type": "Path",
-                    "Path": {
-                      "Compute": "PatrolPathName"
-                    },
+                    "Path": "",
                     "Range": 1000
                   },
                   "BodyMotion": {
-                    "Type": "Path",
-                    "MinRelSpeed": 0.50,
-                    "MaxRelSpeed": 1.00
+                    "Type": "Seek",
+                    "SlowDownDistance": 0.1,
+                    "StopDistance": 0.1
                   }
                 },
                 {
