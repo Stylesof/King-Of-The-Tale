@@ -13,20 +13,20 @@ $C = "../../Common.ui";
     );
 };
 
-Group {
+Group #PlayerData {
     LayoutMode: Left;
     Anchor: (Bottom: 5, Left: 10, Right: 10, Height: 75);
 
     Background: #2c4971;
 
-    Group {
+    Group #TeamColor {
         Anchor: (Width: 100, Height: 50, Right: 10, Left: 10);
         Background: #ff0000;
     }
 
     @EditedSeparator {}
 
-    Group {
+    Group #PlayerName {
         Anchor: (Width: 875, Left: 10, Right: 10);
         Label {
             Text: "Styles_ DNVE";
@@ -39,7 +39,7 @@ Group {
 
     @EditedSeparator {}
 
-    Group {
+    Group #Kills {
         Anchor: (Width: 100, Left: 10, Right: 10);
         @DefaultScoreLabel {
             Text: "78";
@@ -48,7 +48,7 @@ Group {
 
     @EditedSeparator {}
 
-    Group {
+    Group #Deaths {
         Anchor: (Width: 100, Left: 10, Right: 10);
         @DefaultScoreLabel {
             Text: "5";
@@ -57,7 +57,7 @@ Group {
 
     @EditedSeparator {}
 
-    Group {
+    Group #KD {
         Anchor: (Width: 50, Left: 10, Right: 10);
         @DefaultScoreLabel {
             Text: "15.6";

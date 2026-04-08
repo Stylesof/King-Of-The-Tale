@@ -27,6 +27,7 @@ import styles.util.StringGenerator;
 import styles.util.MathHelper;
 import styles.util.item.ItemTypes;
 import styles.util.log.LogTypes;
+import styles.world.match.KOTTScoreboard;
 import styles.world.util.WorldBuilder;
 import styles.world.zone.KOTTTeamZone;
 import styles.world.zone.KOTTZone;
@@ -62,6 +63,8 @@ public class KOTTMatch {
     private CommandContext commandContextHost;
     private World matchWorld;
 
+    private KOTTScoreboard scoreBoard = new KOTTScoreboard();
+
     private boolean isEnding = false; // It's in process to end
 
     public static CompletableFuture<String> tryCreateMatch(@Nonnull Vector3i startPos, int teamCount, int zoneRadius, boolean safe, boolean loop, @Nullable PlayerRef playerRef, @Nullable CommandContext commandContext, @Nonnull World world, @Nonnull World lobbyWorld, @Nonnull Vector3i lobbyPos) {
@@ -79,7 +82,7 @@ public class KOTTMatch {
 
         String tempWorldName = world.getName();
         CompletableFuture<World> fun = CompletableFuture.completedFuture(world);
-        // TODO: Safe Treatment
+        // TODO: Safe, implementation
 
         boolean matchAdded = addMatch(tempWorldName);
         if (!matchAdded) {
@@ -300,7 +303,7 @@ public class KOTTMatch {
         }).thenRun(() -> {});
     }
 
-    public static boolean addMatch(String worldName) {
+    private static boolean addMatch(String worldName) {
         if (!KOTTMatch.getMatchesList().containsKey(worldName)) {
             KOTTMatch.getMatchesList().put(worldName, new KOTTMatch());
             return true;
@@ -370,7 +373,14 @@ public class KOTTMatch {
                 ItemTypes.MITHRIL_SWORD,
                 NotificationTypes.SUCCESS
         );
-        MessageHandler.printLog("Player " + playerRef.getUsername() + " has joined into the Team " + chosenTeam.getDisplayName());
+        printLog("Player " + playerRef.getUsername() + " has joined into the Team " + chosenTeam.getDisplayName());
+
+        if (!this.scoreBoard.getPlayersKillCount().containsKey(playerRef)) {
+            this.scoreBoard.getPlayersKillCount().put(playerRef, 0);
+        }
+        if (!this.scoreBoard.getPlayersDeathCount().containsKey(playerRef)) {
+            this.scoreBoard.getPlayersDeathCount().put(playerRef, 0);
+        }
     }
 
     // MATCH STOP

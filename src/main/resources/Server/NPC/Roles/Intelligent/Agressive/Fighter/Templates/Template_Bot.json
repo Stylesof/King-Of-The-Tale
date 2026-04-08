@@ -752,7 +752,7 @@
                   ]
                 },
                 {
-                  "$Comment": "Prefer to follow a path if it exists",
+                  "$Comment": "Follow a set path, using path finding",
                   "Enabled": {
                     "Compute": "FollowPatrolPath"
                   },

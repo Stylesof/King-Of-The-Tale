@@ -27,5 +27,7 @@ public class KOTTScoreboard {
         }
     }
 
+    public Map<PlayerRef, Integer> getPlayersKillCount() { return this.PlayersKillCount; }
 
+    public Map<PlayerRef, Integer> getPlayersDeathCount() { return this.PlayersDeathCount; }
 }
