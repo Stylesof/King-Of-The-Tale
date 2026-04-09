@@ -751,9 +751,13 @@
                     }
                   ]
                 },
+
+                
+
                 {
                   "$Comment": "Follow a set path, using path finding",
-                  "Enabled": {
+                  "Enabled": 
+                  {
                     "Compute": "FollowPatrolPath"
                   },
                   "Sensor": 
@@ -762,19 +766,18 @@
                     "Path": "",
                     "Range": 1000
                   },
-                  "BodyMotion": {
+                  "BodyMotion": 
+                  {
                     "Type": "Seek",
                     "SlowDownDistance": 0.1,
                     "StopDistance": 0.1,
                     "AbortDistance": 1000,
-                    "MaxPathLength": 1000,
-                    "PathSmoothing": 5,
-                    "HeightDifference": [
-                      -15.0,
-                       15.0
-                    ]
+                    "MaxPathLength": 1000
                   }
                 },
+                
+
+
                 {
                   "$Comment": "Patrol behavior is always run if enabled. We use the .Default state explicitly so that we can skip down to random behaviors on .Break.",
                   "Enabled": {

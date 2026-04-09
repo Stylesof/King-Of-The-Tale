@@ -9,6 +9,7 @@ import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.data.PlayerRespawnPointData;
 import com.hypixel.hytale.server.core.modules.entity.component.NewSpawnComponent;
+import com.hypixel.hytale.server.core.modules.entity.component.PropComponent;
 import com.hypixel.hytale.server.core.modules.entity.teleport.Teleport;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
@@ -18,7 +19,6 @@ import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserM
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.worldstore.WorldMarkersResource;
 import com.hypixel.hytale.server.core.util.NotificationUtil;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
-import styles.npc.NPCZonePath;
 import styles.npc.component.BotComponent;
 import styles.player.component.InvulnerabilityComponent;
 import styles.team.KOTTTeam;
@@ -216,13 +216,12 @@ public class KOTTMatch {
                             );
                             MessageHandler.printLog("Created base of Team \"" + team.getDisplayName() + "\". (X: " + basePos.x + ", Y: " + basePos.y + ", Z: " + basePos.z + ")");
 
-                            team.genBots(2);
+                            team.genBots(1);
                             for (NPCEntity bot : team.getBots()) {
-                                NPCZonePath paths = new NPCZonePath(world, getZone().getPosition().toVector3d(), getZone().getZoneRadius(), 1);
-                                BotComponent botComponent = new BotComponent(paths.getPaths());
                                 world.execute(() -> {
                                     if (bot.getReference() == null) return;
-                                    world.getEntityStore().getStore().addComponent(bot.getReference(), BotComponent.getComponentType(), botComponent);
+                                    world.getEntityStore().getStore().addComponent(bot.getReference(), BotComponent.getComponentType(), new BotComponent(this));
+                                    world.getEntityStore().getStore().addComponent(bot.getReference(), PropComponent.getComponentType(), new PropComponent());
                                 });
 
                             }

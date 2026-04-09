@@ -48,6 +48,8 @@ public class KOTT extends JavaPlugin {
         instance = this;
     }
 
+    public static KOTT getInstance() { return instance; }
+
     @Override
     protected void setup() {
         kottMoneySaveFile.load().thenCompose((var) -> kottMoneySaveFile.save());
@@ -86,7 +88,7 @@ public class KOTT extends JavaPlugin {
         // Systems
         this.getEntityStoreRegistry().registerSystem(new InvulnerabilitySystem(this.invulnerabilityComponentType));
         this.getEntityStoreRegistry().registerSystem(new ProjectileDetectionSystem());
-        this.getEntityStoreRegistry().registerSystem(new BotSystem());
+        this.getEntityStoreRegistry().registerSystem(new BotSystem(this.botComponentType));
 
         PlayerAttackHandler atkHandler = new PlayerAttackHandler();
         inboundFilter = PacketAdapters.registerInbound(atkHandler);
@@ -104,6 +106,4 @@ public class KOTT extends JavaPlugin {
 
         super.shutdown();
     }
-
-    public static KOTT getInstance() { return instance; }
 }

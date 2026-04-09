@@ -43,7 +43,7 @@ public class PlayerTickHandler extends EntityTickingSystem<EntityStore> {
 
         if (playerRef != null && playerRef.getWorldUuid() != null) {
             World world = Universe.get().getWorld(playerRef.getWorldUuid());
-            if (world != null) {
+            if (world != null && world.isAlive()) {
                 KOTTMatch match = KOTTMatch.getMatchesList().get(world.getName());
                 if (match != null) {
 

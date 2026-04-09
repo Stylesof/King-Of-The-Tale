@@ -1,6 +1,5 @@
 package styles.team;
 
-import com.hypixel.hytale.builtin.path.path.TransientPath;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3f;
@@ -14,8 +13,6 @@ import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserM
 import com.hypixel.hytale.server.npc.NPCPlugin;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import it.unimi.dsi.fastutil.Pair;
-import styles.npc.NPCZonePath;
-import styles.npc.component.BotComponent;
 import styles.world.zone.KOTTTeamZone;
 import styles.world.util.WorldBuilder;
 
@@ -115,7 +112,7 @@ public class KOTTTeam {
     public void removeBots() {
         for (NPCEntity npc : this.teamBots) {
             if (npc != null && npc.getWorld() != null) {
-                npc.remove();
+                npc.getWorld().execute(npc::remove);
             }
         }
 
