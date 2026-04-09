@@ -27,7 +27,9 @@ import java.util.concurrent.CompletableFuture;
 import static styles.util.MessageHandler.printChat;
 import static styles.util.MessageHandler.printLog;
 
-@Deprecated
+@Deprecated(
+        forRemoval = true
+)
 public class TestCommand extends AbstractAsyncPlayerCommand {
     public TestCommand() {
         super("test", "");

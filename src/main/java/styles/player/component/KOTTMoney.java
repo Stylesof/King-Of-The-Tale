@@ -43,7 +43,7 @@ public class KOTTMoney implements Component<EntityStore> {
     }
 
     public static ComponentType<EntityStore, KOTTMoney> getComponentType() {
-        return KOTT.getInstance().kottMoneyComponent;
+        return KOTT.getInstance().kottMoneyComponentType;
     }
 
     public enum FilterType{

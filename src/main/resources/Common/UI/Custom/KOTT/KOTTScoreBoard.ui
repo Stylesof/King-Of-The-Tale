@@ -79,5 +79,7 @@ $C.@DecoratedContainer {
             LayoutMode: TopScrolling;
             ScrollbarStyle: $C.@DefaultScrollbarStyle;
         }
+
+        // HERE GOES THE scoreboard/PlayerScores.ui
     }
 }

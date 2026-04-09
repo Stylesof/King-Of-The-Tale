@@ -14,41 +14,43 @@ import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
+import styles.util.ColorHandler;
 import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
 
+import java.util.Objects;
+
 import static styles.util.MessageHandler.printChat;
 
-public class KOTTScoreBoardUI extends CustomUIPage {
-
-    private final PlayerRef playerRef;
+public class KOTTScoreBoardUI extends InteractiveCustomUIPage<KOTTScoreBoardUI.Data> {
     private final KOTTMatch match;
 
     public KOTTScoreBoardUI(@Nonnull PlayerRef playerRef, @Nonnull KOTTMatch match) {
-        super(playerRef, CustomPageLifetime.CanDismiss);
-        this.playerRef = playerRef;
+        super(playerRef, CustomPageLifetime.CanDismiss, Data.CODEC);
         this.match = match;
     }
 
     @Override
-    public void build(@NonNullDecl Ref<EntityStore> ref, @NonNullDecl UICommandBuilder uiCommandBuilder, @NonNullDecl UIEventBuilder uiEventBuilder, @NonNullDecl Store<EntityStore> store) {
+    public void build(@Nonnull Ref<EntityStore> ref, @Nonnull UICommandBuilder uiCommandBuilder, @Nonnull UIEventBuilder uiEventBuilder, @Nonnull Store<EntityStore> store) {
         uiCommandBuilder.append("KOTT/KOTTScoreBoard.ui");
 
         int i = 0;
         for (PlayerRef _playerRef : match.getPlayersInMatch().values()) {
             if (match.getPlayerTeam(_playerRef) == null) continue;
 
-            Color teamColor = match.getPlayerTeam(_playerRef).getTeamColor();
+            Color teamColor = Objects.requireNonNull(match.getPlayerTeam(_playerRef)).getTeamColor();
             String playerName = _playerRef.getUsername();
             int kills = match.getScoreBoard().getPlayersKillCount().get(_playerRef);
             int deaths = match.getScoreBoard().getPlayersDeathCount().get(_playerRef);
 
             uiCommandBuilder.append("#Content #List", "KOTT/scoreboard/PlayerScores.ui");
-            uiCommandBuilder.set("#Content #List[" +  i + "] #TeamColor.Background", teamColor.toString());
+            uiCommandBuilder.set("#Content #List[" + i + "] #TeamColor.Background", ColorHandler.getHexFromColor(teamColor));
             uiCommandBuilder.set("#Content #List[" + i + "] #PlayerName #NameLabel.Text", playerName);
-            uiCommandBuilder.set("#Content #List[" + i + "] #Deaths.Background", "#00FF00");
-            uiCommandBuilder.set("#Content #List[" + i + "] #TeamColor.Background", "#00FF00");
+            uiCommandBuilder.set("#Content #List[" + i + "] #Kills #KillLabel.Text", String.valueOf(kills));
+            uiCommandBuilder.set("#Content #List[" + i + "] #Deaths #DeathLabel.Text", String.valueOf(deaths));
+            uiCommandBuilder.set("#Content #List[" + i + "] #KD #KDLabel.Text", String.valueOf((float) kills / Math.max(deaths, 1)));
+            i++;
         }
     }
 

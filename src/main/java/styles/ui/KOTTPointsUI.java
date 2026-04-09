@@ -59,6 +59,9 @@ public class KOTTPointsUI extends CustomUIHud {
 
             i++;
         }
+
+        if (match.getZone() == null) return;
+
         this.isInZone = match.getZone().getPlayersInZone().contains(playerRef);
 
         if (this.isInTeamZone) {

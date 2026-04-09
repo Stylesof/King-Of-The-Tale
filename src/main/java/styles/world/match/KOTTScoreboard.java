@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class KOTTScoreboard {
-    private Map<PlayerRef, Integer> PlayersKillCount;
-    private Map<PlayerRef, Integer> PlayersDeathCount;
+    private final Map<PlayerRef, Integer> PlayersKillCount = new HashMap<>();
+    private final Map<PlayerRef, Integer> PlayersDeathCount = new HashMap<>();
     private int playerCount = 0;
 
     public void addKills(PlayerRef playerRef, int quantity) {

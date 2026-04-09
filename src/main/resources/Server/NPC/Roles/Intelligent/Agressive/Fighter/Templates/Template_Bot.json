@@ -765,7 +765,14 @@
                   "BodyMotion": {
                     "Type": "Seek",
                     "SlowDownDistance": 0.1,
-                    "StopDistance": 0.1
+                    "StopDistance": 0.1,
+                    "AbortDistance": 1000,
+                    "MaxPathLength": 1000,
+                    "PathSmoothing": 5,
+                    "HeightDifference": [
+                      -15.0,
+                       15.0
+                    ]
                   }
                 },
                 {

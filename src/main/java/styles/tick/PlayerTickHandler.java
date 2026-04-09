@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
 import static styles.util.MessageHandler.printChat;
 import static styles.util.MessageHandler.printLog;
 
-public class EntityTickHandler extends EntityTickingSystem<EntityStore> {
+public class PlayerTickHandler extends EntityTickingSystem<EntityStore> {
 
     // For Entity 2
     @Override

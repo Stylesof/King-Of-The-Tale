@@ -14,14 +14,16 @@ import styles.events.ECS_OnDamageBlockEvent;
 import styles.events.OnPlayerConnectEvent;
 import styles.events.OnPlayerDisconnectEvent;
 import styles.network.player.PlayerAttackHandler;
+import styles.npc.component.BotComponent;
 import styles.player.component.InvulnerabilityComponent;
 import styles.player.component.KOTTMoney;
 import styles.tick.KOTTMatchPointTickHandler;
-import styles.tick.system.InvulnerabilitySystem;
-import styles.tick.system.ProjectileDetectionSystem;
+import styles.tick.system.npc.BotSystem;
+import styles.tick.system.player.InvulnerabilitySystem;
+import styles.tick.system.player.ProjectileDetectionSystem;
 import styles.util.log.LogTypesDebug;
 import styles.world.KOTTMatch;
-import styles.tick.EntityTickHandler;
+import styles.tick.PlayerTickHandler;
 
 import javax.annotation.Nonnull;
 
@@ -31,8 +33,10 @@ public class KOTT extends JavaPlugin {
 
     private static KOTT instance;
 
-    public ComponentType<EntityStore, KOTTMoney> kottMoneyComponent;
+    public ComponentType<EntityStore, KOTTMoney> kottMoneyComponentType;
     public ComponentType<EntityStore, InvulnerabilityComponent> invulnerabilityComponentType;
+
+    public ComponentType<EntityStore, BotComponent> botComponentType;
 
     private PacketFilter inboundFilter;
 
@@ -50,7 +54,7 @@ public class KOTT extends JavaPlugin {
 
         this.getCommandRegistry().registerCommand(new KOTTCommand());
 
-        this.kottMoneyComponent = this.getEntityStoreRegistry().registerComponent(
+        this.kottMoneyComponentType = this.getEntityStoreRegistry().registerComponent(
                 KOTTMoney.class,
                 "KOTTMoneyComponent",
                 KOTTMoney.CODEC
@@ -62,19 +66,27 @@ public class KOTT extends JavaPlugin {
                 InvulnerabilityComponent.CODEC
         );
 
+        this.botComponentType = this.getEntityStoreRegistry().registerComponent(
+                BotComponent.class,
+                "BotComponent",
+                BotComponent.CODEC
+        );
+
         // Event Handler
         this.getEventRegistry().registerGlobal(PlayerConnectEvent.class, OnPlayerConnectEvent::onPlayerConnect);
         this.getEventRegistry().registerGlobal(PlayerDisconnectEvent.class, OnPlayerDisconnectEvent::onPlayerDisconnect);
 
         // ECS Event Handler
         this.getEntityStoreRegistry().registerSystem(new ECS_OnDamageBlockEvent());
+
         // Tick System
-        this.getEntityStoreRegistry().registerSystem(new EntityTickHandler());
+        this.getEntityStoreRegistry().registerSystem(new PlayerTickHandler());
         this.getEntityStoreRegistry().registerSystem(new KOTTMatchPointTickHandler());
 
         // Systems
         this.getEntityStoreRegistry().registerSystem(new InvulnerabilitySystem(this.invulnerabilityComponentType));
         this.getEntityStoreRegistry().registerSystem(new ProjectileDetectionSystem());
+        this.getEntityStoreRegistry().registerSystem(new BotSystem());
 
         PlayerAttackHandler atkHandler = new PlayerAttackHandler();
         inboundFilter = PacketAdapters.registerInbound(atkHandler);

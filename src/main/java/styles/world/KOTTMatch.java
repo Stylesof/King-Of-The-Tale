@@ -17,6 +17,9 @@ import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserM
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarkersStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.worldstore.WorldMarkersResource;
 import com.hypixel.hytale.server.core.util.NotificationUtil;
+import com.hypixel.hytale.server.npc.entities.NPCEntity;
+import styles.npc.NPCZonePath;
+import styles.npc.component.BotComponent;
 import styles.player.component.InvulnerabilityComponent;
 import styles.team.KOTTTeam;
 import styles.ui.KOTTEndUI;
@@ -128,7 +131,7 @@ public class KOTTMatch {
             zoneMarker.setPosition(startPos.x, startPos.z);
             zoneMarker.setName("Attack Zone");
             zoneMarker.setIcon("UserF.png");
-            zoneMarker.setColorTint(new com.hypixel.hytale.protocol.Color((byte) 255, (byte) 0, (byte) 0));
+            zoneMarker.setColorTint(new Color((byte) 255, (byte) 0, (byte) 0));
         Zone = new KOTTZone(zoneRadius, startPos, world, zoneMarker);
         userMapMarkerStore.addUserMapMarker(Zone.getZoneMarker());
 
@@ -212,6 +215,18 @@ public class KOTTMatch {
                                     NotificationTypes.SUCCESS
                             );
                             MessageHandler.printLog("Created base of Team \"" + team.getDisplayName() + "\". (X: " + basePos.x + ", Y: " + basePos.y + ", Z: " + basePos.z + ")");
+
+                            team.genBots(2);
+                            for (NPCEntity bot : team.getBots()) {
+                                NPCZonePath paths = new NPCZonePath(world, getZone().getPosition().toVector3d(), getZone().getZoneRadius(), 1);
+                                BotComponent botComponent = new BotComponent(paths.getPaths());
+                                world.execute(() -> {
+                                    if (bot.getReference() == null) return;
+                                    world.getEntityStore().getStore().addComponent(bot.getReference(), BotComponent.getComponentType(), botComponent);
+                                });
+
+                            }
+
                             return CompletableFuture.completedFuture(true);
                         });
                     });
@@ -269,13 +284,16 @@ public class KOTTMatch {
                         continue;
                     }
 
+
                     world.execute(() -> {
                         PlayerRespawnPointData[] respawnPointData = { new PlayerRespawnPointData(pos, pos.toVector3d(), "Team " + team.getDisplayName() + " Respawn") };
                         player.getPlayerConfigData().getPerWorldData(world.getName()).setRespawnPoints(respawnPointData);
                         KOTTPointsUI newHud = new KOTTPointsUI(_playerRef, this);
                         player.getHudManager().setCustomHud(_playerRef, newHud);
                         newHud.initializeThreadUpdate();
-                        world.getEntityStore().getStore().addComponent(_playerRef.getReference(), InvulnerabilityComponent.getComponentType(), new InvulnerabilityComponent());
+                        if (world.getEntityStore().getStore().getComponent(_playerRef.getReference(), InvulnerabilityComponent.getComponentType()) == null) {
+                            world.getEntityStore().getStore().addComponent(_playerRef.getReference(), InvulnerabilityComponent.getComponentType(), new InvulnerabilityComponent());
+                        }
                     });
                 }
 
@@ -287,7 +305,6 @@ public class KOTTMatch {
                             ItemTypes.MITHRIL_SWORD,
                             NotificationTypes.SUCCESS
                 );
-
                 setCanMarkPoint(true);
             } else {
                 MessageHandler.printLog("Error: Failed to create and start the match on World: " + world.getName());
@@ -420,6 +437,7 @@ public class KOTTMatch {
             }
 
             team.destroyTeamBase();
+            team.removeBots();
         }
 
         MessageHandler.printLog("Removing players CustomHUDs...");
@@ -429,7 +447,10 @@ public class KOTTMatch {
                 if (player != null) {
                     player.getHudManager().resetHud(playerRef);
                 }
-                world.getEntityStore().getStore().removeComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType());
+
+                if (world.getEntityStore().getStore().getComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType()) != null) {
+                    world.getEntityStore().getStore().removeComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType());
+                }
             });
         }
         MessageHandler.printLog("Removed players CustomHUDs...");

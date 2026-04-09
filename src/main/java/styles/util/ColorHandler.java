@@ -5,7 +5,8 @@ import com.hypixel.hytale.protocol.Color;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.List;
+
+import static styles.util.MessageHandler.printLog;
 
 public class ColorHandler {
 
@@ -72,5 +73,19 @@ public class ColorHandler {
             case CYAN -> "#00ffff";
             case PURPLE -> "#ff00ff";
         };
+    }
+
+    public static String getHexFromColor(@Nonnull Color color) {
+        final char[] hex = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
+        int red = Byte.toUnsignedInt(color.red);
+        int green = Byte.toUnsignedInt(color.green);
+        int blue = Byte.toUnsignedInt(color.blue);
+
+        final String redS =   "" + hex[red   % 16] + hex[(red   / 16) % 16];
+        final String greenS = "" + hex[green % 16] + hex[(green / 16) % 16];
+        final String blueS =  "" + hex[blue  % 16] + hex[(blue  / 16) % 16];
+
+        return "#" + redS + greenS + blueS;
     }
 }

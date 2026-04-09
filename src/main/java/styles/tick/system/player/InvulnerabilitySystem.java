@@ -1,4 +1,4 @@
-package styles.tick.system;
+package styles.tick.system.player;
 
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
