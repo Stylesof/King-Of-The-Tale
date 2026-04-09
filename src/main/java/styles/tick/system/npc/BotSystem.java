@@ -13,9 +13,12 @@ import com.hypixel.hytale.server.core.modules.entity.damage.DeathComponent;
 import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
 import com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntityStatTypes;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.path.IPath;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.NPCPlugin;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
+import com.hypixel.hytale.server.npc.role.Role;
 import com.hypixel.hytale.server.npc.systems.RoleChangeSystem;
 import styles.npc.component.BotComponent;
 import styles.world.util.WorldBuilder;
@@ -29,6 +32,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import static styles.util.MessageHandler.printChat;
 import static styles.util.MessageHandler.printLog;
 
+// W.I.P. (Problems with bot path finding)
 public class BotSystem extends EntityTickingSystem<EntityStore> {
 
     private final ComponentType<EntityStore, BotComponent> botComponentType;
@@ -65,13 +69,11 @@ public class BotSystem extends EntityTickingSystem<EntityStore> {
                 TransientPath path = new TransientPath();
                 path.addWaypoint(pos, new Vector3f(0.0f, 0.0f, 0.0f));
 
-                float health = statMap.get(DefaultEntityStatTypes.getHealth()).get();
-                printLog("Vida do safado: " + health);
-                RoleChangeSystem.requestRoleChange();
                 npcComponent.getPathManager().setTransientPath(path);
-                statMap.setStatValue(DefaultEntityStatTypes.getHealth(), health);
-                printLog("Vida dps: " + statMap.get(DefaultEntityStatTypes.getHealth()).get());
+            } else{
+                npcComponent.getPathManager().setTransientPath(new TransientPath());
             }
+
             botComponent.setPathState(!botComponent.getPathState());
         }
     }

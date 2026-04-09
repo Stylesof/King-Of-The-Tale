@@ -751,8 +751,12 @@
                     }
                   ]
                 },
+                
 
                 
+
+
+
 
                 {
                   "$Comment": "Follow a set path, using path finding",
@@ -763,7 +767,9 @@
                   "Sensor": 
                   {
                     "Type": "Path",
-                    "Path": "",
+                    "Path": {
+                      "Compute": "PatrolPathName"
+                    },
                     "Range": 1000
                   },
                   "BodyMotion": 
@@ -775,7 +781,11 @@
                     "MaxPathLength": 1000
                   }
                 },
-                
+
+
+
+
+
 
 
                 {
@@ -828,7 +838,7 @@
                           "Sensor": {
                             "Type": "Leash",
                             "Range": {
-                              "Compute": "LeashDistance * 1.5"
+                              "Compute": "LeashDistance * 0.5"
                             }
                           },
                           "ActionsBlocking": true,

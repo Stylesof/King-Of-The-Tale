@@ -55,6 +55,7 @@ public class TestCommand extends AbstractAsyncPlayerCommand {
             printChat(playerRef, "Bot created!");
             NPCEntity npcComponent = store.getComponent(npc.first(), NPCEntity.getComponentType());
             npcComponent.getPathManager().setTransientPath(paths);
+            npcComponent.getPathManager().setTransientPath(new TransientPath());
 
             //Path path = pathFinder.find
             /*
