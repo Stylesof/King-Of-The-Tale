@@ -58,7 +58,7 @@ Group #PlayerData {
     @EditedSeparator {}
 
     Group #KD {
-        Anchor: (Width: 50, Left: 10, Right: 10);
+        Anchor: (Width: 100, Left: 10, Right: 10);
         @DefaultScoreLabel #KDLabel {
             Text: "15.6";
         }

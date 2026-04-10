@@ -50,6 +50,7 @@ public class KOTTMatch {
     public static final long timeToPoint = 35000;
 
     public AtomicLong matchStartTimer = new AtomicLong(System.currentTimeMillis());
+    public AtomicLong npcSpawnTimer = new AtomicLong(System.currentTimeMillis());
 
     private boolean KOTTMatchStatus = false;
     private boolean canMarkPoint = false;

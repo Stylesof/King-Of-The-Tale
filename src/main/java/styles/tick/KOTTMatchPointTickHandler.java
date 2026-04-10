@@ -4,10 +4,12 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.system.tick.TickingSystem;
 import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.NPCPlugin;
+import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import styles.player.component.KOTTMoney;
 import styles.team.KOTTTeam;
 import styles.util.MathHelper;
@@ -21,6 +23,7 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static styles.util.MessageHandler.printLog;
 import static styles.util.MessageHandler.printNotification;
@@ -33,9 +36,9 @@ public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
             if (match != null && match.getKOTTMatchStatus() && match.getCanMarkPoint()) {
                 long end = System.currentTimeMillis();
 
-                if (end - match.matchStartTimer.get() >= 15000) {
-                    long initialTimer = match.matchStartTimer.get();
-                    if (match.matchStartTimer.compareAndSet(match.matchStartTimer.get(), end)) {
+                if (end - match.npcSpawnTimer.get() >= 15000) {
+                    if (match.npcSpawnTimer.compareAndSet(match.npcSpawnTimer.get(), end)) {
+                        printLog("Time to spawn NPC reached!");
 
                         // try to spawn an NPC in zone to fight every 15 seconds
                         // Spawn in randow pos with safe 10 blocks from any player
@@ -43,25 +46,38 @@ public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
                         Vector3i pos = getVector3i(match);
                         pos = WorldBuilder.alignVectorToWorldSurface(pos, match.getMatchWorld());
 
-                        int i;
-                        for (i = 0; i < match.getZone().getPlayersInZone().size(); i++) {
-                            double distance = MathHelper.positionDistance(match.getZone().getPlayersInZone().get(i).getTransform().getPosition(), pos.toVector3d());
-                            if (distance < 10.0f) {
-                                break;
+                        int i = 0;
+                        if (pos != null) {
+                            for (i = 0; i < match.getZone().getPlayersInZone().size(); i++) {
+                                double distance = MathHelper.positionDistance(match.getZone().getPlayersInZone().get(i).getTransform().getPosition(), pos.toVector3d());
+                                if (distance < 10.0f) {
+                                    break;
+                                }
                             }
                         }
 
-                        if (i == match.getZone().getPlayersInZone().size()) {
-                            NPCPlugin.get().spawnNPC(
-                                    match.getMatchWorld().getEntityStore().getStore(),
-                                    "FighterNPC",
-                                    null,
-                                    pos.toVector3d(),
-                                    new Vector3f(0.0f, 0.0f, 0.0f)
-                            );
-                        }
+                        if (i != 0 && i == match.getZone().getPlayersInZone().size()) {
+                            AtomicInteger npcCounter = new AtomicInteger(0);
+                            match.getMatchWorld().getEntityStore().getStore().forEachEntityParallel((_index, archetypeChunk, commandBuffer) -> {
+                                if (!archetypeChunk.getArchetype().contains(Player.getComponentType())) {
+                                    NPCEntity npc = archetypeChunk.getComponent(_index, NPCEntity.getComponentType());
+                                    if (npc != null && npc.getNPCTypeId().equals("FighterNPC")) {
+                                        npcCounter.getAndIncrement();
+                                    }
+                                }
+                            });
 
-                        match.matchStartTimer.set(initialTimer);
+                            if (npcCounter.get() < 2) {
+                                printLog("Spawning NPC in: (" + pos.x + ", " + pos.y + ", " + pos.z + ")");
+                                NPCPlugin.get().spawnNPC(
+                                        match.getMatchWorld().getEntityStore().getStore(),
+                                        "FighterNPC",
+                                        null,
+                                        pos.toVector3d(),
+                                        new Vector3f(0.0f, 0.0f, 0.0f)
+                                );
+                            }
+                        }
                     }
                 }
 
@@ -137,6 +153,9 @@ public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
         int areaRadius = match.getZone().getZoneRadius();
         int randomX = random.nextInt(-areaRadius, areaRadius);
         int randomZ = random.nextInt(-areaRadius, areaRadius);
+
+        randomX += match.getZone().getPosition().x;
+        randomZ += match.getZone().getPosition().z;
 
         return new Vector3i(randomX, 0, randomZ);
     }
