@@ -9,7 +9,6 @@ import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.data.PlayerRespawnPointData;
 import com.hypixel.hytale.server.core.modules.entity.component.NewSpawnComponent;
-import com.hypixel.hytale.server.core.modules.entity.component.PropComponent;
 import com.hypixel.hytale.server.core.modules.entity.teleport.Teleport;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
@@ -18,8 +17,6 @@ import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserM
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarkersStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.worldstore.WorldMarkersResource;
 import com.hypixel.hytale.server.core.util.NotificationUtil;
-import com.hypixel.hytale.server.npc.entities.NPCEntity;
-import styles.npc.component.BotComponent;
 import styles.player.component.InvulnerabilityComponent;
 import styles.team.KOTTTeam;
 import styles.ui.KOTTEndUI;
@@ -41,6 +38,7 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 
 import static styles.util.MessageHandler.*;
@@ -50,6 +48,8 @@ public class KOTTMatch {
     // [World Name] [KOTTMatch]
     private static final Map<String, KOTTMatch> matchesList = new HashMap<>();
     public static final long timeToPoint = 35000;
+
+    public AtomicLong matchStartTimer = new AtomicLong(System.currentTimeMillis());
 
     private boolean KOTTMatchStatus = false;
     private boolean canMarkPoint = false;
@@ -215,16 +215,6 @@ public class KOTTMatch {
                                     NotificationTypes.SUCCESS
                             );
                             MessageHandler.printLog("Created base of Team \"" + team.getDisplayName() + "\". (X: " + basePos.x + ", Y: " + basePos.y + ", Z: " + basePos.z + ")");
-
-                            team.genBots(1);
-                            for (NPCEntity bot : team.getBots()) {
-                                world.execute(() -> {
-                                    if (bot.getReference() == null) return;
-                                    world.getEntityStore().getStore().addComponent(bot.getReference(), BotComponent.getComponentType(), new BotComponent(this));
-                                    world.getEntityStore().getStore().addComponent(bot.getReference(), PropComponent.getComponentType(), new PropComponent());
-                                });
-
-                            }
 
                             return CompletableFuture.completedFuture(true);
                         });
@@ -436,7 +426,6 @@ public class KOTTMatch {
             }
 
             team.destroyTeamBase();
-            team.removeBots();
         }
 
         MessageHandler.printLog("Removing players CustomHUDs...");
@@ -563,12 +552,6 @@ public class KOTTMatch {
 
     public boolean getIsEnding() { return this.isEnding; }
 
-    public void setCanMarkPoint (boolean state) { this.canMarkPoint = state; }
-
-    public void setKOTTMatchStatus(boolean state) {
-        KOTTMatchStatus = state;
-    }
-
     public List<KOTTTeam> getTeams(){ return this.Teams.values().stream().toList(); }
 
     private KOTTTeam getLastTeamAdded() { return this.Teams.lastEntry().getValue(); }
@@ -590,6 +573,7 @@ public class KOTTMatch {
 
     public KOTTZone getZone() { return this.Zone; }
 
+    @Nonnull
     public World getMatchWorld() { return this.matchWorld; }
 
     public static Map<String, KOTTMatch> getMatchesList() { return matchesList; }
@@ -598,4 +582,10 @@ public class KOTTMatch {
     public static KOTTMatch getMatch(String worldName) { return getMatchesList().get(worldName); }
 
     public KOTTScoreboard getScoreBoard() { return this.scoreBoard; }
+
+    public void setCanMarkPoint (boolean state) { this.canMarkPoint = state; }
+
+    public void setKOTTMatchStatus(boolean state) {
+        KOTTMatchStatus = state;
+    }
 }

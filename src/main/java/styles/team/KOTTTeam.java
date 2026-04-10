@@ -1,18 +1,10 @@
 package styles.team;
 
-import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.Color;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
-import com.hypixel.hytale.server.core.universe.world.npc.INonPlayerCharacter;
-import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
-import com.hypixel.hytale.server.npc.NPCPlugin;
-import com.hypixel.hytale.server.npc.entities.NPCEntity;
-import it.unimi.dsi.fastutil.Pair;
 import styles.world.zone.KOTTTeamZone;
 import styles.world.util.WorldBuilder;
 
@@ -27,7 +19,6 @@ public class KOTTTeam {
 
     public final UUID teamID;
     private final List<PlayerRef> playerList = new ArrayList<>();
-    private final List<NPCEntity> teamBots = new ArrayList<>();
     private final String displayName;
 
     private final Color teamColor;
@@ -87,35 +78,4 @@ public class KOTTTeam {
     public int getPlayerCount() { return playerList.size(); }
 
     public @Nonnull Color getTeamColor() { return this.teamColor; }
-
-    public List<NPCEntity> getBots() { return this.teamBots; }
-
-    public void genBots(int count) {
-        for (int i = 0; i < count; i++) {
-            Vector3d pos = baseZone.getPosition().toVector3d();
-            pos.y += 1;
-
-            Pair<Ref<EntityStore>, INonPlayerCharacter> npc = NPCPlugin.get().spawnNPC(
-                    baseZone.getWorld().getEntityStore().getStore(),
-                    "FighterNPC",
-                    null,
-                    pos,
-                    new Vector3f(0, 0, 0)
-            );
-
-            if (npc != null) {
-                this.teamBots.add(npc.first().getStore().getComponent(npc.first(), Objects.requireNonNull(NPCEntity.getComponentType())));
-            }
-        }
-    }
-
-    public void removeBots() {
-        for (NPCEntity npc : this.teamBots) {
-            if (npc != null && npc.getWorld() != null) {
-                npc.getWorld().execute(npc::remove);
-            }
-        }
-
-        this.teamBots.clear();
-    }
 }

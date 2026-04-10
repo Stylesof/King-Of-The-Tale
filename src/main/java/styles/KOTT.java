@@ -14,11 +14,10 @@ import styles.events.ECS_OnDamageBlockEvent;
 import styles.events.OnPlayerConnectEvent;
 import styles.events.OnPlayerDisconnectEvent;
 import styles.network.player.PlayerAttackHandler;
-import styles.npc.component.BotComponent;
 import styles.player.component.InvulnerabilityComponent;
 import styles.player.component.KOTTMoney;
 import styles.tick.KOTTMatchPointTickHandler;
-import styles.tick.system.npc.BotSystem;
+import styles.tick.system.player.DeathSystem;
 import styles.tick.system.player.InvulnerabilitySystem;
 import styles.tick.system.player.ProjectileDetectionSystem;
 import styles.util.log.LogTypesDebug;
@@ -35,8 +34,6 @@ public class KOTT extends JavaPlugin {
 
     public ComponentType<EntityStore, KOTTMoney> kottMoneyComponentType;
     public ComponentType<EntityStore, InvulnerabilityComponent> invulnerabilityComponentType;
-
-    public ComponentType<EntityStore, BotComponent> botComponentType;
 
     private PacketFilter inboundFilter;
 
@@ -68,12 +65,6 @@ public class KOTT extends JavaPlugin {
                 InvulnerabilityComponent.CODEC
         );
 
-        this.botComponentType = this.getEntityStoreRegistry().registerComponent(
-                BotComponent.class,
-                "BotComponent",
-                BotComponent.CODEC
-        );
-
         // Event Handler
         this.getEventRegistry().registerGlobal(PlayerConnectEvent.class, OnPlayerConnectEvent::onPlayerConnect);
         this.getEventRegistry().registerGlobal(PlayerDisconnectEvent.class, OnPlayerDisconnectEvent::onPlayerDisconnect);
@@ -88,7 +79,7 @@ public class KOTT extends JavaPlugin {
         // Systems
         this.getEntityStoreRegistry().registerSystem(new InvulnerabilitySystem(this.invulnerabilityComponentType));
         this.getEntityStoreRegistry().registerSystem(new ProjectileDetectionSystem());
-        this.getEntityStoreRegistry().registerSystem(new BotSystem(this.botComponentType));
+        this.getEntityStoreRegistry().registerSystem(new DeathSystem());
 
         PlayerAttackHandler atkHandler = new PlayerAttackHandler();
         inboundFilter = PacketAdapters.registerInbound(atkHandler);
