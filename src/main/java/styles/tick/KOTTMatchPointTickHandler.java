@@ -22,6 +22,7 @@ import javax.annotation.Nonnull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -60,14 +61,14 @@ public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
                             AtomicInteger npcCounter = new AtomicInteger(0);
                             match.getMatchWorld().getEntityStore().getStore().forEachEntityParallel((_index, archetypeChunk, commandBuffer) -> {
                                 if (!archetypeChunk.getArchetype().contains(Player.getComponentType())) {
-                                    NPCEntity npc = archetypeChunk.getComponent(_index, NPCEntity.getComponentType());
+                                    NPCEntity npc = archetypeChunk.getComponent(_index, Objects.requireNonNull(NPCEntity.getComponentType()));
                                     if (npc != null && npc.getNPCTypeId().equals("FighterNPC")) {
                                         npcCounter.getAndIncrement();
                                     }
                                 }
                             });
 
-                            if (npcCounter.get() < 2) {
+                            if (npcCounter.get() < match.npcCounter) {
                                 printLog("Spawning NPC in: (" + pos.x + ", " + pos.y + ", " + pos.z + ")");
                                 NPCPlugin.get().spawnNPC(
                                         match.getMatchWorld().getEntityStore().getStore(),

@@ -40,7 +40,7 @@ Group #PlayerData {
     @EditedSeparator {}
 
     Group #Kills {
-        Anchor: (Width: 100, Left: 10, Right: 10);
+        Anchor: (MinWidth: 50, MaxWidth: 100, Left: 10, Right: 10);
         @DefaultScoreLabel #KillLabel {
             Text: "78";
         }
@@ -49,7 +49,7 @@ Group #PlayerData {
     @EditedSeparator {}
 
     Group #Deaths {
-        Anchor: (Width: 100, Left: 10, Right: 10);
+        Anchor: (MinWidth: 50, MaxWidth: 100, Left: 10, Right: 10);
         @DefaultScoreLabel #DeathLabel {
             Text: "5";
         }
@@ -58,7 +58,7 @@ Group #PlayerData {
     @EditedSeparator {}
 
     Group #KD {
-        Anchor: (Width: 100, Left: 10, Right: 10);
+        Anchor: (MinWidth: 50, MaxWidth: 100, Left: 10, Right: 10);
         @DefaultScoreLabel #KDLabel {
             Text: "15.6";
         }

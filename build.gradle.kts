@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "styles"
-version = "0.5.0-BETA"
+version = "0.47.5-BETA"
 
 repositories {
     mavenCentral()
@@ -21,4 +21,20 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.processResources {
+    inputs.property("VERSION", project.version);
+
+    filesMatching("manifest.json") {
+        expand("VERSION" to project.version);
+    }
+}
+
+tasks.jar {
+    doFirst {
+        delete(fileTree(layout.buildDirectory.dir("libs")) {
+            include("*.jar")
+        })
+    }
 }

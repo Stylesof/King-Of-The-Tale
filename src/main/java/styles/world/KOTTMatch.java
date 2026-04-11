@@ -17,6 +17,7 @@ import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserM
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarkersStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.worldstore.WorldMarkersResource;
 import com.hypixel.hytale.server.core.util.NotificationUtil;
+import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import styles.player.component.InvulnerabilityComponent;
 import styles.team.KOTTTeam;
 import styles.ui.KOTTEndUI;
@@ -51,6 +52,8 @@ public class KOTTMatch {
 
     public AtomicLong matchStartTimer = new AtomicLong(System.currentTimeMillis());
     public AtomicLong npcSpawnTimer = new AtomicLong(System.currentTimeMillis());
+
+    public final int npcCounter = 10;
 
     private boolean KOTTMatchStatus = false;
     private boolean canMarkPoint = false;
@@ -211,7 +214,7 @@ public class KOTTMatch {
                             printNotification(
                                     playerRef,
                                     "Created Team Base!",
-                                    "Created base of Team \"" + team.getDisplayName() + "\". (X: " + basePos.x + ", Y: " + basePos.y + ", Z: " + basePos.z + ")",
+                                    "Created an Team Base)",
                                     ItemTypes.MITHRIL_SWORD,
                                     NotificationTypes.SUCCESS
                             );
@@ -298,10 +301,13 @@ public class KOTTMatch {
                 setCanMarkPoint(true);
             } else {
                 MessageHandler.printLog("Error: Failed to create and start the match on World: " + world.getName());
-                NotificationUtil.sendNotification(
-                        playerRef.getPacketHandler(),
-                        Message.raw(""),
-                        Message.raw(""));
+                printNotification(
+                        playerRef,
+                        "Failed to create Match!",
+                        "Couldn't create and start the match!",
+                        ItemTypes.MITHRIL_SWORD,
+                        NotificationTypes.SUCCESS
+                );
 
                 stop(world.getName(), true);
             }
@@ -430,18 +436,29 @@ public class KOTTMatch {
         }
 
         MessageHandler.printLog("Removing players CustomHUDs...");
-        for (PlayerRef playerRef : match.getPlayersInMatch().values()) {
+        MessageHandler.printLog("Removing bots from match...");
+        world.getEntityStore().getStore().forEachEntityParallel((index, archetypeChunk, commandBuffer) -> {
             world.execute(() -> {
-                Player player = world.getEntityStore().getStore().getComponent(Objects.requireNonNull(playerRef.getReference()), Player.getComponentType());
-                if (player != null) {
-                    player.getHudManager().resetHud(playerRef);
-                }
+                Player player = archetypeChunk.getComponent(index, Player.getComponentType());
+                NPCEntity npc = archetypeChunk.getComponent(index, Objects.requireNonNull(NPCEntity.getComponentType()));
 
-                if (world.getEntityStore().getStore().getComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType()) != null) {
-                    world.getEntityStore().getStore().removeComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType());
+                if (player != null && player.getReference() != null) {
+                    PlayerRef playerRef = world.getEntityStore().getStore().getComponent(player.getReference(), PlayerRef.getComponentType());
+
+                    assert playerRef != null;
+                    player.getHudManager().resetHud(playerRef);
+
+                    assert playerRef.getReference() != null;
+                    if (world.getEntityStore().getStore().getComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType()) != null) {
+                        world.getEntityStore().getStore().removeComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType());
+                    }
+                } else if (npc != null) {
+                    if (npc.getNPCTypeId().equals("FighterNPC")) {
+                        npc.remove();
+                    }
                 }
             });
-        }
+        });
         MessageHandler.printLog("Removed players CustomHUDs...");
 
         MessageHandler.printLog(match.Zone.getWorld().getName() + ": Removing UserMapMarker from Zone...");

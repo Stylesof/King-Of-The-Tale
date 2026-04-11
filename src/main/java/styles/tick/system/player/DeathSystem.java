@@ -5,10 +5,8 @@ import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
-import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
-import com.hypixel.hytale.server.core.modules.entity.damage.DamageCause;
 import com.hypixel.hytale.server.core.modules.entity.damage.DeathComponent;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -18,13 +16,20 @@ import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static styles.util.MessageHandler.printChat;
-import static styles.util.MessageHandler.printLog;
 
 public class DeathSystem extends EntityTickingSystem<EntityStore> {
+
+    private final static Map<PlayerRef, AtomicBoolean> playerCanChangeScore = new HashMap<>();
+
     @Override
     public void tick(float v, int i, @Nonnull ArchetypeChunk<EntityStore> archetypeChunk, @Nonnull Store<EntityStore> store, @Nonnull CommandBuffer<EntityStore> commandBuffer) {
         DeathComponent death = archetypeChunk.getComponent(i, DeathComponent.getComponentType());
@@ -32,6 +37,8 @@ public class DeathSystem extends EntityTickingSystem<EntityStore> {
         if (death != null) {
             NPCEntity npc = archetypeChunk.getComponent(i, Objects.requireNonNull(NPCEntity.getComponentType()));
             Player player = archetypeChunk.getComponent(i, Player.getComponentType());
+            PlayerRef playerRef = null;
+
             World world;
             KOTTMatch match;
 
@@ -49,8 +56,21 @@ public class DeathSystem extends EntityTickingSystem<EntityStore> {
                 match = KOTTMatch.getMatch(world.getName());
                 if (match != null) {
                     assert player.getReference() != null;
-                    PlayerRef playerRef = world.getEntityStore().getStore().getComponent(player.getReference(), PlayerRef.getComponentType());
-                    match.getScoreBoard().addDeath(playerRef);
+                    playerRef = world.getEntityStore().getStore().getComponent(player.getReference(), PlayerRef.getComponentType());
+
+                    if (!playerCanChangeScore.containsKey(playerRef)) {
+                        playerCanChangeScore.put(playerRef, new AtomicBoolean(true));
+                    }
+
+                    if (playerCanChangeScore.get(playerRef).get()) {
+                        if (!playerCanChangeScore.get(playerRef).compareAndExchange(true, false)) return;
+                        match.getScoreBoard().addDeath(playerRef);
+
+                        PlayerRef finalPlayerRef = playerRef;
+                        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+                        scheduler.schedule(() -> playerCanChangeScore.remove(finalPlayerRef), 2, TimeUnit.SECONDS);
+                        scheduler.shutdown();
+                    }
                 }
             } else {
                 return;
@@ -62,8 +82,18 @@ public class DeathSystem extends EntityTickingSystem<EntityStore> {
                 world.execute(() -> {
                     PlayerRef killer = world.getEntityStore().getStore().getComponent(entitySource.getRef(), PlayerRef.getComponentType());
                     if (killer != null) {
-                        match.getScoreBoard().addKills(killer, 1);
-                        printChat(killer, "Index: " + death);
+                        if (!playerCanChangeScore.containsKey(killer)) {
+                            playerCanChangeScore.put(killer, new AtomicBoolean(true));
+                        }
+
+                        if (playerCanChangeScore.get(killer).get()) {
+                            if (!playerCanChangeScore.get(killer).compareAndExchange(true, false)) return;
+                            match.getScoreBoard().addKills(killer, 1);
+
+                            ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+                            scheduler.schedule(() -> playerCanChangeScore.remove(killer), 2, TimeUnit.SECONDS);
+                            scheduler.shutdown();
+                        }
                     }
                 });
             }
