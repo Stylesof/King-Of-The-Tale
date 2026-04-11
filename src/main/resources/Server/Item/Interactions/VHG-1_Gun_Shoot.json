@@ -14,9 +14,11 @@
         "RotationOffset": {
           "Pitch": 90
         },
-        "Color": "#ffffff"
+        "Color": "#ff0000"
       }
-    ]
+    ],
+    "LocalSoundEventId": "SFX_Rifle_Fire_Local",
+    "WorldSoundEventId": "SFX_Rifle_Fire"
   },
-  "ProjectileId": "HK121_Bullet"
+  "ProjectileId": "VHG-1_Bullet"
 }

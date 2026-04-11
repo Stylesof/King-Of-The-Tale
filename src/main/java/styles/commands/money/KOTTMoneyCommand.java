@@ -22,6 +22,7 @@ import styles.player.component.KOTTMoney;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -43,11 +44,11 @@ public class KOTTMoneyCommand extends AbstractAsyncPlayerCommand {
     @Override
     protected CompletableFuture<Void> executeAsync(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
         if (!commandContext.isPlayer()) {
-            printChat(commandContext, "Command only to player(s)!");
+            printChat(commandContext, "Command to player(s) only!");
             return CompletableFuture.completedFuture(null);
         }
 
-        KOTTMoney money = playerRef.getReference().getStore().getComponent(ref, KOTTMoney.getComponentType());
+        KOTTMoney money = Objects.requireNonNull(playerRef.getReference()).getStore().getComponent(ref, KOTTMoney.getComponentType());
         float moneyQnt = 0.0f;
         if (money != null) {
             moneyQnt = money.moneyQuantity;

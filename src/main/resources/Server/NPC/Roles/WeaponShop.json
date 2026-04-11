@@ -7,7 +7,7 @@
   },
   "StartState": "Idle",
   "DisplayNames": [
-    "Weapon Seller"
+    "Weapon Shop"
   ],
   "DefaultNPCAttitude": "Ignore",
   "DefaultPlayerAttitude": "Neutral",
@@ -239,7 +239,7 @@
               },
               {
                 "Type": "OpenBarterShop",
-                "Shop": "Weapon_Merchant"
+                "Shop": "Weapon_Shop"
               },
               {
                 "Type": "State",
@@ -251,5 +251,5 @@
       }
     ]
   },
-  "NameTranslationKey": "WeaponSeller"
+  "NameTranslationKey": "WeaponShop"
 }

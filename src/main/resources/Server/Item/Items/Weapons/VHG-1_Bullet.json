@@ -1,0 +1,19 @@
+{
+  "TranslationProperties": {
+    "Name": "VHG-1 Bullet",
+    "Description": "Bullet from/to VHG-1!"
+  },
+  "Id": "VHG-1_Bullet",
+  "Icon": "Icons/ItemsGenerated/Weapons/VHG-1_BulletIcon.png",
+  "Model": "Items/Weapon_VHG-1/VHG-1_Bullet_model.blockymodel",
+  "Texture": "Items/Weapon_VHG-1/VHG-1_Bullet_texture.png",
+  "Quality": "Common",
+  "PlayerAnimationsId": "Item",
+  "MaxStack": 150,
+  "IconProperties": {
+    "Scale": 0.25
+  },
+  "Categories": [
+    "Items.Example"
+  ]
+}

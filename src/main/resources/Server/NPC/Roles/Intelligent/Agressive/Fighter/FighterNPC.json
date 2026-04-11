@@ -13,9 +13,9 @@
     "DropList": "Empty",
     "Appearance": "FighterNPC_Model",
     "Weapons": [
-      "Weapon_HK121"
+      "Weapon_VHG-1"
     ],
-    "Attack": "HK121_Gun_Shoot",
+    "Attack": "VHG-1_Shoot",
     "CombatBackOffAfterAttack": false,
     "AttackDistance": 70,
     "CombatFleeIfTooCloseDistance": 0,

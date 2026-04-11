@@ -1,0 +1,41 @@
+{
+    "DisplayNameKey": "Weapon Shop",
+    "RefreshInterval": {
+        "Days": 1
+    },
+    "RestockHour": 0,
+    "TradeSlots": [
+        {
+            "Type": "Fixed",
+            "Trade": {
+                "Output": {
+                "ItemId": "Weapon_VHG-1",
+                "Quantity": 1
+                },
+                "Input": [
+                {
+                    "ItemId": "Money",
+                    "Quantity": 750
+                }
+                ],
+                "Stock": 1000
+            }
+        },
+        {
+            "Type": "Fixed",
+            "Trade": {
+                "Output": {
+                    "ItemId": "VHG-1_Bullet",
+                    "Quantity": 30
+                },
+                "Input": [
+                    {
+                        "ItemId": "Money",
+                        "Quantity": 100
+                    }
+                ],
+                "Stock": 1000
+            }
+        }
+    ]
+}

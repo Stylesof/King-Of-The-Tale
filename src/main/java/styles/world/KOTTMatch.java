@@ -1,14 +1,16 @@
 package styles.world;
 
+import com.hypixel.hytale.component.RemoveReason;
 import com.hypixel.hytale.math.vector.Transform;
 import com.hypixel.hytale.math.vector.Vector3d;
+import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.Color;
-import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.data.PlayerRespawnPointData;
 import com.hypixel.hytale.server.core.modules.entity.component.NewSpawnComponent;
+import com.hypixel.hytale.server.core.modules.entity.component.PropComponent;
 import com.hypixel.hytale.server.core.modules.entity.teleport.Teleport;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
@@ -16,7 +18,7 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarkersStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.worldstore.WorldMarkersResource;
-import com.hypixel.hytale.server.core.util.NotificationUtil;
+import com.hypixel.hytale.server.npc.NPCPlugin;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import styles.player.component.InvulnerabilityComponent;
 import styles.team.KOTTTeam;
@@ -206,7 +208,7 @@ public class KOTTMatch {
                                         ItemTypes.MITHRIL_SWORD,
                                         NotificationTypes.ERROR
                                 );
-                                MessageHandler.printLog("Error: Failed to create the team base!", Level.SEVERE);
+                                MessageHandler.printLog("ERROR: Failed to create the team base!", Level.SEVERE);
                                 stop(world.getName());
                                 return CompletableFuture.completedFuture(false);
                             }
@@ -218,7 +220,7 @@ public class KOTTMatch {
                                     ItemTypes.MITHRIL_SWORD,
                                     NotificationTypes.SUCCESS
                             );
-                            MessageHandler.printLog("Created base of Team \"" + team.getDisplayName() + "\". (X: " + basePos.x + ", Y: " + basePos.y + ", Z: " + basePos.z + ")");
+                            MessageHandler.printLog("Created base of Team \"" + team.getDisplayName() + "\". (X: " + basePos.x + ", Y: " + basePos.y + ", Z: " + basePos.z);
 
                             return CompletableFuture.completedFuture(true);
                         });
@@ -234,7 +236,7 @@ public class KOTTMatch {
                         ItemTypes.MITHRIL_SWORD,
                         NotificationTypes.ERROR
                 );
-                MessageHandler.printLog("Error: Failed to create the team: " + nameList.get(i));
+                MessageHandler.printLog("ERROR: Failed to create the team: " + nameList.get(i));
                 stop(world.getName());
                 return CompletableFuture.completedFuture(null);
             }
@@ -290,6 +292,31 @@ public class KOTTMatch {
                     });
                 }
 
+                for (KOTTTeam team : this.getTeams()) {
+                    // Add Weapon Shop into Team Bases
+                    Vector3d spawnPos = team.getBaseZone().getPosition().toVector3d();
+                    spawnPos.y += 1; // to npc don't clip to the ground
+                    spawnPos.x += 4.5d;
+                    spawnPos.z -= 3.5d;
+
+                    world.execute(() -> {
+                        var npc = NPCPlugin.get().spawnNPC(
+                            world.getEntityStore().getStore(),
+                            "WeaponShop",
+                            null,
+                            spawnPos,
+                            new Vector3f(0.0f, (float) Math.toRadians(135), 0.0f)
+                        );
+
+                        if (npc != null) {
+                            PropComponent propComponent = world.getEntityStore().getStore().getComponent(npc.first(), PropComponent.getComponentType());
+                            if (propComponent == null) {
+                                world.getEntityStore().getStore().addComponent(npc.first(), PropComponent.getComponentType(), PropComponent.get());
+                            }
+                        }
+                    });
+                }
+
                 MessageHandler.printLog("Match created and started on World: " + world.getName());
                 printNotification(
                             playerRef,
@@ -300,7 +327,7 @@ public class KOTTMatch {
                 );
                 setCanMarkPoint(true);
             } else {
-                MessageHandler.printLog("Error: Failed to create and start the match on World: " + world.getName());
+                MessageHandler.printLog("ERROR: Failed to create and start the match on World: " + world.getName());
                 printNotification(
                         playerRef,
                         "Failed to create Match!",
@@ -369,11 +396,11 @@ public class KOTTMatch {
 
         Teleport tp = Teleport.createForPlayer(chosenTeam.getBaseZone().getWorld(), new Transform(chosenTeam.getBaseZone().getPosition().toVector3d()));
         if (playerRef.getWorldUuid() != null) {
-            Universe.get().getWorld(playerRef.getWorldUuid())
+            Objects.requireNonNull(Universe.get().getWorld(playerRef.getWorldUuid()))
                     .getEntityStore()
                     .getStore()
                     .addComponent(
-                            playerRef.getReference(),
+                            Objects.requireNonNull(playerRef.getReference()),
                             Teleport.getComponentType(),
                             tp
                     );
@@ -435,31 +462,39 @@ public class KOTTMatch {
             team.destroyTeamBase();
         }
 
-        MessageHandler.printLog("Removing players CustomHUDs...");
-        MessageHandler.printLog("Removing bots from match...");
-        world.getEntityStore().getStore().forEachEntityParallel((index, archetypeChunk, commandBuffer) -> {
-            world.execute(() -> {
-                Player player = archetypeChunk.getComponent(index, Player.getComponentType());
+        printLog("Removing players CustomHUDs...");
+        for (PlayerRef playerRef : match.getZone().getPlayersInZone()) {
+            if (playerRef != null && playerRef.getReference() != null) {
+                world.execute(() -> {
+                    Player player = world.getEntityStore().getStore().getComponent(playerRef.getReference(), Player.getComponentType());
+
+                    if (player != null) {
+                        player.getHudManager().resetHud(playerRef);
+
+                        if (world.getEntityStore().getStore().getComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType()) != null) {
+                            world.getEntityStore().getStore().removeComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType());
+                        }
+                    }
+                });
+            }
+        }
+        printLog("Removed players CustomHUDs!");
+
+        printLog("Removing bots from match...");
+        world.execute(() -> world.getEntityStore().getStore().forEachChunk(NPCEntity.getComponentType(), (archetypeChunk, commandBuffer) -> {
+            for (int index = 0; index < archetypeChunk.size(); index++) {
                 NPCEntity npc = archetypeChunk.getComponent(index, Objects.requireNonNull(NPCEntity.getComponentType()));
 
-                if (player != null && player.getReference() != null) {
-                    PlayerRef playerRef = world.getEntityStore().getStore().getComponent(player.getReference(), PlayerRef.getComponentType());
-
-                    assert playerRef != null;
-                    player.getHudManager().resetHud(playerRef);
-
-                    assert playerRef.getReference() != null;
-                    if (world.getEntityStore().getStore().getComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType()) != null) {
-                        world.getEntityStore().getStore().removeComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType());
+                if (npc != null) {
+                    if (npc.getNPCTypeId().equals("FighterNPC") || npc.getNPCTypeId().equals("WeaponShop")) {
+                        world.execute(() -> {
+                            world.getEntityStore().getStore().removeEntity(Objects.requireNonNull(npc.getReference()), RemoveReason.REMOVE);
+                        });
                     }
-                } else if (npc != null) {
-                    if (npc.getNPCTypeId().equals("FighterNPC")) {
-                        npc.remove();
-                    }
-                }
-            });
-        });
-        MessageHandler.printLog("Removed players CustomHUDs...");
+               }
+            }
+        }));
+        printLog("Removed bots from match!");
 
         MessageHandler.printLog(match.Zone.getWorld().getName() + ": Removing UserMapMarker from Zone...");
         store.removeUserMapMarker(match.Zone.getZoneMarker().getId());

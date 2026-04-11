@@ -44,7 +44,7 @@ public class KOTTZone {
         playersInZone.add(playerRef);
     }
 
-    public Vector3i getPosition() { return this.zonePosition; }
+    public Vector3i getPosition() { return new Vector3i(this.zonePosition); }
 
     public boolean isInside(@Nonnull Vector3d position) {
 

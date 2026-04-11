@@ -1,13 +1,13 @@
 {
   "TranslationProperties": {
-    "Name": "server.items.Weapon_Gun.name"
+    "Name": "VHG-1"
   },
   "Categories": [
     "Items.Weapons"
   ],
-  "Icon": "Icons/ItemsGenerated/Weapon_Gun.png",
-  "Model": "Items/Weapon_HK121/HK121.blockymodel",
-  "Texture": "Items/Weapon_HK121/HK121_texture.png",
+  "Icon": "Icons/ItemsGenerated/Weapons/VHG-1Icon.png",
+  "Model": "Items/Weapon_VHG-1/VHG-1_model.blockymodel",
+  "Texture": "Items/Weapon_VHG-1/VHG-1_texture.png",
   "PlayerAnimationsId": {
     "Parent": "Rifle",
     "Animations": {
@@ -15,7 +15,7 @@
         "ThirdPerson": "Characters/Animations/Items/Dual_Handed/Rifle/Attacks/Shoot/Shoot.blockyanim",
         "ThirdPersonMoving": "Characters/Animations/Items/Dual_Handed/Rifle/Attacks/Shoot/Shoot_Moving.blockyanim",
         "FirstPerson": "Characters/Animations/Items/Dual_Handed/Rifle/Attacks/Shoot/Shoot_FPS.blockyanim",
-        "Speed": 2,
+        "Speed": 1.6,
         "BlendingDuration": 0,
         "ThirdPersonFace": "Characters/Animations/Expressions/Frown.blockyanim"
       }
@@ -25,8 +25,20 @@
     "Primary": {
       "Interactions": [
         {
-          "Parent": "HK121_Gun_Shoot",
-          "RunTime": 0.01
+          "Type": "ModifyInventory",
+          "RequiredGameMode": "Adventure",
+          "ItemToRemove": {
+            "Id": "VHG-1_Bullet",
+            "Quantity": 1
+          },
+          "Next": {
+            "Parent": "VHG-1_Gun_Shoot",
+            "RunTime": 0.01,
+            "Effects": {
+
+            }
+          },
+          "Failed": "Gun_Shoot_Fail"
         }
       ],
       "Cooldown": {

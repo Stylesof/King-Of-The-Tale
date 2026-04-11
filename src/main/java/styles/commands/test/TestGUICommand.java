@@ -32,13 +32,13 @@ public class TestGUICommand extends AbstractAsyncPlayerCommand {
         KOTTMatch match = KOTTMatch.getMatch(world.getName());
 
         if (match != null) {
-            printChat(playerRef, "Deu bom");
+            printChat(playerRef, "good");
             world.execute(() -> {
                 Player player = store.getComponent(ref, Player.getComponentType());
                 player.getPageManager().openCustomPage(ref, store, new KOTTScoreBoardUI(playerRef, match));
             });
         } else {
-            printChat(playerRef, "Deu ruim");
+            printChat(playerRef, "bad");
         }
 
         return CompletableFuture.completedFuture(null);

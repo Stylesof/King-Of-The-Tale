@@ -3,11 +3,8 @@ package styles.commands;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractCommandCollection;
 import styles.commands.match.KOTTMatchCommand;
 import styles.commands.money.KOTTMoneyCommand;
+import styles.commands.scoreboard.KOTTScoreboardCommand;
 import styles.commands.team.KOTTTeamCommand;
-import styles.commands.test.TestCommand;
-import styles.commands.test.TestGUICommand;
-
-import static styles.util.MessageHandler.printLog;
 
 public class KOTTCommand extends AbstractCommandCollection {
 
@@ -29,8 +26,10 @@ public class KOTTCommand extends AbstractCommandCollection {
 
         this.addSubCommand(new KOTTMoneyCommand());
 
+        this.addSubCommand(new KOTTScoreboardCommand());
+
         // === FOR TEST ===
-        this.addSubCommand(new TestCommand());
-        this.addSubCommand(new TestGUICommand());
+        //this.addSubCommand(new TestCommand());
+        //this.addSubCommand(new TestGUICommand());
     }
 }
