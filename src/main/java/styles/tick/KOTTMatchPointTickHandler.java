@@ -26,8 +26,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static styles.util.MessageHandler.printLog;
-import static styles.util.MessageHandler.printNotification;
+import static styles.util.MessageHandler.*;
 
 public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
 
@@ -138,7 +137,8 @@ public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
                         if (playerRef.getReference() != null) {
                             if (match.getZone().getPlayersInZone().contains(playerRef)) {
                                 if (finalFirstTeam.containsPlayer(playerRef)){
-                                    KOTTMoney.addMoneyToPlayer(playerRef, 10);
+                                    KOTTMoney.addMoneyToPlayer(playerRef, 100);
+                                    printChat(playerRef, "+$100.00 for marking point!");
                                 }
                             }
 

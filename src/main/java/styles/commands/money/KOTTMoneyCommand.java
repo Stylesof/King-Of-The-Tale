@@ -18,6 +18,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import styles.KOTT;
 import styles.player.component.KOTTMoney;
 
 import javax.annotation.Nonnull;
@@ -38,6 +39,7 @@ public class KOTTMoneyCommand extends AbstractAsyncPlayerCommand {
 
         this.addSubCommand(new KOTTMoneyGetCommand());
         this.addSubCommand(new KOTTMoneyDepositCommand());
+        this.addSubCommand(new KOTTMoneySetCommand());
     }
 
     @Nonnull
@@ -73,7 +75,7 @@ public class KOTTMoneyCommand extends AbstractAsyncPlayerCommand {
             String _filter = this.filter.get(commandContext);
             assert  _filter != null;
 
-            Map<String, Float> playerMoneyList = KOTTMoney.getPlayerMoneyMap(_filter);
+            Map<String, Integer> playerMoneyList = KOTTMoney.getPlayerMoneyMap(_filter);
             int i = 1;
             for (String name : playerMoneyList.keySet()) {
                 printChat(commandContext, i + ". " + name + ": $" + playerMoneyList.get(name));
@@ -277,6 +279,56 @@ public class KOTTMoneyCommand extends AbstractAsyncPlayerCommand {
 
                 return CompletableFuture.completedFuture(null);
             }
+        }
+    }
+
+    public static class KOTTMoneySetCommand extends AbstractAsyncPlayerCommand{
+
+        private final RequiredArg<Integer> moneyQuantity;
+        private final DefaultArg<String> playerName;
+
+        public KOTTMoneySetCommand() {
+            super("set", "Set any player money quantity!");
+
+            this.moneyQuantity = this.withRequiredArg("value", "Money quantity to set." , ArgTypes.INTEGER);
+            this.playerName = this.withDefaultArg("player", "Player to set the money!", ArgTypes.STRING, "#self", "Set money in yourself");
+        }
+
+        @Nonnull
+        @Override
+        protected CompletableFuture<Void> executeAsync(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
+            Integer _moneyQuantity = this.moneyQuantity.get(commandContext);
+            String _playerName = this.playerName.get(commandContext);
+
+            PlayerRef actualPlayerRef = null;
+            if (_playerName == null || _playerName.equals("#self")) {
+                if (!commandContext.isPlayer()) {
+                    printChat(commandContext, "To use this command as a non-player, you need to insert the player which you want to set the money!");
+                    return CompletableFuture.completedFuture(null);
+                }
+
+                _playerName = playerRef.getUsername();
+                actualPlayerRef = playerRef;
+            }
+
+            if (actualPlayerRef == null) {
+                for (PlayerRef _playerRef : Universe.get().getPlayers()) {
+                    if (_playerRef.getUsername().equals(_playerName)) {
+                        actualPlayerRef = _playerRef;
+                        break;
+                    }
+                }
+            }
+
+            if (actualPlayerRef == null || !actualPlayerRef.isValid()) {
+                printChat(commandContext, "Invalid player!");
+                return CompletableFuture.completedFuture(null);
+            }
+
+            KOTTMoney.setPlayerMoney(playerRef, _moneyQuantity);
+            printChat(commandContext, "Set $" + _moneyQuantity + ".00 to the player: " + _playerName);
+
+            return CompletableFuture.completedFuture(null);
         }
     }
 }

@@ -12,6 +12,7 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
+import styles.player.component.KOTTMoney;
 import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
@@ -89,6 +90,8 @@ public class DeathSystem extends EntityTickingSystem<EntityStore> {
                         if (playerCanChangeScore.get(killer).get()) {
                             if (!playerCanChangeScore.get(killer).compareAndExchange(true, false)) return;
                             match.getScoreBoard().addKills(killer, 1);
+                            KOTTMoney.addMoneyToPlayer(killer, 100);
+                            printChat(killer, "+$100.00 for the kill!");
 
                             ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
                             scheduler.schedule(() -> playerCanChangeScore.remove(killer), 2, TimeUnit.SECONDS);

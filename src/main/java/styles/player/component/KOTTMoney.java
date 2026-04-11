@@ -21,16 +21,17 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static styles.util.MessageHandler.printChat;
+import static styles.util.MessageHandler.printLog;
 
 public class KOTTMoney implements Component<EntityStore> {
-    public float moneyQuantity;
+    public int moneyQuantity;
 
     public static final BuilderCodec<KOTTMoney> CODEC = BuilderCodec.builder(KOTTMoney.class, KOTTMoney::new)
-            .append(new KeyedCodec<>("MoneyQuantity", BuilderCodec.FLOAT),
+            .append(new KeyedCodec<>("MoneyQuantity", BuilderCodec.INTEGER),
                     (data, value) -> data.moneyQuantity = value,
                     data -> data.moneyQuantity)
             .addValidator(Validators.nonNull())
-            .addValidator(Validators.min(0.0f))
+            .addValidator(Validators.min(0))
             .add()
             .build();
 
@@ -53,9 +54,9 @@ public class KOTTMoney implements Component<EntityStore> {
         ADD_OLDEST
     }
 
-    public static Map<String, Float> getPlayerMoneyMap() { return KOTTMoneySaveFile.getKottConfig().getPlayerMoneyMap; }
+    public static Map<String, Integer> getPlayerMoneyMap() { return KOTTMoneySaveFile.getKottConfig().getPlayerMoneyMap; }
 
-    public static Map<String, Float> getPlayerMoneyMap(@Nonnull String filter) {
+    public static Map<String, Integer> getPlayerMoneyMap(@Nonnull String filter) {
         filter = filter.toUpperCase();
         if (filter.equals(FilterType.MONEY_HIGHER.toString())) {
             return getPlayerMoneyMap(FilterType.MONEY_HIGHER);
@@ -68,11 +69,11 @@ public class KOTTMoney implements Component<EntityStore> {
         }
     }
 
-    public static Map<String, Float> getPlayerMoneyMap(FilterType filter) {
-        Map<String, Float> playerMoneyMap = getPlayerMoneyMap();
+    public static Map<String, Integer> getPlayerMoneyMap(FilterType filter) {
+        Map<String, Integer> playerMoneyMap = getPlayerMoneyMap();
         if (getPlayerMoneyMap().isEmpty()) return new HashMap<>();
 
-        Map<String, Float> sortedMap = new LinkedHashMap<>();
+        Map<String, Integer> sortedMap = new LinkedHashMap<>();
 
         switch (filter){
             case MONEY_LOWER -> sortedMap = playerMoneyMap.entrySet().stream()
@@ -85,7 +86,7 @@ public class KOTTMoney implements Component<EntityStore> {
                     ));
 
             case MONEY_HIGHER -> sortedMap = playerMoneyMap.entrySet().stream()
-                    .sorted(Map.Entry.<String, Float>comparingByValue().reversed())
+                    .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
                     .collect(Collectors.toMap(
                             Map.Entry::getKey,
                             Map.Entry::getValue,
@@ -98,7 +99,7 @@ public class KOTTMoney implements Component<EntityStore> {
 
         if (filter == FilterType.ADD_NEWEST) {
             for (int i = playerMoneyMap.size() - 1; i >= 0; i--) {
-                sortedMap.put(playerMoneyMap.keySet().toArray(new String[0])[i], playerMoneyMap.values().toArray(new Float[0])[i]);
+                sortedMap.put(playerMoneyMap.keySet().toArray(new String[0])[i], playerMoneyMap.values().toArray(new Integer[0])[i]);
             }
         }
 
@@ -118,6 +119,26 @@ public class KOTTMoney implements Component<EntityStore> {
         KOTTMoneySaveFile.getKottConfig().addToPlayerMoneyList(playerRef.getUsername(), money.moneyQuantity);
     }
 
+    public static void setPlayerMoney(@Nonnull PlayerRef playerRef, int quantity) {
+        if (playerRef.getReference() != null && playerRef.getWorldUuid() != null) {
+            World world = Universe.get().getWorld(playerRef.getWorldUuid());
+            if (world != null) {
+                KOTTMoney money = world.getEntityStore().getStore().getComponent(playerRef.getReference(), KOTTMoney.getComponentType());
+                if (money == null) {
+                    money = new KOTTMoney();
+                    world.getEntityStore().getStore().addComponent(playerRef.getReference(), KOTTMoney.getComponentType(), money);
+                } else {
+                    addMoneyToPlayer(playerRef, -money.moneyQuantity);
+                    addMoneyToPlayer(playerRef, quantity);
+                }
+            } else {
+                printLog("ERROR: Invalid player World!");
+            }
+        } else{
+            printLog("ERROR: Invalid player reference!");
+        }
+    }
+
     public static void removeMoneyFromPlayer(@Nonnull PlayerRef playerRef, int quantity) {
         addMoneyToPlayer(playerRef, -quantity);
     }
@@ -129,19 +150,19 @@ public class KOTTMoney implements Component<EntityStore> {
     }
 
     public static class KOTTMoneySaveFile {
-        public Map<String, Float> getPlayerMoneyMap = new LinkedHashMap<>();
+        public Map<String, Integer> getPlayerMoneyMap = new LinkedHashMap<>();
 
         public static final BuilderCodec<KOTTMoneySaveFile> CODEC = BuilderCodec.builder(KOTTMoneySaveFile.class, KOTTMoneySaveFile::new)
-                .append(new KeyedCodec<>("PlayerMoneyList", new MapCodec<>(Codec.FLOAT, HashMap<String, Float>::new)),
+                .append(new KeyedCodec<>("PlayerMoneyList", new MapCodec<>(Codec.INTEGER, HashMap<String, Integer>::new)),
                         (data, value) -> data.getPlayerMoneyMap = value,
                         (data) -> data.getPlayerMoneyMap)
                 .add()
                 .build();
 
-        public void addToPlayerMoneyList(String username, float money) {
+        public void addToPlayerMoneyList(String username, int money) {
             KOTTMoneySaveFile config = getKottConfig();
 
-            Map<String, Float> _playerMoneyMap = new LinkedHashMap<>(getPlayerMoneyMap);
+            Map<String, Integer> _playerMoneyMap = new LinkedHashMap<>(getPlayerMoneyMap);
             _playerMoneyMap.put(username, money);
             config.getPlayerMoneyMap = _playerMoneyMap;
             KOTT.getInstance().kottMoneySaveFile.save();
@@ -151,7 +172,7 @@ public class KOTTMoney implements Component<EntityStore> {
             KOTTMoneySaveFile config = getKottConfig();
             for(String _username : config.getPlayerMoneyMap.keySet()) {
                 if (_username.equals(username)) {
-                    Map<String, Float> playerMoneyMap2 = new LinkedHashMap<>(getPlayerMoneyMap);
+                    Map<String, Integer> playerMoneyMap2 = new LinkedHashMap<>(getPlayerMoneyMap);
                     playerMoneyMap2.remove(username);
                     config.getPlayerMoneyMap = playerMoneyMap2;
                     saveKOTTConfig();

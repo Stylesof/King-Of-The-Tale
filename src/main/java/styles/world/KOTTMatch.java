@@ -463,7 +463,7 @@ public class KOTTMatch {
         }
 
         printLog("Removing players CustomHUDs...");
-        for (PlayerRef playerRef : match.getZone().getPlayersInZone()) {
+        for (PlayerRef playerRef : match.getPlayersInMatch().values()) {
             if (playerRef != null && playerRef.getReference() != null) {
                 world.execute(() -> {
                     Player player = world.getEntityStore().getStore().getComponent(playerRef.getReference(), Player.getComponentType());
