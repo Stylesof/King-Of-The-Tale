@@ -51,7 +51,7 @@ public class WorldBuilder {
         Vector3i min = new Vector3i(pos.x - size, pos.y, pos.z - size); // left down corner
         Vector3i max = new Vector3i(pos.x + size, pos.y + size, pos.z + size);
 
-        return world.getChunkAsync(pos.x, pos.z).thenAccept(WorldChunk::addKeepLoaded).thenCompose(unused -> {
+        return world.getChunkAsync(pos.x, pos.z).thenAccept(WorldChunk::markNeedsSaving).thenCompose(unused -> {
             for(int y = min.y; y <= max.y; y++){
                 for(int x = min.x; x <= max.x; x++){
                     for(int z = min.z; z <= max.z; z++){
