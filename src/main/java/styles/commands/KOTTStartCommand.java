@@ -43,11 +43,11 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
     public KOTTStartCommand() {
         super("start", "Create an KOTT game session!");
 
-        this.team_count = this.withDefaultArg("team_count", "Count of Teams.", ArgTypes.INTEGER, 1, "(1 Team by default)");
-        this.zone_radius = this.withDefaultArg("zone_size", "Area size to conquer (in blocks).", ArgTypes.INTEGER, 100, "(100 Zone size by default");
+        this.team_count = this.withDefaultArg("teamCount", "Count of Teams.", ArgTypes.INTEGER, 1, "(1 Team by default)");
+        this.zone_radius = this.withDefaultArg("zoneSize", "Area size to conquer (in blocks).", ArgTypes.INTEGER, 100, "(100 Zone size by default");
         this.world_name = this.withOptionalArg("world", "World to create the KOTT (leave empty for use the actual).", ArgTypes.STRING);
 
-        this.world_pos = this.withOptionalArg("world_pos", "Position of the defined world to spawn the MainZone (Actual position by default).", ArgTypes.VECTOR3I);
+        this.world_pos = this.withOptionalArg("worldPos", "Position of the defined world to spawn the MainZone (Actual position by default).", ArgTypes.VECTOR3I);
         this.safe = this.withFlagArg("safe", "Creates the match on a temporary World (Deleted after the end of the match).");
         this.loop = this.withFlagArg("loop", "Restart the match after the end. WIP, after the end of the match, a temporary world is created and started a match on it.");
     }

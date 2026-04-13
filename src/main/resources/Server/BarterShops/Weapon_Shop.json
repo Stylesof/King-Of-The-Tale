@@ -25,13 +25,46 @@
             "Type": "Fixed",
             "Trade": {
                 "Output": {
-                    "ItemId": "VHG-1_Bullet",
+                    "ItemId": "Bullet_VHG-1",
                     "Quantity": 30
                 },
                 "Input": [
                     {
                         "ItemId": "Money",
                         "Quantity": 100
+                    }
+                ],
+                "Stock": 1000
+            }
+        },
+
+        {
+            "Type": "Fixed",
+            "Trade": {
+                "Output": {
+                    "ItemId": "Weapon_VPS-1",
+                    "Quantity": 1
+                },
+                "Input": [
+                    {
+                        "ItemId": "Money",
+                        "Quantity": 1500
+                    }
+                ],
+                "Stock": 1000
+            }
+        },
+        {
+            "Type": "Fixed",
+            "Trade": {
+                "Output": {
+                    "ItemId": "Bullet_VPS-1",
+                    "Quantity": 5
+                },
+                "Input": [
+                    {
+                        "ItemId": "Money",
+                        "Quantity": 500
                     }
                 ],
                 "Stock": 1000

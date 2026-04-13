@@ -1,0 +1,56 @@
+{
+  "TranslationProperties": {
+    "Name": "ATM Block"
+  },
+  "PlayerAnimationsId": "Block",
+  "Categories": [
+    "Blocks.Deco"
+  ],
+  "Set": "Furniture_Human",
+  "Icon": "Icons/ItemsGenerated/Arcade_Machine.png",
+  "IconProperties": {
+    "Scale": 0.22,
+    "Rotation": [
+      22.5,
+      45.0,
+      22.5
+    ],
+    "Translation": [
+      2.113,
+      -52.0
+    ]
+  },
+  "BlockType": {
+    "BlockParticleSetId": "Stone",
+    "BlockSoundSetId": "Stone",
+    "CustomModel": "Blocks/ATM_Block/ATM_Block_model.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Texture": "Blocks/ATM_Block/ATM_Block_texture.png",
+        "Weight": 1
+      }
+    ],
+    "DrawType": "Model",
+    "Flags": {},
+    "Gathering": {
+      "Breaking": {
+        "GatherType": "Rocks"
+      }
+    },
+    "HitboxType": "Statue_Full",
+    "Material": "Solid",
+    "Opacity": "Transparent",
+    "VariantRotation": "NESW",
+    "ParticleColor": "#9f9e81",
+    "CustomModelScale": 1.0
+  },
+  "Tags": {
+    "Type": [
+      "Furniture"
+    ],
+    "Family": [
+      "Human"
+    ]
+  },
+  "Scale": 1
+}

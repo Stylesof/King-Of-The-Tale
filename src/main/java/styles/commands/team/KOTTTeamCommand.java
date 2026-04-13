@@ -34,13 +34,13 @@ public class KOTTTeamCommand extends AbstractCommandCollection {
     public static class KOTTTeamListCommand extends AbstractAsyncPlayerCommand {
 
         private final OptionalArg<Integer> showuuid;
-        private final OptionalArg<String> world_name;
+        private final OptionalArg<String> worldName;
 
         public KOTTTeamListCommand() {
             super("list", "Lists all Teams availables!");
 
             this.showuuid = withOptionalArg("showuuid", "Show the team name + uuid. (1. Name + UUID, 2. UUID Only)", ArgTypes.INTEGER);
-            this.world_name = withOptionalArg("world", "Specify the world name of the match.", ArgTypes.STRING);
+            this.worldName = withOptionalArg("worldName", "Specify the world name of the match.", ArgTypes.STRING);
         }
 
         /*===========================================================
@@ -50,23 +50,23 @@ public class KOTTTeamCommand extends AbstractCommandCollection {
         @Nonnull
         @Override
         protected CompletableFuture<Void> executeAsync(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-            String _word_name = world_name.get(commandContext);
+            String _wordName = worldName.get(commandContext);
             World _world;
 
             // Verify if the world name is valid
-            if (_word_name == null) {
-                _word_name = world.getName();
+            if (_wordName == null) {
+                _wordName = world.getName();
             }
 
             // Verify if the world is valid
-            _world = Universe.get().getWorld(_word_name);
+            _world = Universe.get().getWorld(_wordName);
             if (_world == null) {
                 printLog(playerRef, LogTypes.KOTTInvalidWorld);
                 return CompletableFuture.completedFuture(null);
             }
 
             // Verify if has a match active in the world
-            KOTTMatch match = KOTTMatch.getMatchesList().get(_word_name);
+            KOTTMatch match = KOTTMatch.getMatchesList().get(_wordName);
             if (match == null || !match.getKOTTMatchStatus()){
                 printChat(commandContext, "There isn't any match happening in the moment!");
                 return CompletableFuture.completedFuture(null);

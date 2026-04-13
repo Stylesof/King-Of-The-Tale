@@ -89,9 +89,9 @@ public class KOTTMoneyCommand extends AbstractAsyncPlayerCommand {
         private final OptionalArg<String> playerName;
         public KOTTMoneyClearCommand() {
             super("clear", "Clear player(s) money!");
-            this.addSubCommand(new KOTTMoneyClearAllCommand());
-
             this.playerName = this.withOptionalArg("player", "Player to clear the money.", ArgTypes.STRING);
+
+            this.addSubCommand(new KOTTMoneyClearAllCommand());
         }
 
         @Nonnull
