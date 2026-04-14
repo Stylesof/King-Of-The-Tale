@@ -20,10 +20,12 @@ import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserM
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.worldstore.WorldMarkersResource;
 import com.hypixel.hytale.server.npc.NPCPlugin;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
+import styles.KOTT;
 import styles.player.component.InvulnerabilityComponent;
 import styles.team.KOTTTeam;
 import styles.ui.KOTTEndUI;
 import styles.ui.KOTTPointsUI;
+import styles.ui.TeleportProvider;
 import styles.util.ColorHandler;
 import styles.util.MessageHandler;
 import styles.util.StringGenerator;
@@ -430,17 +432,7 @@ public class KOTTMatch {
 
         addToMatch(playerRef, chosenTeam);
 
-        Teleport tp = Teleport.createForPlayer(chosenTeam.getBaseZone().getWorld(), new Transform(chosenTeam.getBaseZone().getPosition().toVector3d()));
-        if (playerRef.getWorldUuid() != null) {
-            Objects.requireNonNull(Universe.get().getWorld(playerRef.getWorldUuid()))
-                    .getEntityStore()
-                    .getStore()
-                    .addComponent(
-                            Objects.requireNonNull(playerRef.getReference()),
-                            Teleport.getComponentType(),
-                            tp
-                    );
-        }
+        TeleportProvider.TeleportPlayer(playerRef, chosenTeam.getBaseZone().getPosition().toVector3d(), this.getMatchWorld());
 
         if (playerRef.getReference() == null) {
             printLog("Invalid player reference!");
@@ -473,6 +465,19 @@ public class KOTTMatch {
         }
 
         return true;
+    }
+
+    public void leave(@Nonnull PlayerRef playerRef) {
+        printLog("Player " + playerRef.getUsername() + ". Leaved the match on world: " + getMatchWorld().getName() + "!");
+        removeFromMatch(playerRef);
+
+        TeleportProvider.TeleportPlayer(playerRef, this.LobbyPos.toVector3d(), this.Lobby);
+
+        assert playerRef.getWorldUuid() != null;
+        World world = Universe.get().getWorld(playerRef.getWorldUuid());
+
+        assert world != null;
+        KOTTPointsUI.unloadHud(playerRef, world);
     }
 
     // MATCH STOP
@@ -648,8 +653,8 @@ public class KOTTMatch {
             if (match.getPlayersInMatch().containsValue(playerRef)) {
                 for (KOTTTeam team : match.Teams.values()) {
                     if (team.containsPlayer(playerRef)) {
-                        match.playersInMatch.remove(playerRef.getUuid());
-                        match.Zone.removeFromZone(playerRef);
+                        match.getPlayersInMatch().remove(playerRef.getUuid());
+                        match.getZone().removeFromZone(playerRef);
                         team.removeFromTeam(playerRef);
                         return;
                     }

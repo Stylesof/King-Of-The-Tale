@@ -63,10 +63,6 @@ public class PlayerTickHandler extends EntityTickingSystem<EntityStore> {
                 }
             }));
 
-            if (KOTTPointsUI.statusHud(playerRef, world)) {
-                KOTTPointsUI.unloadHud(playerRef, world);
-            }
-
             return;
         }
 

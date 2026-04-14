@@ -1,6 +1,7 @@
 package styles;
 
 import com.hypixel.hytale.component.ComponentType;
+import com.hypixel.hytale.server.core.event.events.player.AddPlayerToWorldEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
@@ -17,7 +18,7 @@ import styles.thread.ThreadSafetyProvider;
 import styles.tick.KOTTMatchPointTickHandler;
 import styles.tick.system.player.DeathSystem;
 import styles.tick.system.player.InvulnerabilitySystem;
-import styles.tick.system.player.ProjectileDetectionSystem;
+import styles.tick.system.ProjectileDetectionSystem;
 import styles.util.log.LogTypesDebug;
 import styles.world.KOTTMatch;
 import styles.tick.PlayerTickHandler;
