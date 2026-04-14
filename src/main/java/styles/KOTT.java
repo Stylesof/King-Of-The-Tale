@@ -13,6 +13,7 @@ import styles.events.OnPlayerConnectEvent;
 import styles.events.OnPlayerDisconnectEvent;
 import styles.player.component.InvulnerabilityComponent;
 import styles.player.component.KOTTMoney;
+import styles.thread.ThreadSafetyProvider;
 import styles.tick.KOTTMatchPointTickHandler;
 import styles.tick.system.player.DeathSystem;
 import styles.tick.system.player.InvulnerabilitySystem;
@@ -117,6 +118,7 @@ public class KOTT extends JavaPlugin {
     @Override
     protected void shutdown() {
         KOTTMatch.getMatchesList().clear();
+        ThreadSafetyProvider.shutdownAllThreads();
         //PacketAdapters.deregisterInbound(inboundFilter);
 
         super.shutdown();

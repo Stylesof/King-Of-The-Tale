@@ -7,6 +7,7 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
 import styles.world.zone.KOTTTeamZone;
 import styles.world.util.WorldBuilder;
+import styles.world.zone.MapMarkersHandler;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -28,11 +29,19 @@ public class KOTTTeam {
     private final KOTTTeamZone baseZone;
     public static final int distanceBaseFromZone = 100;
 
-    public KOTTTeam(UUID id, String displayName, @Nonnull Vector3i basePosition, @Nonnull World world, @Nonnull UserMapMarker zoneMarker) {
+    public KOTTTeam(UUID id, String displayName, Color teamColor, @Nonnull Vector3i basePosition, @Nonnull World world) {
         this.teamID = id;
         this.displayName = displayName;
-        this.baseZone = new KOTTTeamZone(distanceBaseFromZone, basePosition, world, this, zoneMarker);
-        this.teamColor = this.baseZone.getZoneMarker().getColorTint();
+        this.baseZone = new KOTTTeamZone(distanceBaseFromZone, basePosition, world, this);
+        this.teamColor = teamColor;
+    }
+
+    public void init() {
+        this.baseZone.createUserMapMarker(
+                "Team " + this.displayName,
+                this.teamColor,
+                MapMarkersHandler.MarkerType.BASE
+        );
     }
 
     // Add player to the Team
@@ -42,17 +51,6 @@ public class KOTTTeam {
 
     public boolean containsPlayer(PlayerRef playerRef) {
         return playerList.contains(playerRef);
-    }
-
-    public static boolean createTeam(Map<UUID, KOTTTeam> teamListRef, UUID id, String displayName, Vector3i basePosition, @Nonnull World world, @Nonnull UserMapMarker zoneMarker) {
-
-        if(teamListRef.containsKey(id)){
-            printLog("[KOTH] There is an Team with that ID already!");
-            return false;
-        }else{
-            teamListRef.put(id, new KOTTTeam(id, displayName, basePosition, world, zoneMarker));
-            return true;
-        }
     }
 
     public CompletableFuture<Void> destroyTeamBase() {

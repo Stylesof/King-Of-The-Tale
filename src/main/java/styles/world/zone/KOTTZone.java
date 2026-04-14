@@ -20,16 +20,18 @@ public class KOTTZone {
     public final List<NPCEntity> npcsInZone = new ArrayList<>();
     private final List<PlayerRef> playersInZone = new ArrayList<>();
     private final World world;
-    private final UserMapMarker zoneMarker;
+    private UserMapMarker zoneMarker;
     private final int zoneRadius;
 
-    public KOTTZone(int zoneRadius, @Nonnull Vector3i zonePosition, @Nonnull World world) { this(zoneRadius, zonePosition, world, null); }
-
-    public KOTTZone(int zoneRadius, @Nonnull Vector3i zonePosition, @Nonnull World world, @Nonnull UserMapMarker zoneMarker) {
+    public KOTTZone(int zoneRadius, @Nonnull Vector3i zonePosition, @Nonnull World world) {
         this.zoneRadius = zoneRadius;
         this.zonePosition = zonePosition;
-        this.zoneMarker = zoneMarker;
+        this.zoneMarker = null;
         this.world = world;
+    }
+
+    public void createUserMapMarker(@Nonnull String name, @Nonnull Color color, @Nonnull MapMarkersHandler.MarkerType type) {
+        this.zoneMarker = MapMarkersHandler.createMarker(name, color, type, world, zonePosition.toVector3f());
     }
 
     public void removeFromZone(@Nonnull NPCEntity npcEntity) {

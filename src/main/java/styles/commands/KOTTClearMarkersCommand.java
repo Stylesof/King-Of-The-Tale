@@ -3,6 +3,7 @@ package styles.commands;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
+import com.hypixel.hytale.server.core.command.system.arguments.system.FlagArg;
 import com.hypixel.hytale.server.core.command.system.arguments.system.OptionalArg;
 import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractAsyncPlayerCommand;
@@ -20,19 +21,17 @@ import static styles.util.MessageHandler.printChat;
 
 public class KOTTClearMarkersCommand extends AbstractAsyncPlayerCommand {
 
-    private final OptionalArg<String> confirm;
+    private final FlagArg confirm;
 
     public KOTTClearMarkersCommand() {
         super("clear-markers", "Remove all UserMapMarkers from this World. Use this if the played match icon (Base and Zone) still in any player map!");
 
-        this.confirm = this.withOptionalArg("confirm", "Confirm the markers removal.", ArgTypes.STRING);
+        this.confirm = this.withFlagArg("confirm", "Confirm the markers removal.");
     }
 
     @Nonnull
     @Override
     protected CompletableFuture<Void> executeAsync(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-        String confirm = this.confirm.get(commandContext);
-
         if (confirm == null) {
             printChat(commandContext, "Use --confirm to confirm the removal.");
             return CompletableFuture.completedFuture(null);

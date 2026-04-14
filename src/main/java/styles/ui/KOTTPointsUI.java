@@ -5,23 +5,20 @@ import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.hud.CustomUIHud;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.world.World;
 import styles.team.KOTTTeam;
 import styles.util.ColorHandler;
 import styles.util.MathHelper;
 import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static styles.util.MessageHandler.printChat;
 import static styles.util.MessageHandler.printLog;
 
 public class KOTTPointsUI extends CustomUIHud {
-
-    private AtomicLong start = new AtomicLong(System.currentTimeMillis()), end = new AtomicLong();
-    private ExecutorService updateThread;
 
     private final PlayerRef playerRef;
     private final KOTTMatch match;
@@ -101,31 +98,41 @@ public class KOTTPointsUI extends CustomUIHud {
         uiCommandBuilder.set("#InZoneIcon.Angle", angle);
     }
 
-    public void initializeThreadUpdate() {
-        if (this.updateThread == null) {
-            this.updateThread = Executors.newFixedThreadPool(1);
-            updateThread.submit(() -> { // Code inspired by from AdminUI of Buuz135
-                while (!Thread.currentThread().isInterrupted()) {
-                    this.end.set(System.currentTimeMillis());
+    public static void loadHud(@Nonnull PlayerRef playerRef, @Nonnull KOTTMatch match) {
+        match.getMatchWorld().execute(() -> {
+            Player playerComp = match.getMatchWorld().getEntityStore().getStore().getComponent(Objects.requireNonNull(playerRef.getReference()), Player.getComponentType());
+            if (playerComp == null) {
+                printLog("Invalid PlayerComponent!");
+                return;
+            }
 
-                    if (!match.getKOTTMatchStatus() || match.getIsEnding() || playerRef.getReference() == null || match.getZone() == null) {
-                        this.updateThread.shutdown();
-                        return;
-                    }
+            KOTTPointsUI newHud = new KOTTPointsUI(playerRef, match);
+            playerComp.getHudManager().setCustomHud(playerRef, newHud);
+        });
+    }
 
-                    if (end.get() - start.get() >= 20) { // 20 ms delay
-                        if (!start.compareAndSet(start.get(), end.get())) return;
+    public static void unloadHud(@Nonnull PlayerRef playerRef, @Nonnull World world) {
+        world.execute(() -> {
+            Player playerComp = world.getEntityStore().getStore().getComponent(Objects.requireNonNull(playerRef.getReference()), Player.getComponentType());
+            if (playerComp == null) {
+                printLog("Invalid PlayerComponent!");
+                return;
+            }
 
-                        match.getMatchWorld().execute(() -> {
-                            Player player = match.getMatchWorld().getEntityStore().getStore().getComponent(playerRef.getReference(), Player.getComponentType());
-                            if (player != null) {
-                                player.getHudManager().setCustomHud(playerRef, new KOTTPointsUI(playerRef, match));
-                            }
-                        });
-                    }
-                }
-            });
-        }
+            playerComp.getHudManager().resetHud(playerRef);
+        });
+    }
+
+    public static boolean statusHud(@Nonnull PlayerRef playerRef, @Nonnull World world) {
+        AtomicBoolean ui = new AtomicBoolean(false);
+        world.execute(() -> {
+            Player playerComp = world.getEntityStore().getStore().getComponent(Objects.requireNonNull(playerRef.getReference()), Player.getComponentType());
+            if (playerComp != null) {
+                ui.set(playerComp.getHudManager().getCustomHud() instanceof KOTTPointsUI);
+            }
+        });
+
+        return ui.get();
     }
 }
 

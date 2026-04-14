@@ -13,6 +13,7 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import styles.player.component.KOTTMoney;
+import styles.thread.ThreadSafetyProvider;
 import styles.world.KOTTMatch;
 
 import javax.annotation.Nonnull;
@@ -68,9 +69,7 @@ public class DeathSystem extends EntityTickingSystem<EntityStore> {
                         match.getScoreBoard().addDeath(playerRef);
 
                         PlayerRef finalPlayerRef = playerRef;
-                        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-                        scheduler.schedule(() -> playerCanChangeScore.remove(finalPlayerRef), 2, TimeUnit.SECONDS);
-                        scheduler.shutdown();
+                        ThreadSafetyProvider.DeathSystemScheduler.schedule(() -> playerCanChangeScore.remove(finalPlayerRef), 2, TimeUnit.SECONDS);
                     }
                 }
             } else {
@@ -93,9 +92,7 @@ public class DeathSystem extends EntityTickingSystem<EntityStore> {
                             KOTTMoney.addMoneyToPlayer(killer, 100);
                             printChat(killer, "+$100.00 for the kill!");
 
-                            ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-                            scheduler.schedule(() -> playerCanChangeScore.remove(killer), 2, TimeUnit.SECONDS);
-                            scheduler.shutdown();
+                            ThreadSafetyProvider.DeathSystemScheduler.schedule(() -> playerCanChangeScore.remove(killer), 2, TimeUnit.SECONDS);
                         }
                     }
                 });

@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "styles"
-version = "0.70.30-BETA"
+version = "0.72.38-BETA"
 
 repositories {
     mavenCentral()

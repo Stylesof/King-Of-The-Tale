@@ -6,6 +6,7 @@ import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.Color;
+import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.data.PlayerRespawnPointData;
@@ -15,7 +16,6 @@ import com.hypixel.hytale.server.core.modules.entity.teleport.Teleport;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
-import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarkersStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.worldstore.WorldMarkersResource;
 import com.hypixel.hytale.server.npc.NPCPlugin;
@@ -34,6 +34,7 @@ import styles.world.match.KOTTScoreboard;
 import styles.world.util.WorldBuilder;
 import styles.world.zone.KOTTTeamZone;
 import styles.world.zone.KOTTZone;
+import styles.world.zone.MapMarkersHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,6 +42,7 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 
@@ -68,6 +70,9 @@ public class KOTTMatch {
     private KOTTZone Zone;
     private Vector3i LobbyPos; // A 'home' to use when the match stops
 
+    private CompletableFuture<Boolean> startMatchThread = CompletableFuture.runAsync(() -> {}).thenCompose(status -> CompletableFuture.completedFuture(true));
+    private AtomicBoolean startMatchThreadSuccess = new AtomicBoolean(true);
+
     private PlayerRef host;
     private CommandContext commandContextHost;
     private World matchWorld;
@@ -75,6 +80,39 @@ public class KOTTMatch {
     private KOTTScoreboard scoreBoard = new KOTTScoreboard();
 
     private boolean isEnding = false; // It's in process to end
+
+    /*
+        Create MATCH workflow:
+            Validate Zone position
+            Create Zone
+            // get -> Valid zone position!
+
+            Validate Team Base position
+            // get -> Team Base in a secure place
+
+            Create Teams
+            // get -> Team successfully created!
+
+            Clear Team Bases Area
+            Build Team Bases
+            // get -> Team bases successfully created!
+
+            Add players to the teams
+            Teleport player to the team base position (this is necessary to guarantee NPC spawn in team base)
+            Set Player Respawn in base
+            // get -> Player added to Team and send to the base
+
+            Spawn Weapon Shop NPC in team bases
+            // get -> NPC spawned
+
+            Create UserMapMarkers for teams
+            // get -> Team marker created
+
+            Create ZoneMarker
+            // get -> Zone and zone marker created!
+
+            Match Successfully Created!
+     */
 
     public static CompletableFuture<String> tryCreateMatch(@Nonnull Vector3i startPos, int teamCount, int zoneRadius, boolean safe, boolean loop, @Nullable PlayerRef playerRef, @Nullable CommandContext commandContext, @Nonnull World world, @Nonnull World lobbyWorld, @Nonnull Vector3i lobbyPos) {
         // Verify area size
@@ -131,88 +169,73 @@ public class KOTTMatch {
         MessageHandler.printLog("Starting KOTT Match creation...");
         MessageHandler.printLog("Team Count: " + teamCount);
 
-        UserMapMarkersStore userMapMarkerStore = world.getChunkStore().getStore().getResource(WorldMarkersResource.getResourceType());
-        UserMapMarker zoneMarker = new UserMapMarker();
-            zoneMarker.setId(UUID.randomUUID().toString());
-            zoneMarker.setPosition(startPos.x, startPos.z);
-            zoneMarker.setName("Attack Zone");
-            zoneMarker.setIcon("UserF.png");
-            zoneMarker.setColorTint(new Color((byte) 255, (byte) 0, (byte) 0));
-        Zone = new KOTTZone(zoneRadius, startPos, world, zoneMarker);
-        userMapMarkerStore.addUserMapMarker(Zone.getZoneMarker());
+        Vector3i zonePosition = WorldBuilder.alignVectorToWorldSurface(startPos, world);
+        if (zonePosition == null) {
+            printChat(playerRef, Message.raw("Failed to create the Match! Invalid position!"));
+            printLog("Cannot create the zone in the received position!" + startPos);
+            stop(world.getName(), true);
+            return CompletableFuture.completedFuture(null);
+        }
+        this.Zone = new KOTTZone(zoneRadius, startPos, world);
 
-        float angleBetweenBases = 360.0f / teamCount;
-        float startAngle = 0.0f;
-        int distanceZoneBase = zoneRadius + KOTTTeamZone.baseRadius + KOTTTeam.distanceBaseFromZone;
-
-        // Calculates the first base position
-        Vector3i baseLocation = new Vector3i(distanceZoneBase, 0, 0);
-        baseLocation = MathHelper.vectorSum(baseLocation.toVector3d(), Zone.getPosition().toVector3d()).ceil().toVector3i();
+        printLog("Zone is in a safe place!");
 
         // Using a pre-defined name template, get a list with random names
         List<String> nameList = StringGenerator.genRandomNameList(teamCount);
         List<Color> colorList = ColorHandler.genRandomColorList(teamCount);
 
-        CompletableFuture<Boolean> fun = CompletableFuture.completedFuture(true);
+        float angleBetweenBases = 360.0f / teamCount;
+        float baseAngle = 0.0f;
+        int distanceZoneBase = zoneRadius + KOTTTeamZone.baseRadius + KOTTTeam.distanceBaseFromZone;
 
-        int i = 0;
-        while (i < teamCount) {
-            baseLocation = WorldBuilder.alignVectorToWorldSurface(baseLocation, world); // get the highest position of floor before sky
-            if (baseLocation == null) {
-                printChat(commandContext, "Failed to define Base Position, try in another place!");
-                MessageHandler.printLog("ERROR: Invalid Base position!");
-                stop(world.getName());
+        for (int i = 0; i < teamCount; i++) {
+
+            Vector3i basePosition = new Vector3i(distanceZoneBase, 0, 0);
+            basePosition = MathHelper.vectorSum(basePosition.toVector3d(), zonePosition.toVector3d()).ceil().toVector3i();
+
+            if (i != 0) { // Calculates the others base position by angle
+                baseAngle += angleBetweenBases;
+                Vector3d other = MathHelper.convertAngleToUnitVector(baseAngle);
+                other = MathHelper.scalarVector(other, distanceZoneBase);
+                basePosition = MathHelper.vectorSum(other, zonePosition.toVector3d()).ceil().toVector3i();
+            }
+
+            basePosition = WorldBuilder.alignVectorToWorldSurface(basePosition, world); // get the highest point of the floor before sky
+            if (basePosition == null) {
+                printChat(commandContext, "Failed to validate Team Base position!");
+                printLog("ERROR: Invalid Base position!");
+                forceStop();
                 return CompletableFuture.completedFuture(null);
             }
-            baseLocation.y += 1;
 
-            UserMapMarker zoneMarker2 = new UserMapMarker();
-                zoneMarker2.setId(UUID.randomUUID().toString());
-                zoneMarker2.setPosition(baseLocation.x, baseLocation.z);
-                zoneMarker2.setName("Team " + nameList.get(i) + " Base");
-                zoneMarker2.setIcon("UserD.png");
-                zoneMarker2.setColorTint(new Color(colorList.get(i).red, colorList.get(i).green, colorList.get(i).blue));
+            basePosition.y += 1;
 
-            // Create %teamCount% teams
-            MessageHandler.printLog("Starting Team creation...");
-            if (KOTTTeam.createTeam(Teams, UUID.randomUUID(), nameList.get(i), baseLocation, world, zoneMarker2)) {
+            printLog("Starting Team creation...");
+            Color teamColor = colorList.get(i);
+            ColorHandler.ColorType teamColorType = ColorHandler.getColorType(teamColor);
+            if (!createTeam(UUID.randomUUID(), nameList.get(i), teamColor, basePosition, world)) {
+                printNotification(
+                        playerRef,
+                        "Failed to create a team!",
+                        "Failed to create the Team " + nameList.get(i) + ". More info in the logs!",
+                        ItemTypes.MITHRIL_SWORD,
+                        NotificationTypes.ERROR
+                );
+                printLog("ERROR: Failed to create the team: " + nameList.get(i));
+                forceStop();
+                return CompletableFuture.completedFuture(null);
+            }
 
-                userMapMarkerStore.addUserMapMarker(getLastTeamAdded().getBaseZone().getZoneMarker());
+            KOTTTeam lastTeamAdded = getLastTeamAdded();
+            printLog("Successfully created the Team " + lastTeamAdded.getDisplayName());
 
-                if (i < teamCount - 1) {
-                    startAngle += angleBetweenBases;
-                    Vector3d other = MathHelper.convertAngleToUnitVector(startAngle);
-                    other = MathHelper.scalarVector(other, distanceZoneBase);
-                    baseLocation = MathHelper.vectorSum(other, Zone.getPosition().toVector3d()).ceil().toVector3i();
-                }
-
-                // Get the ColorType from a color Team
-                ColorHandler.ColorType teamColorType = ColorHandler.getColorType(colorList.get(i));
-
-                // Clear area and construct base
-                Vector3i basePos = getLastTeamAdded().getBaseZone().getPosition();
-                basePos.y--; // the base spawn inside ground
-
-                KOTTTeam team = getLastTeamAdded();
-                fun = fun.thenCompose(status -> {
-                    if (!status) return CompletableFuture.completedFuture(false);
-
-                    return WorldBuilder.clearAreaSquare(basePos, 10, world).thenCompose(unused -> {
-                        basePos.y++;
-                        return WorldBuilder.constructTeamBase(basePos, teamColorType, world).thenCompose(status2 -> {
-                            if(!status2) {
-                                printNotification(
-                                        playerRef,
-                                        "Failed to create Team Base!",
-                                        "",
-                                        ItemTypes.MITHRIL_SWORD,
-                                        NotificationTypes.ERROR
-                                );
-                                MessageHandler.printLog("ERROR: Failed to create the team base!", Level.SEVERE);
-                                stop(world.getName());
-                                return CompletableFuture.completedFuture(false);
-                            }
-
+            Vector3i teamBaseSpawnPos = lastTeamAdded.getBaseZone().getPosition();
+            startMatchThread = startMatchThread.thenCompose(status -> {
+               if (!status) return CompletableFuture.completedFuture(false);
+               return
+               WorldBuilder.clearAreaSquare(new Vector3i(teamBaseSpawnPos.x, teamBaseSpawnPos.y - 1, teamBaseSpawnPos.z), 10, world).thenCompose(unused ->
+                    WorldBuilder.constructTeamBase(new Vector3i(teamBaseSpawnPos), teamColorType, world).thenCompose(created ->{
+                        if (created) {
                             printNotification(
                                     playerRef,
                                     "Created Team Base!",
@@ -220,127 +243,140 @@ public class KOTTMatch {
                                     ItemTypes.MITHRIL_SWORD,
                                     NotificationTypes.SUCCESS
                             );
-                            MessageHandler.printLog("Created base of Team \"" + team.getDisplayName() + "\". (X: " + basePos.x + ", Y: " + basePos.y + ", Z: " + basePos.z);
-
+                            MessageHandler.printLog("Created base of Team \"" + lastTeamAdded.getDisplayName() + "\". (X: " + teamBaseSpawnPos.x + ", Y: " + teamBaseSpawnPos.y + ", Z: " + teamBaseSpawnPos.z);
                             return CompletableFuture.completedFuture(true);
-                        });
-                    });
-                });
+                        }
 
-                i++;
-            } else {
-                printNotification(
-                        playerRef,
-                        "Failed to create team!",
-                        "Failed to create the Team " + nameList.get(i),
-                        ItemTypes.MITHRIL_SWORD,
-                        NotificationTypes.ERROR
-                );
-                MessageHandler.printLog("ERROR: Failed to create the team: " + nameList.get(i));
-                stop(world.getName());
-                return CompletableFuture.completedFuture(null);
-            }
+                        printNotification(
+                                playerRef,
+                                "Failed to create Team Base!",
+                                "",
+                                ItemTypes.MITHRIL_SWORD,
+                                NotificationTypes.ERROR
+                        );
+                        MessageHandler.printLog("ERROR: Failed to create the team base!", Level.SEVERE);
+                        startMatchThreadSuccess.set(false);
+                        forceStop();
+                        return CompletableFuture.completedFuture(false);
+                    })
+               );
+            });
         }
 
-        return fun.thenCompose(status -> {
-            if (status) {
-                setKOTTMatchStatus(true);
+        startMatchThread = startMatchThread.thenCompose(status -> {
+            if (!startMatchThreadSuccess.get()) {
+                forceStop();
+                return CompletableFuture.completedFuture(null);
+            }
 
-                MessageHandler.printLog("Finished KOTT Match creation! World name: " + world.getName());
-                printNotification(
-                        playerRef,
-                        "Sending players to the base...",
-                        "",
-                        ItemTypes.MITHRIL_SWORD,
-                        NotificationTypes.WARNING
-                );
+            setKOTTMatchStatus(true);
 
-                for (PlayerRef _playerRef : world.getPlayerRefs()) {
-                    if (_playerRef.getReference() == null) continue;
-
-                    join(_playerRef);
-                    KOTTTeam team = getPlayerTeam(_playerRef);
-                    if (team == null || team.getBaseZone() == null) {
-                        MessageHandler.printLog("Invalid Team!");
-                        continue;
-                    }
-
-                    Transform transform = _playerRef.getTransform();
-                    transform.setPosition(team.getBaseZone().getPosition().toVector3d());
-                    Teleport tp = Teleport.createForPlayer(transform);
-                    world.getEntityStore().getStore().addComponent(_playerRef.getReference(), Teleport.getComponentType(), tp);
-                    world.getEntityStore().getStore().getComponent(_playerRef.getReference(), NewSpawnComponent.getComponentType());
-
-                    Vector3i pos = team.getBaseZone().getPosition();
-
-                    Player player = world.getEntityStore().getStore().getComponent(_playerRef.getReference(), Player.getComponentType());
-                    if (player == null){
-                        MessageHandler.printLog("Invalid Player!");
-                        continue;
-                    }
-
-
-                    world.execute(() -> {
-                        PlayerRespawnPointData[] respawnPointData = { new PlayerRespawnPointData(pos, pos.toVector3d(), "Team " + team.getDisplayName() + " Respawn") };
-                        player.getPlayerConfigData().getPerWorldData(world.getName()).setRespawnPoints(respawnPointData);
-                        KOTTPointsUI newHud = new KOTTPointsUI(_playerRef, this);
-                        player.getHudManager().setCustomHud(_playerRef, newHud);
-                        newHud.initializeThreadUpdate();
-                        if (world.getEntityStore().getStore().getComponent(_playerRef.getReference(), InvulnerabilityComponent.getComponentType()) == null) {
-                            world.getEntityStore().getStore().addComponent(_playerRef.getReference(), InvulnerabilityComponent.getComponentType(), new InvulnerabilityComponent());
-                        }
-                    });
+            printLog("Adding players to the Teams and sending to Base");
+            for (PlayerRef _playerRef : this.getMatchWorld().getPlayerRefs()) {
+                if (_playerRef == null || _playerRef.getReference() == null) {
+                    printLog("Invalid player reference");
+                    continue;
                 }
 
-                for (KOTTTeam team : this.getTeams()) {
-                    // Add Weapon Shop into Team Bases
-                    Vector3d spawnPos = team.getBaseZone().getPosition().toVector3d();
-                    spawnPos.y += 1; // to npc don't clip to the ground
-                    spawnPos.x += 4.5d;
-                    spawnPos.z -= 3.5d;
+                Player playerComp = this.getMatchWorld().getEntityStore().getStore().getComponent(_playerRef.getReference(), Player.getComponentType());
 
-                    world.execute(() -> {
-                        var npc = NPCPlugin.get().spawnNPC(
+                boolean joinStatus = join(_playerRef);
+                if (playerComp == null || !joinStatus) {
+                    printLog("Failed to add the player: " + _playerRef.getUsername() + ", to a team");
+                    continue;
+                }
+
+                KOTTTeam playerTeam = getPlayerTeam(_playerRef);
+                assert playerTeam != null;
+
+                KOTTPointsUI.loadHud(_playerRef, this);
+
+                world.execute(() -> {
+                    if (this.getMatchWorld().getEntityStore().getStore().getComponent(_playerRef.getReference(), InvulnerabilityComponent.getComponentType()) == null) {
+                        this.getMatchWorld().getEntityStore().getStore().addComponent(_playerRef.getReference(), InvulnerabilityComponent.getComponentType(), new InvulnerabilityComponent());
+                    }
+                });
+            }
+
+            printLog("All players from the world has sent to base");
+
+            return CompletableFuture.completedFuture(true);
+        });
+
+        startMatchThread = startMatchThread.thenCompose(status -> {
+            if (!startMatchThreadSuccess.get()) {
+                forceStop();
+                return CompletableFuture.completedFuture(null);
+            }
+
+            for (KOTTTeam _team : this.getTeams()) {
+
+                // Add Weapon Shop into Team Bases
+                Vector3d spawnPos = _team.getBaseZone().getPosition().toVector3d();
+                spawnPos.y += 1; // to npc don't clip to the ground
+                spawnPos.x += 4.5d;
+                spawnPos.z -= 3.5d;
+
+                world.execute(() -> {
+                    var npc = NPCPlugin.get().spawnNPC(
                             world.getEntityStore().getStore(),
                             "WeaponShop",
                             null,
                             spawnPos,
                             new Vector3f(0.0f, (float) Math.toRadians(135), 0.0f)
-                        );
+                    );
 
-                        if (npc != null) {
-                            PropComponent propComponent = world.getEntityStore().getStore().getComponent(npc.first(), PropComponent.getComponentType());
-                            if (propComponent == null) {
-                                world.getEntityStore().getStore().addComponent(npc.first(), PropComponent.getComponentType(), PropComponent.get());
-                            }
+                    if (npc != null) {
+                        PropComponent propComponent = this.getMatchWorld().getEntityStore().getStore().getComponent(npc.first(), PropComponent.getComponentType());
+                        if (propComponent == null) {
+                            this.getMatchWorld().getEntityStore().getStore().addComponent(npc.first(), PropComponent.getComponentType(), PropComponent.get());
                         }
-                    });
+
+                        printLog("Weapon Shop NPC spawn in the base of team: " + _team.getDisplayName());
+                    } else {
+                        printLog("Failed to Spawn the Weapon Shop NPC for the team: " + _team.getDisplayName());
+                        startMatchThreadSuccess.set(false);
+                    }
+                });
+
+                if (!startMatchThreadSuccess.get()) {
+                    forceStop();
+                    return CompletableFuture.completedFuture(null);
                 }
 
-                MessageHandler.printLog("Match created and started on World: " + world.getName());
-                printNotification(
-                            playerRef,
-                            "Match created!",
-                            "Match created on World: " + world.getName() + "!",
-                            ItemTypes.MITHRIL_SWORD,
-                            NotificationTypes.SUCCESS
-                );
-                setCanMarkPoint(true);
-            } else {
-                MessageHandler.printLog("ERROR: Failed to create and start the match on World: " + world.getName());
-                printNotification(
-                        playerRef,
-                        "Failed to create Match!",
-                        "Couldn't create and start the match!",
-                        ItemTypes.MITHRIL_SWORD,
-                        NotificationTypes.SUCCESS
-                );
-
-                stop(world.getName(), true);
+                _team.init();
             }
 
+            this.Zone.createUserMapMarker(
+                    "Attack Zone",
+                    new Color((byte) 255, (byte) 0, (byte) 0),
+                    MapMarkersHandler.MarkerType.ATTACK
+            );
+
+            printLog("Match created and started on World: " + world.getName());
+            printNotification(
+                    playerRef,
+                    "Match created!",
+                    "Match created on World: " + world.getName() + "!",
+                    ItemTypes.MITHRIL_SWORD,
+                    NotificationTypes.SUCCESS
+            );
+            setCanMarkPoint(true);
+
             return CompletableFuture.completedFuture(true);
-        }).thenRun(() -> {});
+        });
+
+        return startMatchThread.thenRun(() -> {});
+    }
+
+    private boolean createTeam(UUID id, String displayName, Color teamColor, Vector3i basePosition, @Nonnull World world) {
+        if(this.Teams.containsKey(id)){
+            printLog("Failed to create the Team! Duplicated Team UUID!");
+            return false;
+        }else{
+            this.Teams.put(id, new KOTTTeam(id, displayName, teamColor, basePosition, world));
+            return true;
+        }
     }
 
     private static boolean addMatch(String worldName) {
@@ -357,7 +393,7 @@ public class KOTTMatch {
         return false;
     }
 
-    public void join(@Nonnull PlayerRef playerRef) {
+    public boolean join(@Nonnull PlayerRef playerRef) {
         if (!getKOTTMatchStatus() && !getIsEnding()){
             printNotification(
                     playerRef,
@@ -366,7 +402,7 @@ public class KOTTMatch {
                     ItemTypes.MITHRIL_SWORD,
                     NotificationTypes.WARNING
             );
-            return;
+            return false;
         }
 
         removeFromMatch(playerRef);
@@ -384,11 +420,11 @@ public class KOTTMatch {
                 printNotification(
                         playerRef,
                         "Failed to Join!",
-                        "The player is already in a Team",
+                        "The player is already in a Team in this match!",
                         ItemTypes.MITHRIL_SWORD,
                         NotificationTypes.ERROR
                 );
-                return;
+                return false;
             }
         }
 
@@ -406,6 +442,20 @@ public class KOTTMatch {
                     );
         }
 
+        if (playerRef.getReference() == null) {
+            printLog("Invalid player reference!");
+            return false;
+        }
+
+        Player playerComp = this.getMatchWorld().getEntityStore().getStore().getComponent(playerRef.getReference(), Player.getComponentType());
+        if (playerComp == null) {
+            printLog("Invalid PlayerComponent!");
+            return false;
+        }
+
+        PlayerRespawnPointData[] respawnPointData = { new PlayerRespawnPointData(chosenTeam.getBaseZone().getPosition(), chosenTeam.getBaseZone().getPosition().toVector3d(), "Team " + chosenTeam.getDisplayName() + " Respawn") };
+        playerComp.getPlayerConfigData().getPerWorldData(this.getMatchWorld().getName()).setRespawnPoints(respawnPointData);
+
         printNotification(
                 playerRef,
                 "You joined the Team " + chosenTeam.getDisplayName() + "!",
@@ -421,10 +471,19 @@ public class KOTTMatch {
         if (!this.scoreBoard.getPlayersDeathCount().containsKey(playerRef)) {
             this.scoreBoard.getPlayersDeathCount().put(playerRef, 0);
         }
+
+        return true;
     }
 
     // MATCH STOP
-    public static CompletableFuture<Void> stop(@Nonnull String worldName) { return stop(worldName, false, null, false); }
+    private CompletableFuture<Void> forceStop() {
+        if (!this.startMatchThread.isCancelled()) {
+            this.startMatchThread.cancel(true);
+        }
+
+        return stop(this.getMatchWorld().getName(), true, null, true);
+    }
+
     public static CompletableFuture<Void> stop(@Nonnull String worldName, boolean forceStop) { return stop(worldName, forceStop, null, false); }
     public static CompletableFuture<Void> stop(@Nonnull String worldName, boolean forceStop, @Nullable CommandContext commandContext) { return stop(worldName, forceStop, commandContext, false); }
     public static CompletableFuture<Void> stop(@Nonnull String worldName, boolean forceStop, @Nullable CommandContext commandContext, boolean serverStop) {
@@ -455,7 +514,7 @@ public class KOTTMatch {
 
         for (KOTTTeam team : match.getTeams()) {
             if (team.getBaseZone().getZoneMarker() != null) {
-                MessageHandler.printLog(match.Zone.getWorld().getName() + ": Removing UserMapMarker from Team: " + team.getDisplayName() + "...");
+                printLog(match.Zone.getWorld().getName() + ": Removing UserMapMarker from Team: " + team.getDisplayName() + "...");
                 store.removeUserMapMarker(team.getBaseZone().getZoneMarker().getId());
             }
 
@@ -469,7 +528,7 @@ public class KOTTMatch {
                     Player player = world.getEntityStore().getStore().getComponent(playerRef.getReference(), Player.getComponentType());
 
                     if (player != null) {
-                        player.getHudManager().resetHud(playerRef);
+                        KOTTPointsUI.unloadHud(playerRef, world);
 
                         if (world.getEntityStore().getStore().getComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType()) != null) {
                             world.getEntityStore().getStore().removeComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType());
@@ -496,9 +555,9 @@ public class KOTTMatch {
         }));
         printLog("Removed bots from match!");
 
-        MessageHandler.printLog(match.Zone.getWorld().getName() + ": Removing UserMapMarker from Zone...");
+        printLog(match.getMatchWorld().getName() + ": Removing UserMapMarker from Zone...");
         store.removeUserMapMarker(match.Zone.getZoneMarker().getId());
-        MessageHandler.printLog(match.Zone.getWorld().getName() + ": Removed all UserMapMakers on " + match.getZone().getWorld().getName());
+        printLog(match.getMatchWorld().getName() + ": Removed all UserMapMakers on " + match.getZone().getWorld().getName());
 
         Vector3i finalWordPos = match.matchStartPos;
         int finalTeamCount = match.getTeams().size();
