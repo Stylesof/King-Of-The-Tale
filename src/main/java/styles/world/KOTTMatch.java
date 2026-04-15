@@ -287,17 +287,6 @@ public class KOTTMatch {
                     printLog("Failed to add the player: " + _playerRef.getUsername() + ", to a team");
                     continue;
                 }
-
-                KOTTTeam playerTeam = getPlayerTeam(_playerRef);
-                assert playerTeam != null;
-
-                KOTTPointsUI.loadHud(_playerRef, this);
-
-                world.execute(() -> {
-                    if (this.getMatchWorld().getEntityStore().getStore().getComponent(_playerRef.getReference(), InvulnerabilityComponent.getComponentType()) == null) {
-                        this.getMatchWorld().getEntityStore().getStore().addComponent(_playerRef.getReference(), InvulnerabilityComponent.getComponentType(), new InvulnerabilityComponent());
-                    }
-                });
             }
 
             printLog("All players from the world has sent to base");
@@ -407,22 +396,20 @@ public class KOTTMatch {
             return false;
         }
 
-        removeFromMatch(playerRef);
 
         KOTTTeam chosenTeam = (KOTTTeam) Teams.values().toArray()[0];
         int playerCounter = Universe.get().getPlayerCount();
         for (KOTTTeam team : Teams.values()) {
             if (!team.getPlayerList().contains(playerRef)) {
-                if (team.getPlayerCount() < playerCounter) {
+                if (team.getPlayerCount() <= playerCounter) {
                     playerCounter = team.getPlayerCount();
                     chosenTeam = team;
                 }
             } else {
-                addToMatch(playerRef, team);
                 printNotification(
                         playerRef,
                         "Failed to Join!",
-                        "Player already in a Team in this match!",
+                        "Player is already in this match!",
                         ItemTypes.MITHRIL_SWORD,
                         NotificationTypes.ERROR
                 );
@@ -430,16 +417,21 @@ public class KOTTMatch {
             }
         }
 
-        if (!addToMatch(playerRef, chosenTeam)) {
-            printNotification(
-                    playerRef,
-                    "Failed to join the Team " + chosenTeam.getDisplayName() + "!",
-                    "",
-                    ItemTypes.MITHRIL_SWORD,
-                    NotificationTypes.ERROR
-            );
-            printLog("Failed to join the player: " + playerRef.getUsername() + ", into the match!");
-            return false;
+        addToMatch(playerRef, chosenTeam);
+
+        TeleportProvider.TeleportPlayer(
+                playerRef,
+                chosenTeam.getBaseZone().getPosition().toVector3d(),
+                this.getMatchWorld()
+        );
+
+        KOTTPointsUI.loadHud(playerRef, this);
+
+        if (!this.getScoreBoard().getPlayersKillCount().containsKey(playerRef)) {
+            this.getScoreBoard().getPlayersKillCount().put(playerRef, 0);
+        }
+        if (!this.getScoreBoard().getPlayersDeathCount().containsKey(playerRef)) {
+            this.getScoreBoard().getPlayersDeathCount().put(playerRef, 0);
         }
 
         printNotification(
@@ -456,20 +448,33 @@ public class KOTTMatch {
 
     public void leave(@Nonnull PlayerRef playerRef) { leave(playerRef, null); }
     public void leave(@Nonnull PlayerRef playerRef, @Nullable Holder<EntityStore> holder) {
-        printLog("Player " + playerRef.getUsername() + ". Leaved the match on world: " + getMatchWorld().getName() + "!");
+        // if has an holder, it's probably the player haven't been started yet, like in AddPlayerWorldEvent, or something like it
+        // for it, it's necessary another way to handle it
         removeFromMatch(playerRef);
 
         if (holder == null) {
-            TeleportProvider.TeleportPlayer(playerRef, this.LobbyPos.toVector3d(), this.Lobby);
-
             assert playerRef.getWorldUuid() != null;
             World world = Universe.get().getWorld(playerRef.getWorldUuid());
 
             assert world != null;
             KOTTPointsUI.unloadHud(playerRef, world);
+
+            world.execute(() -> {
+                if (world.getEntityStore().getStore().getComponent(Objects.requireNonNull(playerRef.getReference()), InvulnerabilityComponent.getComponentType()) != null) {
+                    world.getEntityStore().getStore().removeComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType());
+                }
+            });
+
+            TeleportProvider.TeleportPlayer(playerRef, this.LobbyPos.toVector3d(), this.Lobby);
+
         } else {
             KOTTPointsUI.unloadHud(playerRef, holder);
+            if (holder.getComponent(InvulnerabilityComponent.getComponentType()) != null) {
+                holder.removeComponent(InvulnerabilityComponent.getComponentType());
+            }
         }
+
+        printLog("Player " + playerRef.getUsername() + ". Leaved the match on world: " + getMatchWorld().getName() + "!");
     }
 
     // MATCH STOP
@@ -518,24 +523,6 @@ public class KOTTMatch {
             team.destroyTeamBase();
         }
 
-        printLog("Removing players CustomHUDs...");
-        for (PlayerRef playerRef : match.getPlayersInMatch().values()) {
-            if (playerRef != null && playerRef.getReference() != null) {
-                world.execute(() -> {
-                    Player player = world.getEntityStore().getStore().getComponent(playerRef.getReference(), Player.getComponentType());
-
-                    if (player != null) {
-                        KOTTPointsUI.unloadHud(playerRef, world);
-
-                        if (world.getEntityStore().getStore().getComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType()) != null) {
-                            world.getEntityStore().getStore().removeComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType());
-                        }
-                    }
-                });
-            }
-        }
-        printLog("Removed players CustomHUDs!");
-
         printLog("Removing bots from match...");
         world.execute(() -> world.getEntityStore().getStore().forEachChunk(NPCEntity.getComponentType(), (archetypeChunk, commandBuffer) -> {
             for (int index = 0; index < archetypeChunk.size(); index++) {
@@ -556,6 +543,24 @@ public class KOTTMatch {
         store.removeUserMapMarker(match.Zone.getZoneMarker().getId());
         printLog(match.getMatchWorld().getName() + ": Removed all UserMapMakers on " + match.getZone().getWorld().getName());
 
+        printLog("Returning player to lobby...");
+        for (PlayerRef playerRef : match.getPlayersInMatch().values()) {
+            if (playerRef != null && playerRef.getReference() != null) {
+                world.execute(() -> {
+                    Player player = world.getEntityStore().getStore().getComponent(playerRef.getReference(), Player.getComponentType());
+
+                    if (player != null) {
+                        if (world.getEntityStore().getStore().getComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType()) != null) {
+                            world.getEntityStore().getStore().removeComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType());
+                        }
+                    }
+                });
+
+                match.leave(playerRef);
+            }
+        }
+        printLog("All players from match has been returned to the lobby!");
+
         Vector3i finalWordPos = match.matchStartPos;
         int finalTeamCount = match.getTeams().size();
         int finalZoneRadius = match.Zone.getZoneRadius();
@@ -566,12 +571,7 @@ public class KOTTMatch {
         World finalLobbyWorld = match.Lobby;
         Vector3i finalLobbyPos = match.LobbyPos;
 
-        if (!finalZoneLoop) {
-            List<PlayerRef> finalPlayerRefList = new ArrayList<>(match.getPlayersInMatch().values());
-            for (PlayerRef playerRef : finalPlayerRefList) {
-                match.leave(playerRef);
-            }
-        }
+        match.startMatchThread.cancel(true);
 
         // match.getTeams().clear();
         match.Zone = null;
@@ -641,48 +641,18 @@ public class KOTTMatch {
         });
     }
 
-    private boolean addToMatch(@Nonnull PlayerRef playerRef, KOTTTeam team) {
+    private void addToMatch(@Nonnull PlayerRef playerRef, KOTTTeam team) {
         this.getPlayersInMatch().put(playerRef.getUuid(), playerRef);
         this.getZone().addToZone(playerRef);
         team.addPlayer(playerRef);
-
-        if (playerRef.getReference() == null) {
-            printLog("Invalid player reference!");
-            return false;
-        }
-
-        TeleportProvider.TeleportPlayer(playerRef, team.getBaseZone().getPosition().toVector3d(), this.getMatchWorld());
-
-        this.getMatchWorld().execute(() -> {
-            Player playerComp = this.getMatchWorld().getEntityStore().getStore().getComponent(playerRef.getReference(), Player.getComponentType());
-
-            assert  playerComp != null;
-            PlayerRespawnPointData[] respawnPointData = { new PlayerRespawnPointData(team.getBaseZone().getPosition(), team.getBaseZone().getPosition().toVector3d(), "Team " + team.getDisplayName() + " Respawn") };
-            playerComp.getPlayerConfigData().getPerWorldData(this.getMatchWorld().getName()).setRespawnPoints(respawnPointData);
-        });
-
-
-        if (!this.scoreBoard.getPlayersKillCount().containsKey(playerRef)) {
-            this.scoreBoard.getPlayersKillCount().put(playerRef, 0);
-        }
-        if (!this.scoreBoard.getPlayersDeathCount().containsKey(playerRef)) {
-            this.scoreBoard.getPlayersDeathCount().put(playerRef, 0);
-        }
-
-        return true;
     }
 
-    private static void removeFromMatch(@Nonnull PlayerRef playerRef) {
-        for (KOTTMatch match : KOTTMatch.getMatchesList().values()) {
-            if (match.getPlayersInMatch().containsValue(playerRef)) {
-                KOTTTeam team = match.getPlayerTeam(playerRef);
-                if (team != null) {
-                    match.getPlayersInMatch().remove(playerRef.getUuid());
-                    match.getZone().removeFromZone(playerRef);
-                    team.removeFromTeam(playerRef);
-                    return;
-                }
-            }
+    private void removeFromMatch(@Nonnull PlayerRef playerRef) {
+        KOTTTeam team = this.getPlayerTeam(playerRef);
+        if (team != null) {
+            this.getPlayersInMatch().remove(playerRef.getUuid());
+            this.getZone().removeFromZone(playerRef);
+            team.removeFromTeam(playerRef);
         }
     }
 
@@ -698,11 +668,9 @@ public class KOTTMatch {
 
     @Nullable
     public KOTTTeam getPlayerTeam(PlayerRef playerRef) {
-        if (getKOTTMatchStatus()) {
-            for (KOTTTeam team : this.Teams.values()) {
-                if (team.containsPlayer(playerRef)) {
-                    return team;
-                }
+        for (KOTTTeam team : this.Teams.values()) {
+            if (team.containsPlayer(playerRef)) {
+                return team;
             }
         }
 
