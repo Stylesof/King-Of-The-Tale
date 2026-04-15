@@ -49,19 +49,21 @@ public class PlayerTickHandler extends EntityTickingSystem<EntityStore> {
 
         KOTTMatch match = KOTTMatch.getMatchesList().get(world.getName());
         if (match == null || !match.getPlayersInMatch().containsKey(playerRef.getUuid()) || !match.getKOTTMatchStatus() || !match.getCanMarkPoint()) {
-            world.execute(() -> world.getEntityStore().getStore().forEachChunk(NPCEntity.getComponentType(), (_archetypeChunk, _commandBuffer) -> {
-                for (int i = 0; i < archetypeChunk.size(); i++) {
-                    NPCEntity npc = archetypeChunk.getComponent(i, Objects.requireNonNull(NPCEntity.getComponentType()));
+            if (match == null || !match.getKOTTMatchStatus() || !match.getCanMarkPoint()) {
+                world.execute(() -> world.getEntityStore().getStore().forEachChunk(NPCEntity.getComponentType(), (_archetypeChunk, _commandBuffer) -> {
+                    for (int i = 0; i < archetypeChunk.size(); i++) {
+                        NPCEntity npc = archetypeChunk.getComponent(i, Objects.requireNonNull(NPCEntity.getComponentType()));
 
-                    if (npc != null) {
-                        if (npc.getNPCTypeId().equals("FighterNPC") || npc.getNPCTypeId().equals("WeaponShop")) {
-                            world.execute(() -> {
-                                world.getEntityStore().getStore().removeEntity(Objects.requireNonNull(npc.getReference()), RemoveReason.REMOVE);
-                            });
+                        if (npc != null) {
+                            if (npc.getNPCTypeId().equals("FighterNPC") || npc.getNPCTypeId().equals("WeaponShop")) {
+                                world.execute(() -> {
+                                    world.getEntityStore().getStore().removeEntity(Objects.requireNonNull(npc.getReference()), RemoveReason.REMOVE);
+                                });
+                            }
                         }
                     }
-                }
-            }));
+                }));
+            }
 
             return;
         }

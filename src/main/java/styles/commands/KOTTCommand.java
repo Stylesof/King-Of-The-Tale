@@ -5,6 +5,7 @@ import styles.commands.match.KOTTMatchCommand;
 import styles.commands.money.KOTTMoneyCommand;
 import styles.commands.scoreboard.KOTTScoreboardCommand;
 import styles.commands.team.KOTTTeamCommand;
+import styles.commands.test.TestCommand;
 
 public class KOTTCommand extends AbstractCommandCollection {
 

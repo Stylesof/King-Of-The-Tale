@@ -67,8 +67,8 @@ public class DeathSystem extends EntityTickingSystem<EntityStore> {
                     if (playerCanChangeScore.get(playerRef).get()) {
                         if (!playerCanChangeScore.get(playerRef).compareAndExchange(true, false)) return;
                         match.getScoreBoard().addDeath(playerRef);
-
                         PlayerRef finalPlayerRef = playerRef;
+
                         ThreadSafetyProvider.DeathSystemScheduler.schedule(() -> playerCanChangeScore.remove(finalPlayerRef), 2, TimeUnit.SECONDS);
                     }
                 }

@@ -4,6 +4,7 @@ import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.server.core.event.events.player.AddPlayerToWorldEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
+import com.hypixel.hytale.server.core.event.events.player.RemovedPlayerFromWorldEvent;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -12,6 +13,7 @@ import styles.commands.KOTTCommand;
 import styles.events.ECS_OnDamageBlockEvent;
 import styles.events.OnPlayerConnectEvent;
 import styles.events.OnPlayerDisconnectEvent;
+import styles.events.OnPlayerRemovedFromWorldEvent;
 import styles.player.component.InvulnerabilityComponent;
 import styles.player.component.KOTTMoney;
 import styles.thread.ThreadSafetyProvider;
@@ -68,6 +70,7 @@ public class KOTT extends JavaPlugin {
         // Event Handler
         this.getEventRegistry().registerGlobal(PlayerConnectEvent.class, OnPlayerConnectEvent::onPlayerConnect);
         this.getEventRegistry().registerGlobal(PlayerDisconnectEvent.class, OnPlayerDisconnectEvent::onPlayerDisconnect);
+        this.getEventRegistry().registerGlobal(RemovedPlayerFromWorldEvent.class, OnPlayerRemovedFromWorldEvent::onPlayerRemovedFromWorld);
 
         // ECS Event Handler
         this.getEntityStoreRegistry().registerSystem(new ECS_OnDamageBlockEvent());

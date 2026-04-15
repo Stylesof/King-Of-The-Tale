@@ -1,7 +1,7 @@
 package styles.world;
 
+import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.RemoveReason;
-import com.hypixel.hytale.math.vector.Transform;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
@@ -10,12 +10,11 @@ import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.data.PlayerRespawnPointData;
-import com.hypixel.hytale.server.core.modules.entity.component.NewSpawnComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.PropComponent;
-import com.hypixel.hytale.server.core.modules.entity.teleport.Teleport;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarkersStore;
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.worldstore.WorldMarkersResource;
 import com.hypixel.hytale.server.npc.NPCPlugin;
@@ -25,7 +24,7 @@ import styles.player.component.InvulnerabilityComponent;
 import styles.team.KOTTTeam;
 import styles.ui.KOTTEndUI;
 import styles.ui.KOTTPointsUI;
-import styles.ui.TeleportProvider;
+import styles.util.TeleportProvider;
 import styles.util.ColorHandler;
 import styles.util.MessageHandler;
 import styles.util.StringGenerator;
@@ -178,9 +177,10 @@ public class KOTTMatch {
             stop(world.getName(), true);
             return CompletableFuture.completedFuture(null);
         }
-        this.Zone = new KOTTZone(zoneRadius, startPos, world);
+        this.Zone = new KOTTZone(zoneRadius, zonePosition, world);
 
         printLog("Zone is in a safe place!");
+        printLog("Zone position: " + zonePosition);
 
         // Using a pre-defined name template, get a list with random names
         List<String> nameList = StringGenerator.genRandomNameList(teamCount);
@@ -241,11 +241,11 @@ public class KOTTMatch {
                             printNotification(
                                     playerRef,
                                     "Created Team Base!",
-                                    "Created an Team Base)",
+                                    "Created an Team Base",
                                     ItemTypes.MITHRIL_SWORD,
                                     NotificationTypes.SUCCESS
                             );
-                            MessageHandler.printLog("Created base of Team \"" + lastTeamAdded.getDisplayName() + "\". (X: " + teamBaseSpawnPos.x + ", Y: " + teamBaseSpawnPos.y + ", Z: " + teamBaseSpawnPos.z);
+                            MessageHandler.printLog("Created base of Team \"" + lastTeamAdded.getDisplayName() + "\". (X: " + teamBaseSpawnPos.x + ", Y: " + teamBaseSpawnPos.y + ", Z: " + teamBaseSpawnPos.z + ").");
                             return CompletableFuture.completedFuture(true);
                         }
 
@@ -422,7 +422,7 @@ public class KOTTMatch {
                 printNotification(
                         playerRef,
                         "Failed to Join!",
-                        "The player is already in a Team in this match!",
+                        "Player already in a Team in this match!",
                         ItemTypes.MITHRIL_SWORD,
                         NotificationTypes.ERROR
                 );
@@ -430,23 +430,17 @@ public class KOTTMatch {
             }
         }
 
-        addToMatch(playerRef, chosenTeam);
-
-        TeleportProvider.TeleportPlayer(playerRef, chosenTeam.getBaseZone().getPosition().toVector3d(), this.getMatchWorld());
-
-        if (playerRef.getReference() == null) {
-            printLog("Invalid player reference!");
+        if (!addToMatch(playerRef, chosenTeam)) {
+            printNotification(
+                    playerRef,
+                    "Failed to join the Team " + chosenTeam.getDisplayName() + "!",
+                    "",
+                    ItemTypes.MITHRIL_SWORD,
+                    NotificationTypes.ERROR
+            );
+            printLog("Failed to join the player: " + playerRef.getUsername() + ", into the match!");
             return false;
         }
-
-        Player playerComp = this.getMatchWorld().getEntityStore().getStore().getComponent(playerRef.getReference(), Player.getComponentType());
-        if (playerComp == null) {
-            printLog("Invalid PlayerComponent!");
-            return false;
-        }
-
-        PlayerRespawnPointData[] respawnPointData = { new PlayerRespawnPointData(chosenTeam.getBaseZone().getPosition(), chosenTeam.getBaseZone().getPosition().toVector3d(), "Team " + chosenTeam.getDisplayName() + " Respawn") };
-        playerComp.getPlayerConfigData().getPerWorldData(this.getMatchWorld().getName()).setRespawnPoints(respawnPointData);
 
         printNotification(
                 playerRef,
@@ -457,27 +451,25 @@ public class KOTTMatch {
         );
         printLog("Player " + playerRef.getUsername() + " has joined into the Team " + chosenTeam.getDisplayName());
 
-        if (!this.scoreBoard.getPlayersKillCount().containsKey(playerRef)) {
-            this.scoreBoard.getPlayersKillCount().put(playerRef, 0);
-        }
-        if (!this.scoreBoard.getPlayersDeathCount().containsKey(playerRef)) {
-            this.scoreBoard.getPlayersDeathCount().put(playerRef, 0);
-        }
-
         return true;
     }
 
-    public void leave(@Nonnull PlayerRef playerRef) {
+    public void leave(@Nonnull PlayerRef playerRef) { leave(playerRef, null); }
+    public void leave(@Nonnull PlayerRef playerRef, @Nullable Holder<EntityStore> holder) {
         printLog("Player " + playerRef.getUsername() + ". Leaved the match on world: " + getMatchWorld().getName() + "!");
         removeFromMatch(playerRef);
 
-        TeleportProvider.TeleportPlayer(playerRef, this.LobbyPos.toVector3d(), this.Lobby);
+        if (holder == null) {
+            TeleportProvider.TeleportPlayer(playerRef, this.LobbyPos.toVector3d(), this.Lobby);
 
-        assert playerRef.getWorldUuid() != null;
-        World world = Universe.get().getWorld(playerRef.getWorldUuid());
+            assert playerRef.getWorldUuid() != null;
+            World world = Universe.get().getWorld(playerRef.getWorldUuid());
 
-        assert world != null;
-        KOTTPointsUI.unloadHud(playerRef, world);
+            assert world != null;
+            KOTTPointsUI.unloadHud(playerRef, world);
+        } else {
+            KOTTPointsUI.unloadHud(playerRef, holder);
+        }
     }
 
     // MATCH STOP
@@ -574,7 +566,14 @@ public class KOTTMatch {
         World finalLobbyWorld = match.Lobby;
         Vector3i finalLobbyPos = match.LobbyPos;
 
-        match.Teams.clear();
+        if (!finalZoneLoop) {
+            List<PlayerRef> finalPlayerRefList = new ArrayList<>(match.getPlayersInMatch().values());
+            for (PlayerRef playerRef : finalPlayerRefList) {
+                match.leave(playerRef);
+            }
+        }
+
+        // match.getTeams().clear();
         match.Zone = null;
         match.setKOTTMatchStatus(false);
         match.setCanMarkPoint(false);
@@ -642,22 +641,46 @@ public class KOTTMatch {
         });
     }
 
-    private void addToMatch(@Nonnull PlayerRef playerRef, KOTTTeam team) {
-        this.playersInMatch.put(playerRef.getUuid(), playerRef);
-        this.Zone.getPlayersInZone().add(playerRef);
-        team.addPlayerRef(playerRef);
+    private boolean addToMatch(@Nonnull PlayerRef playerRef, KOTTTeam team) {
+        this.getPlayersInMatch().put(playerRef.getUuid(), playerRef);
+        this.getZone().addToZone(playerRef);
+        team.addPlayer(playerRef);
+
+        if (playerRef.getReference() == null) {
+            printLog("Invalid player reference!");
+            return false;
+        }
+
+        TeleportProvider.TeleportPlayer(playerRef, team.getBaseZone().getPosition().toVector3d(), this.getMatchWorld());
+
+        this.getMatchWorld().execute(() -> {
+            Player playerComp = this.getMatchWorld().getEntityStore().getStore().getComponent(playerRef.getReference(), Player.getComponentType());
+
+            assert  playerComp != null;
+            PlayerRespawnPointData[] respawnPointData = { new PlayerRespawnPointData(team.getBaseZone().getPosition(), team.getBaseZone().getPosition().toVector3d(), "Team " + team.getDisplayName() + " Respawn") };
+            playerComp.getPlayerConfigData().getPerWorldData(this.getMatchWorld().getName()).setRespawnPoints(respawnPointData);
+        });
+
+
+        if (!this.scoreBoard.getPlayersKillCount().containsKey(playerRef)) {
+            this.scoreBoard.getPlayersKillCount().put(playerRef, 0);
+        }
+        if (!this.scoreBoard.getPlayersDeathCount().containsKey(playerRef)) {
+            this.scoreBoard.getPlayersDeathCount().put(playerRef, 0);
+        }
+
+        return true;
     }
 
-    private static void removeFromMatch(PlayerRef playerRef) {
+    private static void removeFromMatch(@Nonnull PlayerRef playerRef) {
         for (KOTTMatch match : KOTTMatch.getMatchesList().values()) {
             if (match.getPlayersInMatch().containsValue(playerRef)) {
-                for (KOTTTeam team : match.Teams.values()) {
-                    if (team.containsPlayer(playerRef)) {
-                        match.getPlayersInMatch().remove(playerRef.getUuid());
-                        match.getZone().removeFromZone(playerRef);
-                        team.removeFromTeam(playerRef);
-                        return;
-                    }
+                KOTTTeam team = match.getPlayerTeam(playerRef);
+                if (team != null) {
+                    match.getPlayersInMatch().remove(playerRef.getUuid());
+                    match.getZone().removeFromZone(playerRef);
+                    team.removeFromTeam(playerRef);
+                    return;
                 }
             }
         }

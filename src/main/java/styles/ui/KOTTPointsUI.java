@@ -1,11 +1,13 @@
 package styles.ui;
 
+import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.hud.CustomUIHud;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import styles.team.KOTTTeam;
 import styles.util.ColorHandler;
 import styles.util.MathHelper;
@@ -100,7 +102,9 @@ public class KOTTPointsUI extends CustomUIHud {
 
     public static void loadHud(@Nonnull PlayerRef playerRef, @Nonnull KOTTMatch match) {
         match.getMatchWorld().execute(() -> {
-            Player playerComp = match.getMatchWorld().getEntityStore().getStore().getComponent(Objects.requireNonNull(playerRef.getReference()), Player.getComponentType());
+            if (playerRef.getReference() == null) return;
+
+            Player playerComp = match.getMatchWorld().getEntityStore().getStore().getComponent(playerRef.getReference(), Player.getComponentType());
             if (playerComp == null) {
                 printLog("Invalid PlayerComponent!");
                 return;
@@ -123,16 +127,11 @@ public class KOTTPointsUI extends CustomUIHud {
         });
     }
 
-    public static boolean statusHud(@Nonnull PlayerRef playerRef, @Nonnull World world) {
-        AtomicBoolean ui = new AtomicBoolean(false);
-        world.execute(() -> {
-            Player playerComp = world.getEntityStore().getStore().getComponent(Objects.requireNonNull(playerRef.getReference()), Player.getComponentType());
-            if (playerComp != null) {
-                ui.set(playerComp.getHudManager().getCustomHud() instanceof KOTTPointsUI);
-            }
-        });
+    public static void unloadHud(@Nonnull PlayerRef playerRef, @Nonnull Holder<EntityStore> holder) {
+        Player playerComp = holder.getComponent(Player.getComponentType());
 
-        return ui.get();
+        assert playerComp != null;
+        playerComp.getHudManager().resetHud(playerRef);
     }
 }
 

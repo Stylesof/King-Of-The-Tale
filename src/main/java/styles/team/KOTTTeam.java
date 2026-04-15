@@ -4,7 +4,6 @@ import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.Color;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
-import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserMapMarker;
 import styles.world.zone.KOTTTeamZone;
 import styles.world.util.WorldBuilder;
 import styles.world.zone.MapMarkersHandler;
@@ -45,7 +44,7 @@ public class KOTTTeam {
     }
 
     // Add player to the Team
-    public void addPlayerRef(PlayerRef playerRef) {
+    public void addPlayer(PlayerRef playerRef) {
         playerList.add(playerRef);
     }
 
