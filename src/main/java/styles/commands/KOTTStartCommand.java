@@ -70,7 +70,7 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
         // Verify if the inserted world name is valid
         if (_world_name == null) {
             if (!commandContext.isPlayer()) {
-                MessageHandler.printLog("[KOTT Debug] Error: To use this command as not Player, you need to insert an world!");
+                MessageHandler.printLog("ERROR: To use this command as not Player, you need to insert an world!");
                 return CompletableFuture.completedFuture(null);
             }
             _world_name = world.getName();

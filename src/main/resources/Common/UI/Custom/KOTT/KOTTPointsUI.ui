@@ -92,3 +92,13 @@ Group {
         }
     }
 }
+
+$C.@Panel {
+    Anchor: (Width: 300, Height: 50, Left: 40, Bottom: 40);
+    Padding: (Full: 15);
+  
+    Label #PlayerMoneyLabel {
+        Text: "$0.00";
+        Style: (TextColor: #009900, FontSize: 30, Alignment: Start, VerticalAlignment: Center);
+    }
+}

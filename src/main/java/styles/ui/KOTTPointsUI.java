@@ -8,6 +8,7 @@ import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import styles.player.component.KOTTMoney;
 import styles.team.KOTTTeam;
 import styles.util.ColorHandler;
 import styles.util.MathHelper;
@@ -97,7 +98,15 @@ public class KOTTPointsUI extends CustomUIHud {
         angle -= 90.0f; // Sprite rotation adjustment
         angle += angleRot;
 
+        if (Double.isNaN(angle)) {
+            angle = 0.0d;
+        }
+
         uiCommandBuilder.set("#InZoneIcon.Angle", angle);
+
+        if (KOTTMoney.getPlayerMoneyMap().containsKey(playerRef.getUsername())) {
+        uiCommandBuilder.set("#PlayerMoneyLabel.Text", "$" + KOTTMoney.getPlayerMoneyMap().get(playerRef.getUsername()) + ".00");
+        }
     }
 
     public static void loadHud(@Nonnull PlayerRef playerRef, @Nonnull KOTTMatch match) {

@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static styles.util.MessageHandler.printChat;
@@ -107,8 +108,10 @@ public class KOTTMoney implements Component<EntityStore> {
     }
 
     public static void addMoneyToPlayer(@Nonnull PlayerRef playerRef, int quantity) {
-        World world = Universe.get().getWorld(playerRef.getWorldUuid());
-        KOTTMoney money = world.getEntityStore().getStore().getComponent(playerRef.getReference(), KOTTMoney.getComponentType());
+        World world = Universe.get().getWorld(Objects.requireNonNull(playerRef.getWorldUuid()));
+
+        assert world != null;
+        KOTTMoney money = world.getEntityStore().getStore().getComponent(Objects.requireNonNull(playerRef.getReference()), KOTTMoney.getComponentType());
         if (money == null) {
             money = new KOTTMoney();
             world.getEntityStore().getStore().addComponent(playerRef.getReference(), KOTTMoney.getComponentType(), money);

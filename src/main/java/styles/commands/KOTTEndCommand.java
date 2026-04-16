@@ -35,7 +35,7 @@ public class KOTTEndCommand extends AbstractAsyncPlayerCommand {
         // Verify if the world name is valid
         if (_word_name == null) {
             if (!commandContext.isPlayer()) {
-                printLog("[KOTT Debug] Error: To use this command as not Player, you need to insert an World name");
+                printLog("ERROR: To use this command as not Player, you need to insert an World name");
                 return CompletableFuture.completedFuture(null);
             }
             _word_name = world.getName();

@@ -32,7 +32,7 @@ public class KOTTJoinCommand extends AbstractAsyncPlayerCommand {
     @Override
     protected CompletableFuture<Void> executeAsync(@NonNullDecl CommandContext commandContext, @NonNullDecl Store<EntityStore> store, @NonNullDecl Ref<EntityStore> ref, @NonNullDecl PlayerRef playerRef, @NonNullDecl World world) {
         if (!commandContext.isPlayer()) {
-            printLog("[KOTT Debug] Command only for players!");
+            printLog("Command only for players!");
             return CompletableFuture.completedFuture(null);
         }
 
@@ -41,7 +41,7 @@ public class KOTTJoinCommand extends AbstractAsyncPlayerCommand {
 
         KOTTMatch match = KOTTMatch.getMatchesList().get(_worldName);
         if (match == null) {
-            printChat(playerRef, "[KOTT] There isn't a match happening in this world!");
+            printChat(playerRef, "There isn't a match happening in this world!");
             return CompletableFuture.completedFuture(null);
         }
 
