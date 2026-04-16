@@ -23,6 +23,7 @@ import styles.KOTT;
 import styles.player.component.InvulnerabilityComponent;
 import styles.team.KOTTTeam;
 import styles.ui.KOTTEndUI;
+import styles.ui.KOTTLoadingUI;
 import styles.ui.KOTTPointsUI;
 import styles.util.TeleportProvider;
 import styles.util.ColorHandler;
@@ -136,6 +137,10 @@ public class KOTTMatch {
         if (!matchAdded) {
             printChat(playerRef, LogTypes.KOTTMatchAlreadyRunning, java.awt.Color.RED);
             return CompletableFuture.completedFuture(null);
+        }
+
+        if (playerRef != null) {
+            KOTTLoadingUI.loadHud(playerRef);
         }
 
         return fun.thenCompose(_world -> _world.getChunkAsync(startPos.x, startPos.z)
@@ -425,6 +430,7 @@ public class KOTTMatch {
                 this.getMatchWorld()
         );
 
+        KOTTLoadingUI.unloadHud(playerRef);
         KOTTPointsUI.loadHud(playerRef, this);
 
         if (!this.getScoreBoard().getPlayersKillCount().containsKey(playerRef)) {

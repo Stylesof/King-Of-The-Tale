@@ -20,6 +20,7 @@ import com.hypixel.hytale.server.npc.movement.controllers.ProbeMoveData;
 import com.hypixel.hytale.server.npc.navigation.*;
 import com.hypixel.hytale.server.npc.util.expression.compile.ast.AST;
 import it.unimi.dsi.fastutil.Pair;
+import styles.ui.KOTTLoadingUI;
 import styles.ui.KOTTPointsUI;
 
 import javax.annotation.Nonnull;
@@ -41,6 +42,7 @@ public class TestCommand extends AbstractAsyncPlayerCommand {
     @Override
     protected CompletableFuture<Void> executeAsync(@Nonnull CommandContext commandContext, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
 
+        KOTTLoadingUI.unloadHud(playerRef);
 
         return CompletableFuture.completedFuture(null);
     }

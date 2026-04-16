@@ -1,0 +1,13 @@
+$C = "../Common.ui";
+
+Group {
+    Anchor: (Full: 0);
+    Background: #000000;
+
+    Group {
+        Anchor: (Width: 64, Height: 64, Right: 40, Bottom: 40);
+
+        $C.@DefaultSpinner {}
+        // Or customize:
+    }
+}

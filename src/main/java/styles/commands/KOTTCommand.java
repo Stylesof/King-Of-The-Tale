@@ -6,6 +6,7 @@ import styles.commands.money.KOTTMoneyCommand;
 import styles.commands.scoreboard.KOTTScoreboardCommand;
 import styles.commands.team.KOTTTeamCommand;
 import styles.commands.test.TestCommand;
+import styles.commands.test.TestGUICommand;
 
 public class KOTTCommand extends AbstractCommandCollection {
 
@@ -30,7 +31,7 @@ public class KOTTCommand extends AbstractCommandCollection {
         this.addSubCommand(new KOTTScoreboardCommand());
 
         // === FOR TEST ===
-        //this.addSubCommand(new TestCommand());
-        //this.addSubCommand(new TestGUICommand());
+        this.addSubCommand(new TestCommand());
+        this.addSubCommand(new TestGUICommand());
     }
 }
