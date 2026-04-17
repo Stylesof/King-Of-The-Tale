@@ -139,10 +139,6 @@ public class KOTTMatch {
             return CompletableFuture.completedFuture(null);
         }
 
-        if (playerRef != null) {
-            KOTTLoadingUI.loadHud(playerRef);
-        }
-
         return fun.thenCompose(_world -> _world.getChunkAsync(startPos.x, startPos.z)
                 .thenCompose(worldChunk -> {
                     KOTTMatch.getMatchesList().get(_world.getName()).start(
@@ -171,6 +167,12 @@ public class KOTTMatch {
         this.isSafe = safe;
         if (playerRef != null) this.host = playerRef;
         if (commandContext != null) this.commandContextHost = commandContext;
+
+        if (playerRef != null) {
+            for (PlayerRef _playerRef : world.getPlayerRefs()) {
+                KOTTLoadingUI.loadHud(_playerRef);
+            }
+        }
 
         MessageHandler.printLog("Starting KOTT Match creation...");
         MessageHandler.printLog("Team Count: " + teamCount);
@@ -290,7 +292,6 @@ public class KOTTMatch {
                 boolean joinStatus = join(_playerRef);
                 if (playerComp == null || !joinStatus) {
                     printLog("Failed to add the player: " + _playerRef.getUsername() + ", to a team");
-                    continue;
                 }
             }
 
@@ -390,6 +391,9 @@ public class KOTTMatch {
     }
 
     public boolean join(@Nonnull PlayerRef playerRef) {
+
+        KOTTLoadingUI.loadHud(playerRef);
+
         if (!getKOTTMatchStatus() && !getIsEnding()){
             printNotification(
                     playerRef,
@@ -400,7 +404,6 @@ public class KOTTMatch {
             );
             return false;
         }
-
 
         KOTTTeam chosenTeam = (KOTTTeam) Teams.values().toArray()[0];
         int playerCounter = Universe.get().getPlayerCount();

@@ -116,6 +116,7 @@ public class KOTTStartUI extends InteractiveCustomUIPage<KOTTStartUI.Data> {
                 if (this.safe) _world = world;
 
                 World final_world = _world;
+
                 CompletableFuture.runAsync(() -> {
                     KOTTMatch.tryCreateMatch(
                             this.worldPos,
