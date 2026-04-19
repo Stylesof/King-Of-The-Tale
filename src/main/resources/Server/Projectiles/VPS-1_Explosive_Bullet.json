@@ -1,0 +1,65 @@
+{
+  "Appearance": "Bullet_Blunderbuss",
+  "Radius": 0.960,
+  "Height": 0,
+  "DepthShot": 0.7,
+  "PitchAdjustShot": true,
+  "SticksVertically": true,
+  "MuzzleVelocity": 700,
+  "TerminalVelocity": 700,
+  "Gravity": 50,
+  "Bounciness": 0,
+  "ImpactSlowdown": 0,
+  "TimeToLive": 50,
+  "Damage": 130,
+  "DeathEffectsOnHit": true,
+  "DeadTime": 0.1,
+  "DeadTimeMiss": 0,
+  "MissParticles": {
+    "SystemId": "Explosion_Small"
+  },
+  "DeathParticles": {
+    "SystemId": "Gun_Impact"
+  },
+  "VerticalCenterShot": 0,
+  "HorizontalCenterShot": 0,
+  "DeathSoundEventId": "SFX_GunPvP_Assault_Rifle_Bullet_Death",
+  "ExplosionConfig": {
+    "DamageEntities": true,
+    "DamageBlocks": true,
+    "BlockDamageRadius": 2,
+    "EntityDamageRadius": 5,
+    "EntityDamageFalloff": 2,
+    "BlockDropChance": 0,
+    "EntityDamage": 200,
+    "BlockDamageFalloff": 0.5,
+    "ItemTool": {
+      "Specs": [
+        {
+          "Power": 2,
+          "GatherType": "SoftBlocks"
+        },
+        {
+          "Power": 2,
+          "GatherType": "Soils"
+        },
+        {
+          "Power": 1,
+          "GatherType": "Woods"
+        },
+        {
+          "Power": 0.5,
+          "GatherType": "Rocks"
+        },
+        {
+          "Power": 1,
+          "GatherType": "Benches"
+        },
+        {
+          "Power": 0.001,
+          "GatherType": "VolcanicRocks"
+        }
+      ]
+    }
+  }
+}

@@ -1,7 +1,6 @@
 package styles;
 
 import com.hypixel.hytale.component.ComponentType;
-import com.hypixel.hytale.server.core.event.events.player.AddPlayerToWorldEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
 import com.hypixel.hytale.server.core.event.events.player.RemovedPlayerFromWorldEvent;
@@ -17,7 +16,7 @@ import styles.events.OnPlayerRemovedFromWorldEvent;
 import styles.player.component.InvulnerabilityComponent;
 import styles.player.component.KOTTMoney;
 import styles.thread.ThreadSafetyProvider;
-import styles.tick.KOTTMatchPointTickHandler;
+import styles.tick.KOTTMatchTickHandler;
 import styles.tick.system.player.DeathSystem;
 import styles.tick.system.player.InvulnerabilitySystem;
 import styles.tick.system.ProjectileDetectionSystem;
@@ -77,7 +76,7 @@ public class KOTT extends JavaPlugin {
 
         // Tick System
         this.getEntityStoreRegistry().registerSystem(new PlayerTickHandler());
-        this.getEntityStoreRegistry().registerSystem(new KOTTMatchPointTickHandler());
+        this.getEntityStoreRegistry().registerSystem(new KOTTMatchTickHandler());
 
         // Systems
         this.getEntityStoreRegistry().registerSystem(new InvulnerabilitySystem(this.invulnerabilityComponentType));

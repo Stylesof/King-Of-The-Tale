@@ -28,7 +28,7 @@
           "Type": "ModifyInventory",
           "RequiredGameMode": "Adventure",
           "ItemToRemove": {
-            "Id": "VPS-1_Bullet",
+            "Id": "Bullet_VPS-1",
             "Quantity": 1
           },
           "Next": {
@@ -38,7 +38,22 @@
 
             }
           },
-          "Failed": "Gun_Shoot_Fail"
+          "Failed": {
+            "Type": "ModifyInventory",
+            "RequiredGameMode": "Adventure",
+            "ItemToRemove": {
+              "Id": "Bullet_Explosive_VPS-1",
+              "Quantity": 1
+            },
+            "Next": {
+              "Parent": "VPS-1_Gun_Shoot_Explosive",
+              "RunTime": 0.01,
+              "Effects": {
+
+              }
+            },
+            "Failed": "Gun_Shoot_Fail"
+          }
         }
       ],
       "Cooldown": {

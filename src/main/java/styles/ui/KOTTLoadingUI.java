@@ -62,10 +62,18 @@ public class KOTTLoadingUI extends InteractiveCustomUIPage<KOTTLoadingUI.NullCla
 
         assert world != null;
         world.execute(() -> {
-            Player _player = world.getEntityStore().getStore().getComponent(Objects.requireNonNull(playerRef.getReference()), Player.getComponentType());
-            assert _player != null;
-            _player.getPageManager().setPage(Objects.requireNonNull(_player.getReference()), world.getEntityStore().getStore(), Page.None);
-            _player.getHudManager().resetHud(playerRef);
+            if (playerRef.getReference() != null) {
+                Player _player = world.getEntityStore().getStore().getComponent(playerRef.getReference(), Player.getComponentType());
+
+                assert _player != null;
+                _player.getPageManager().setPage(playerRef.getReference(), world.getEntityStore().getStore(), Page.None);
+                _player.getHudManager().resetHud(playerRef);
+            } else if (playerRef.getHolder() != null) {
+                Player _player = playerRef.getHolder().getComponent(Player.getComponentType());
+
+                assert _player != null;
+                _player.getHudManager().resetHud(playerRef);
+            }
         });
     }
 

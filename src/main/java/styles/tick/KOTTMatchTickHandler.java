@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static styles.util.MessageHandler.*;
 
-public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
+public class KOTTMatchTickHandler extends TickingSystem<EntityStore> {
 
     @Override
     public void tick(float dt, int index, @Nonnull Store<EntityStore> store) {
@@ -43,52 +43,50 @@ public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
                         // try to spawn an NPC in zone to fight every 15 seconds
                         // Spawn in randow pos with safe 10 blocks from any player
                         // in radius
-                        AtomicReference<Vector3i> pos = new AtomicReference<>(getRandomPos(match));
                         match.getMatchWorld().execute(() -> {
-                            pos.set(WorldBuilder.alignVectorToWorldSurface(pos.get(), match.getMatchWorld()));
-                        });
+                            Vector3i pos = getRandomPos(match);
+                            pos = WorldBuilder.alignVectorToWorldSurface(pos, match.getMatchWorld());
 
-                        int i = 0;
-                        if (pos.get() != null) {
-                            for (i = 0; i < match.getZone().getPlayersInZone().size(); i++) {
-                                double distance = MathHelper.positionDistance(match.getZone().getPlayersInZone().get(i).getTransform().getPosition(), pos.get().toVector3d());
-                                if (distance < 10.0f) {
-                                    break;
-                                }
-                            }
-                        } else {
-                            printLog("Invalid NPC spawn position");
-                        }
-
-                        if (i != 0 && i == match.getZone().getPlayersInZone().size()) {
-                            AtomicInteger npcCounter = new AtomicInteger(0);
-                            match.getMatchWorld().execute(() -> match.getMatchWorld().getEntityStore().getStore().forEachChunk(NPCEntity.getComponentType(), (archetypeChunk, commandBuffer) -> {
-                                for(int _index = 0; _index < archetypeChunk.size(); _index++) {
-                                    NPCEntity npc = archetypeChunk.getComponent(_index, Objects.requireNonNull(NPCEntity.getComponentType()));
-
-                                    if (npc != null) {
-                                        if (npc.getNPCTypeId().equals("FighterNPC")) {
-                                            npcCounter.getAndIncrement();
-                                        }
+                            int i = 0;
+                            if (pos != null) {
+                                for (i = 0; i < match.getZone().getPlayersInZone().size(); i++) {
+                                    double distance = MathHelper.positionDistance(match.getZone().getPlayersInZone().get(i).getTransform().getPosition(), pos.toVector3d());
+                                    if (distance < 10.0f) {
+                                        break;
                                     }
                                 }
-                            }));
+                            } else {
+                                printLog("Invalid NPC spawn position");
+                            }
 
-                            if (npcCounter.get() < match.npcCounter) {
-                                printLog("Spawning NPC in: (" + pos.get().x + ", " + pos.get().y + ", " + pos.get().z + ")");
-                                match.getMatchWorld().execute(() -> {
+                            if (i != 0 && i == match.getZone().getPlayersInZone().size()) {
+                                AtomicInteger npcCounter = new AtomicInteger(0);
+                                match.getMatchWorld().execute(() -> match.getMatchWorld().getEntityStore().getStore().forEachChunk(NPCEntity.getComponentType(), (archetypeChunk, commandBuffer) -> {
+                                    for(int _index = 0; _index < archetypeChunk.size(); _index++) {
+                                        NPCEntity npc = archetypeChunk.getComponent(_index, Objects.requireNonNull(NPCEntity.getComponentType()));
+
+                                        if (npc != null) {
+                                            if (npc.getNPCTypeId().equals("FighterNPC")) {
+                                                npcCounter.getAndIncrement();
+                                            }
+                                        }
+                                    }
+                                }));
+
+                                if (npcCounter.get() < match.npcCounter) {
+                                    printLog("Spawning NPC in: (" + pos.x + ", " + pos.y + ", " + pos.z + ")");
                                     NPCPlugin.get().spawnNPC(
                                             match.getMatchWorld().getEntityStore().getStore(),
                                             "FighterNPC",
                                             null,
-                                            pos.get().toVector3d(),
+                                            pos.toVector3d(),
                                             new Vector3f(0.0f, 0.0f, 0.0f)
                                     );
-                                });
-                            } else {
-                                printLog("NPC in Zone limit reached!");
+                                } else {
+                                    printLog("NPC in Zone limit reached!");
+                                }
                             }
-                        }
+                        });
                     }
                 }
 
@@ -98,35 +96,28 @@ public class KOTTMatchPointTickHandler extends TickingSystem<EntityStore> {
                 World world = match.getMatchWorld();
 
                 // get team with more players in area
-                Map<KOTTTeam, Integer> teamPlayersCount = new HashMap<>(); // player count per team
                 KOTTTeam firstTeam = null, secondTeam = null; // get the first and second team with most players in area
-                for (PlayerRef playerRef : match.getZone().getPlayersInZone()) {
-                    if (!teamPlayersCount.containsKey(match.getPlayerTeam(playerRef))) {
-                        teamPlayersCount.put(match.getPlayerTeam(playerRef), 0);
+                for (KOTTTeam team : match.getTeamCountInZone().keySet()) {
+                    if (firstTeam == null) {
+                        firstTeam = team;
+                        continue;
                     }
 
-                    int playerCount = teamPlayersCount.get(match.getPlayerTeam(playerRef));
-                    teamPlayersCount.put(match.getPlayerTeam(playerRef), ++playerCount);
-
-                    if (firstTeam == null) {
-                        firstTeam = match.getPlayerTeam(playerRef);
+                    if (match.getTeamCountInZone().get(team) > match.getTeamCountInZone().get(firstTeam)) {
+                        secondTeam = firstTeam;
+                        firstTeam = team;
                     } else {
-                        if (playerCount > teamPlayersCount.get(firstTeam)) {
-                            secondTeam = firstTeam;
-                            firstTeam = match.getPlayerTeam(playerRef);
-                        } else if (playerCount <= teamPlayersCount.get(firstTeam)) {
-                            if (secondTeam != null) {
-                                if (playerCount > teamPlayersCount.get(secondTeam)) {
-                                    secondTeam = match.getPlayerTeam(playerRef);
-                                }
-                            } else{
-                                secondTeam = match.getPlayerTeam(playerRef);
+                        if (secondTeam == null) {
+                            secondTeam = team;
+                        } else {
+                            if (match.getTeamCountInZone().get(team) > match.getTeamCountInZone().get(secondTeam)) {
+                                secondTeam = team;
                             }
                         }
                     }
                 }
 
-                if (firstTeam == null || teamPlayersCount.get(firstTeam).equals(teamPlayersCount.get(secondTeam))) continue;
+                if (firstTeam == null || match.getTeamCountInZone().get(firstTeam).equals(match.getTeamCountInZone().get(secondTeam))) continue;
 
                 firstTeam.teamPoints++;
                 printLog("Team " + firstTeam.getDisplayName() + " marked a point! (" + firstTeam.teamPoints + " / 100)");

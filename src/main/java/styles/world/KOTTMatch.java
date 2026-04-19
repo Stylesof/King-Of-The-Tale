@@ -9,7 +9,6 @@ import com.hypixel.hytale.protocol.Color;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.entity.entities.player.data.PlayerRespawnPointData;
 import com.hypixel.hytale.server.core.modules.entity.component.PropComponent;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
@@ -19,7 +18,6 @@ import com.hypixel.hytale.server.core.universe.world.worldmap.markers.user.UserM
 import com.hypixel.hytale.server.core.universe.world.worldmap.markers.worldstore.WorldMarkersResource;
 import com.hypixel.hytale.server.npc.NPCPlugin;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
-import styles.KOTT;
 import styles.player.component.InvulnerabilityComponent;
 import styles.team.KOTTTeam;
 import styles.ui.KOTTEndUI;
@@ -67,13 +65,14 @@ public class KOTTMatch {
     private boolean isSafe = false;
     private final LinkedHashMap<UUID, KOTTTeam> Teams = new LinkedHashMap<>();
     private final Map<UUID, PlayerRef> playersInMatch = new HashMap<>();
+    private final Map<KOTTTeam, Integer> teamsCountInZone = new HashMap<>();
     private World Lobby;
     private Vector3i matchStartPos = new Vector3i();
     private KOTTZone Zone;
     private Vector3i LobbyPos; // A 'home' to use when the match stops
 
     private CompletableFuture<Boolean> startMatchThread = CompletableFuture.runAsync(() -> {}).thenCompose(status -> CompletableFuture.completedFuture(true));
-    private AtomicBoolean startMatchThreadSuccess = new AtomicBoolean(true);
+    private final AtomicBoolean startMatchThreadSuccess = new AtomicBoolean(true);
 
     private PlayerRef host;
     private CommandContext commandContextHost;
@@ -140,7 +139,7 @@ public class KOTTMatch {
         }
 
         return fun.thenCompose(_world -> _world.getChunkAsync(startPos.x, startPos.z)
-                .thenCompose(worldChunk -> {
+                .thenCompose(worldChunk ->
                     KOTTMatch.getMatchesList().get(_world.getName()).start(
                             startPos,
                             teamCount,
@@ -152,10 +151,10 @@ public class KOTTMatch {
                             _world,
                             lobbyWorld,
                             lobbyPos
-                    );
-                    return CompletableFuture.completedFuture(_world.getName());
-                })
-        ).thenApply(unused -> tempWorldName);
+                    )
+                )
+                .thenCompose(unused -> CompletableFuture.completedFuture(_world.getName()))
+        ).thenCompose(unused -> CompletableFuture.completedFuture(tempWorldName));
     }
 
     private CompletableFuture<Void> start(@Nonnull Vector3i startPos, int teamCount, int zoneRadius, boolean safe, boolean loop, @Nullable PlayerRef playerRef, @Nullable CommandContext commandContext, @Nonnull World world, @Nonnull World lobbyWorld, @Nonnull Vector3i lobbyPos) {
@@ -184,6 +183,8 @@ public class KOTTMatch {
             stop(world.getName(), true);
             return CompletableFuture.completedFuture(null);
         }
+
+        this.matchStartPos = zonePosition;
         this.Zone = new KOTTZone(zoneRadius, zonePosition, world);
 
         printLog("Zone is in a safe place!");
@@ -392,9 +393,7 @@ public class KOTTMatch {
 
     public boolean join(@Nonnull PlayerRef playerRef) {
 
-        KOTTLoadingUI.loadHud(playerRef);
-
-        if (!getKOTTMatchStatus() && !getIsEnding()){
+        if (!getKOTTMatchStatus() || getIsEnding()){
             printNotification(
                     playerRef,
                     "Failed to Join!",
@@ -404,6 +403,8 @@ public class KOTTMatch {
             );
             return false;
         }
+
+        KOTTLoadingUI.loadHud(playerRef);
 
         KOTTTeam chosenTeam = (KOTTTeam) Teams.values().toArray()[0];
         int playerCounter = Universe.get().getPlayerCount();
@@ -467,7 +468,6 @@ public class KOTTMatch {
 
             assert world != null;
             KOTTPointsUI.unloadHud(playerRef, world);
-
             world.execute(() -> {
                 if (world.getEntityStore().getStore().getComponent(Objects.requireNonNull(playerRef.getReference()), InvulnerabilityComponent.getComponentType()) != null) {
                     world.getEntityStore().getStore().removeComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType());
@@ -550,27 +550,46 @@ public class KOTTMatch {
 
         printLog(match.getMatchWorld().getName() + ": Removing UserMapMarker from Zone...");
         store.removeUserMapMarker(match.Zone.getZoneMarker().getId());
-        printLog(match.getMatchWorld().getName() + ": Removed all UserMapMakers on " + match.getZone().getWorld().getName());
+        printLog(match.getMatchWorld().getName() + ": Removed all UserMapMakers");
 
-        printLog("Returning player to lobby...");
-        for (PlayerRef playerRef : match.getPlayersInMatch().values()) {
-            if (playerRef != null && playerRef.getReference() != null) {
-                world.execute(() -> {
-                    Player player = world.getEntityStore().getStore().getComponent(playerRef.getReference(), Player.getComponentType());
+        List<PlayerRef> finalPlayerRefList = new ArrayList<>(match.getPlayersInMatch().values());
 
-                    if (player != null) {
-                        if (world.getEntityStore().getStore().getComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType()) != null) {
-                            world.getEntityStore().getStore().removeComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType());
+        printLog("Removing players from match...");
+        for (PlayerRef playerRef : finalPlayerRefList) {
+            if (playerRef != null) {
+                if (!match.isLoop || forceStop) {
+                    /*
+                    TODO: FIX THAT IN FUTURE, BECAUSE THE LEAVE FUNCTION ALREADY DO SOMETHING LIKE IT, BUT THE LEAVE
+                          FUNCTION THREATS ANOTHER ISSUE, SO, I NEED TO WORK ON IT '-'
+                    */
+                    world.execute(() -> {
+                        if (playerRef.getReference() != null) {
+                            Player player = world.getEntityStore().getStore().getComponent(playerRef.getReference(), Player.getComponentType());
+                            if (player != null) {
+                                if (world.getEntityStore().getStore().getComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType()) != null) {
+                                    world.getEntityStore().getStore().removeComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType());
+                                }
+                            }
+                        } else if (playerRef.getHolder() != null) {
+                            Player player = playerRef.getHolder().getComponent(Player.getComponentType());
+                            if (player != null) {
+                                if (playerRef.getHolder().getComponent(InvulnerabilityComponent.getComponentType()) != null) {
+                                    playerRef.getHolder().removeComponent(InvulnerabilityComponent.getComponentType());
+                                }
+                            }
                         }
-                    }
-                });
+                    });
 
-                match.leave(playerRef);
+                    match.leave(playerRef);
+                } else {
+                    match.removeFromMatch(playerRef);
+                }
             }
         }
-        printLog("All players from match has been returned to the lobby!");
+        printLog("All players removed from the match!");
 
-        Vector3i finalWordPos = match.matchStartPos;
+
+        Vector3i finalWorldPos = new Vector3i(match.matchStartPos);
         int finalTeamCount = match.getTeams().size();
         int finalZoneRadius = match.Zone.getZoneRadius();
         boolean finalZoneLoop = match.isLoop && !forceStop;
@@ -582,7 +601,7 @@ public class KOTTMatch {
 
         match.startMatchThread.cancel(true);
 
-        // match.getTeams().clear();
+        //match.getTeams().clear();
         match.Zone = null;
         match.setKOTTMatchStatus(false);
         match.setCanMarkPoint(false);
@@ -595,12 +614,11 @@ public class KOTTMatch {
         return CompletableFuture.runAsync(() -> {
            if (finalZoneLoop) {
                Random random = new Random();
-               finalWordPos.x += random.nextInt(10000);
-               finalWordPos.y += random.nextInt(10000);
-               finalWordPos.z += random.nextInt(10000);
+               finalWorldPos.x += random.nextInt(-10000, 10000);
+               finalWorldPos.z += random.nextInt(-10000, 10000);
 
                KOTTMatch.tryCreateMatch(
-                   finalWordPos,
+                   finalWorldPos,
                    finalTeamCount,
                    finalZoneRadius,
                    finalZoneSafe,
@@ -652,7 +670,7 @@ public class KOTTMatch {
 
     private void addToMatch(@Nonnull PlayerRef playerRef, KOTTTeam team) {
         this.getPlayersInMatch().put(playerRef.getUuid(), playerRef);
-        this.getZone().addToZone(playerRef);
+        this.addPlayerToZone(playerRef);
         team.addPlayer(playerRef);
     }
 
@@ -660,8 +678,39 @@ public class KOTTMatch {
         KOTTTeam team = this.getPlayerTeam(playerRef);
         if (team != null) {
             this.getPlayersInMatch().remove(playerRef.getUuid());
-            this.getZone().removeFromZone(playerRef);
+            this.removePlayerFromZone(playerRef);
             team.removeFromTeam(playerRef);
+        }
+    }
+
+    public Map<KOTTTeam, Integer> getTeamCountInZone() { return this.teamsCountInZone; }
+
+    public void addPlayerToZone(@Nonnull PlayerRef playerRef) {
+        if (!this.getZone().getPlayersInZone().contains(playerRef)) {
+            this.getZone().addToZone(playerRef);
+
+            KOTTTeam team = getPlayerTeam(playerRef);
+            assert team != null;
+            if (!this.teamsCountInZone.containsKey(team)) {
+                this.teamsCountInZone.put(team, 1);
+            } else {
+                this.teamsCountInZone.put(team, this.teamsCountInZone.get(team) + 1);
+            }
+        }
+    }
+
+    public void removePlayerFromZone(@Nonnull PlayerRef playerRef) {
+        if (this.getZone().getPlayersInZone().contains(playerRef)) {
+            this.getZone().removeFromZone(playerRef);
+
+            KOTTTeam team = getPlayerTeam(playerRef);
+            assert team != null;
+            if (this.teamsCountInZone.containsKey(team)) {
+                this.teamsCountInZone.put(team, this.teamsCountInZone.get(team) - 1);
+                if (this.teamsCountInZone.get(team) == 0) {
+                    this.teamsCountInZone.remove(team);
+                }
+            }
         }
     }
 

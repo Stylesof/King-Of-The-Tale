@@ -28,7 +28,7 @@
           "Type": "ModifyInventory",
           "RequiredGameMode": "Adventure",
           "ItemToRemove": {
-            "Id": "VHG-1_Bullet",
+            "Id": "Bullet_VHG-1",
             "Quantity": 1
           },
           "Next": {

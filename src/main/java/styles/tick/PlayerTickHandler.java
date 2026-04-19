@@ -48,25 +48,25 @@ public class PlayerTickHandler extends EntityTickingSystem<EntityStore> {
         if (world == null || !world.isAlive()) return;
 
         KOTTMatch match = KOTTMatch.getMatchesList().get(world.getName());
-        if (match == null || !match.getPlayersInMatch().containsKey(playerRef.getUuid()) || !match.getKOTTMatchStatus() || !match.getCanMarkPoint()) {
-            if (match == null || !match.getKOTTMatchStatus() || !match.getCanMarkPoint()) {
-                world.execute(() -> world.getEntityStore().getStore().forEachChunk(NPCEntity.getComponentType(), (_archetypeChunk, _commandBuffer) -> {
-                    for (int i = 0; i < archetypeChunk.size(); i++) {
-                        NPCEntity npc = archetypeChunk.getComponent(i, Objects.requireNonNull(NPCEntity.getComponentType()));
+        if (match == null || !match.getKOTTMatchStatus() || !match.getCanMarkPoint()) {
+            world.execute(() -> world.getEntityStore().getStore().forEachChunk(NPCEntity.getComponentType(), (_archetypeChunk, _commandBuffer) -> {
+                for (int i = 0; i < _archetypeChunk.size(); i++) {
+                    NPCEntity npc = _archetypeChunk.getComponent(i, Objects.requireNonNull(NPCEntity.getComponentType()));
 
-                        if (npc != null) {
-                            if (npc.getNPCTypeId().equals("FighterNPC") || npc.getNPCTypeId().equals("WeaponShop")) {
-                                world.execute(() -> {
-                                    world.getEntityStore().getStore().removeEntity(Objects.requireNonNull(npc.getReference()), RemoveReason.REMOVE);
-                                });
-                            }
+                    if (npc != null) {
+                        if (npc.getNPCTypeId().equals("FighterNPC") || npc.getNPCTypeId().equals("WeaponShop")) {
+                            world.execute(() -> {
+                                world.getEntityStore().getStore().removeEntity(Objects.requireNonNull(npc.getReference()), RemoveReason.REMOVE);
+                            });
                         }
                     }
-                }));
-            }
+                }
+            }));
 
             return;
         }
+
+        if (!match.getPlayersInMatch().containsValue(playerRef)) return;
 
         // Match is started
         Vector3d playerPos;
@@ -118,7 +118,7 @@ public class PlayerTickHandler extends EntityTickingSystem<EntityStore> {
 
         if (!match.getZone().isInside(playerRef.getTransform().getPosition()) && playerRef.getReference() != null) {
             // It's outside the main zone
-            match.getZone().getPlayersInZone().remove(playerRef);
+            match.removePlayerFromZone(playerRef);
 
             playerPos = playerRef.getTransform().getPosition();
             playerPos.y = 0;
@@ -144,9 +144,7 @@ public class PlayerTickHandler extends EntityTickingSystem<EntityStore> {
                 });
             }
         } else {
-            if (!match.getZone().getPlayersInZone().contains(playerRef)) {
-                match.getZone().addToZone(playerRef);
-            }
+            match.addPlayerToZone(playerRef);
         }
     }
 

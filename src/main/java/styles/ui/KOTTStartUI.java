@@ -108,7 +108,7 @@ public class KOTTStartUI extends InteractiveCustomUIPage<KOTTStartUI.Data> {
                 break;
             case "Start":
                 World _world = Universe.get().getWorld(this.worldName);
-                if (_world == null && !this.safe) {
+                if (_world == null) {
                     this.errorMessage = "Invalid World name!";
                     break;
                 }
@@ -122,7 +122,7 @@ public class KOTTStartUI extends InteractiveCustomUIPage<KOTTStartUI.Data> {
                             this.worldPos,
                             this.teamCount,
                             this.zoneRadius,
-                            this.safe,
+                            false, // disabled by now
                             this.loop,
                             this.playerRef,
                             null,

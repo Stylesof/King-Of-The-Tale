@@ -45,19 +45,6 @@ public class ProjectileDetectionSystem extends EntityTickingSystem<EntityStore> 
                         if (tr != null) {
                             for (KOTTTeam team : match.getTeams()) {
                                 if (team.getBaseZone().isInside(tr.getPosition()) && MathHelper.positionDistance(tr.getPosition(), team.getBaseZone().getPosition().toVector3d()) <= KOTTTeamZone.baseRadius) {
-                                    /* BUG TO FIX
-                                    var proj = world.getEntityStore().getStore().getComponent(archetypeChunk.getReferenceTo(index), ProjectileComponent.getComponentType());
-                                    if (proj != null) {
-                                        if (proj.getProjectile() != null) {
-                                            if (proj.getProjectile().getId().equals("VHG-1_Bullet")) {
-                                                if (archetypeChunk.getComponent(index, Velocity.getComponentType()).getSpeed() == 0.0f) {
-                                                    ExplosionUtils.performExplosion(Damage.NULL_SOURCE, archetypeChunk.getComponent(index, TransformComponent.getComponentType()).getPosition(), new ExplosionConfig(), null, commandBuffer, world.getChunkStore().getStore());
-                                                }
-                                            }
-                                        }
-
-                                    */
-
                                     world.getEntityStore().getStore().removeEntity(archetypeChunk.getReferenceTo(index), RemoveReason.REMOVE);
                                 }
                             }

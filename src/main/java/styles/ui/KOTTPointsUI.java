@@ -6,6 +6,7 @@ import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.hud.CustomUIHud;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import styles.player.component.KOTTMoney;
@@ -111,9 +112,15 @@ public class KOTTPointsUI extends CustomUIHud {
 
     public static void loadHud(@Nonnull PlayerRef playerRef, @Nonnull KOTTMatch match) {
         match.getMatchWorld().execute(() -> {
-            if (playerRef.getReference() == null) return;
+            if (playerRef.getWorldUuid() == null || playerRef.getReference() == null) return;
 
-            Player playerComp = match.getMatchWorld().getEntityStore().getStore().getComponent(playerRef.getReference(), Player.getComponentType());
+            World world = Universe.get().getWorld(playerRef.getWorldUuid());
+            if (world == null) {
+                printLog("ERROR: Failed to execute loadHud(), invalid playerRef World!");
+                return;
+            }
+
+            Player playerComp = world.getEntityStore().getStore().getComponent(playerRef.getReference(), Player.getComponentType());
             if (playerComp == null) {
                 printLog("Invalid PlayerComponent!");
                 return;

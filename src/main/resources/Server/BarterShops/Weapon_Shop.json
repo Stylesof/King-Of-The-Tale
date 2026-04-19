@@ -18,7 +18,7 @@
                     "Quantity": 750
                 }
                 ],
-                "Stock": 1000
+                "Stock": 10000
             }
         },
         {
@@ -34,7 +34,7 @@
                         "Quantity": 100
                     }
                 ],
-                "Stock": 1000
+                "Stock": 10000
             }
         },
 
@@ -51,7 +51,7 @@
                         "Quantity": 1500
                     }
                 ],
-                "Stock": 1000
+                "Stock": 10000
             }
         },
         {
@@ -67,7 +67,23 @@
                         "Quantity": 500
                     }
                 ],
-                "Stock": 1000
+                "Stock": 10000
+            }
+        },
+        {
+            "Type": "Fixed",
+            "Trade": {
+                "Output": {
+                    "ItemId": "Bullet_Explosive_VPS-1",
+                    "Quantity": 1
+                },
+                "Input": [
+                    {
+                        "ItemId": "Money",
+                        "Quantity": 500
+                    }
+                ],
+                "Stock": 10000
             }
         }
     ]

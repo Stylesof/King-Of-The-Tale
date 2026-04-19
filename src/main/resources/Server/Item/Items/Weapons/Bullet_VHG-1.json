@@ -3,7 +3,7 @@
     "Name": "VHG-1 Bullet",
     "Description": "Bullet from/to VHG-1!"
   },
-  "Id": "VHG-1_Bullet",
+  "Id": "Bullet_VHG-1",
   "Icon": "Icons/ItemsGenerated/Weapons/VHG-1_BulletIcon.png",
   "Model": "Items/Weapon_VHG-1/VHG-1_Bullet_model.blockymodel",
   "Texture": "Items/Weapon_VHG-1/VHG-1_Bullet_texture.png",
