@@ -9,7 +9,13 @@
 <p style="padding-left: 40px;"><span style="color: #ced4d9;">I created this mod because I am really addicted to this gamemode, and I'm trying to get experience in Hytale Modding.</span></p>
 <p>&nbsp;</p>
 <h3><span style="color: #ecf0f1;"><strong>Advices</strong></span></h3>
+<p style="padding-left: 40px;"><strong><span style="color: #e03e2d;">DO NOT USE THIS MOD IN YOUR MAIN WORLD, IT MAY DESTROY SOME PLACES AROUND THE WORLD TO BUILD THE TEAM BASES, OR WORSE. THIS MOD STILL IN DEVELOPMENT</span></strong></p>
 <p style="padding-left: 40px;"><span style="color: #ced4d9;">This mod is still in devolpment, and I don't expect to finish too soon (It's a long-term project), I really want to work on this project.</span></p>
+<p style="padding-left: 40px;">&nbsp;</p>
+<h3><strong><span style="color: #ced4d9;">Bug List</span></strong></h3>
+<ul>
+<li><span style="color: #ced4d9;"><strong>Github Issues:</strong> <span style="color: #236fa1;"><a style="color: #236fa1;" href="https://github.com/Stylesof/King-Of-The-Tale/issues" target="_blank" rel="nofollow noopener">King Of The Tale Issues</a></span></span></li>
+</ul>
 <p>&nbsp;</p>
 <hr>
 <h2><em><span style="color: #e03e2d;"><strong>Commands</strong></span></em></h2>
