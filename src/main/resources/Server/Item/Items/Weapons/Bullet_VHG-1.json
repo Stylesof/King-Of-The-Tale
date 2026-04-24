@@ -1,7 +1,7 @@
 {
   "TranslationProperties": {
-    "Name": "VHG-1 Bullet",
-    "Description": "Bullet from/to VHG-1!"
+    "Name": "items.bullet_vhg-1.name",
+    "Description": "items.bullet_vhg-1.description"
   },
   "Id": "Bullet_VHG-1",
   "Icon": "Icons/ItemsGenerated/Weapons/VHG-1_BulletIcon.png",

@@ -1,8 +1,8 @@
 
 {
   "TranslationProperties": {
-    "Name": "VPS-1 Explosive Bullet",
-    "Description": "Bullet from/to VPS-1!"
+    "Name": "items.bullet_explosive-vps-1.name",
+    "Description": "items.bullet_explosive_vps-1.description"
   },
   "Id": "Bullet_Explosive_VPS-1",
   "Icon": "Icons/ItemsGenerated/Weapons/VPS-1_Explosive_BulletIcon.png",

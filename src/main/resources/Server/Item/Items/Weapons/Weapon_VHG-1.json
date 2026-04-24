@@ -1,6 +1,7 @@
 {
   "TranslationProperties": {
-    "Name": "VHG-1"
+    "Name": "items.weapon_vhg-1.name",
+    "Description": "items.weapon_vhg-1.description"
   },
   "Categories": [
     "Items.Weapons"

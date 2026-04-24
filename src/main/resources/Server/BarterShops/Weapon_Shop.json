@@ -85,6 +85,57 @@
                 ],
                 "Stock": 10000
             }
+        },
+
+        {
+            "Type": "Fixed",
+            "Trade": {
+                "Output": {
+                    "ItemId": "Weapon_Vector",
+                    "Quantity": 1
+                },
+                "Input": [
+                    {
+                        "ItemId": "Money",
+                        "Quantity": 250
+                    }
+                ],
+                "Stock": 10000
+            }
+        },
+
+        {
+            "Type": "Fixed",
+            "Trade": {
+                "Output": {
+                    "ItemId": "Weapon_RPG",
+                    "Quantity": 1
+                },
+                "Input": [
+                    {
+                        "ItemId": "Money",
+                        "Quantity": 1000
+                    }
+                ],
+                "Stock": 10000
+            }
+        },
+
+        {
+            "Type": "Fixed",
+            "Trade": {
+                "Output": {
+                    "ItemId": "Weapon_GL",
+                    "Quantity": 1
+                },
+                "Input": [
+                    {
+                        "ItemId": "Money",
+                        "Quantity": 1500
+                    }
+                ],
+                "Stock": 10000
+            }
         }
     ]
 }

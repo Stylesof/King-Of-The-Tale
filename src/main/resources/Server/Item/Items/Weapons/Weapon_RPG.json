@@ -1,6 +1,7 @@
 {
   "TranslationProperties": {
-    "Name": "RPG"
+    "Name": "items.weapon_rpg.name",
+    "Description": "items.weapon_rpg.description"
   },
   "Categories": [
     "Items.Weapons"

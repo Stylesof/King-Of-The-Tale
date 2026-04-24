@@ -30,6 +30,7 @@ import styles.util.StringGenerator;
 import styles.util.MathHelper;
 import styles.util.item.ItemTypes;
 import styles.util.log.LogTypes;
+import styles.util.log.LogTypesDebug;
 import styles.world.match.KOTTScoreboard;
 import styles.world.util.WorldBuilder;
 import styles.world.zone.KOTTTeamZone;
@@ -118,13 +119,13 @@ public class KOTTMatch {
     public static CompletableFuture<String> tryCreateMatch(@Nonnull Vector3i startPos, int teamCount, int zoneRadius, boolean safe, boolean loop, @Nullable PlayerRef playerRef, @Nullable CommandContext commandContext, @Nonnull World world, @Nonnull World lobbyWorld, @Nonnull Vector3i lobbyPos) {
         // Verify area size
         if (zoneRadius < 100 || zoneRadius > 500) {
-            printChat(playerRef, LogTypes.KOTTInvalidAreaSize, java.awt.Color.red);
+            printChat(playerRef, LogTypes.KOTTInvalidAreaSize, NotificationTypes.ERROR);
             return CompletableFuture.completedFuture(null);
         }
 
         // Verify number of teams
         if (teamCount < 1 || teamCount > 5) {
-            printChat(playerRef, LogTypes.KOTTInvalidTeamCount, java.awt.Color.RED);
+            printChat(playerRef, LogTypes.KOTTInvalidTeamCount, NotificationTypes.ERROR);
             return CompletableFuture.completedFuture(null);
         }
 
@@ -134,7 +135,7 @@ public class KOTTMatch {
 
         boolean matchAdded = addMatch(tempWorldName);
         if (!matchAdded) {
-            printChat(playerRef, LogTypes.KOTTMatchAlreadyRunning, java.awt.Color.RED);
+            printChat(playerRef, LogTypes.KOTTMatchAlreadyRunning, NotificationTypes.ERROR);
             return CompletableFuture.completedFuture(null);
         }
 
@@ -246,6 +247,7 @@ public class KOTTMatch {
                WorldBuilder.clearAreaSquare(new Vector3i(teamBaseSpawnPos.x, teamBaseSpawnPos.y - 1, teamBaseSpawnPos.z), 10, world).thenCompose(unused ->
                     WorldBuilder.constructTeamBase(new Vector3i(teamBaseSpawnPos), teamColorType, world).thenCompose(created ->{
                         if (created) {
+                            // for more than 1 team it will override others notification, incrementing the counter of notification.
                             printNotification(
                                     playerRef,
                                     "Created Team Base!",
@@ -417,7 +419,7 @@ public class KOTTMatch {
             } else {
                 printNotification(
                         playerRef,
-                        "Failed to Join!",
+                        LogTypes.PlayerMatchJoinFailed,
                         "Player is already in this match!",
                         ItemTypes.MITHRIL_SWORD,
                         NotificationTypes.ERROR
@@ -446,8 +448,8 @@ public class KOTTMatch {
 
         printNotification(
                 playerRef,
+                LogTypes.PlayerMatchJoin,
                 "You joined the Team " + chosenTeam.getDisplayName() + "!",
-                "",
                 ItemTypes.MITHRIL_SWORD,
                 NotificationTypes.SUCCESS
         );
@@ -483,6 +485,7 @@ public class KOTTMatch {
             }
         }
 
+        printChat(playerRef, LogTypes.PlayerMatchLeave, NotificationTypes.ERROR);
         printLog("Player " + playerRef.getUsername() + ". Leaved the match on world: " + getMatchWorld().getName() + "!");
     }
 
@@ -502,17 +505,18 @@ public class KOTTMatch {
         World world = Universe.get().getWorld(worldName);
         if (world == null) {
             if (commandContext == null || !commandContext.isPlayer()) {
-                MessageHandler.printLog("You need to specify an world via --world parameter!", Level.WARNING);
+                //printLog("You need to specify an world via --world parameter!", Level.WARNING);
+                printChat(commandContext, LogTypes.KOTTInvalidWorldDesc, NotificationTypes.ERROR);
                 return CompletableFuture.completedFuture(null);
             }
-            MessageHandler.printLog("Trying to stop a match on a invalid world!", Level.WARNING);
-            printChat(commandContext, "Invalid World!");
+            printLog("Trying to stop a match on a invalid world!", Level.WARNING);
+            printChat(commandContext, LogTypes.KOTTInvalidWorld, NotificationTypes.ERROR);
             return CompletableFuture.completedFuture(null);
         }
 
         if (!KOTTMatch.getMatchesList().containsKey(worldName)) {
-            MessageHandler.printLog("There isn't a match happening in this world!", Level.WARNING);
-            printChat(commandContext, "There isn't a match happening in this world!");
+            printLog(LogTypesDebug.KOTTInvalidMatch, NotificationTypes.ERROR);
+            printChat(commandContext, LogTypes.KOTTInvalidMatch, NotificationTypes.ERROR);
             return CompletableFuture.completedFuture(null);
         }
         KOTTMatch match = KOTTMatch.getMatchesList().get(worldName);
@@ -607,7 +611,7 @@ public class KOTTMatch {
         match.setCanMarkPoint(false);
 
         KOTTMatch.getMatchesList().remove(worldName);
-        printChat(commandContext, "Stopped the active KOTT match!");
+        printChat(commandContext, LogTypes.KOTTMatchStop, NotificationTypes.ERROR);
 
         // NEW LOOP SYSTEM
         // IF NO SAFE IT WILL GET RANDOM POS IN THE WORLD TO RE-START THE MATCH

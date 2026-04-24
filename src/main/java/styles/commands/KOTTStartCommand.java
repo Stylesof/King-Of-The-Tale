@@ -88,7 +88,7 @@ public class KOTTStartCommand extends AbstractAsyncPlayerCommand {
         // Verify if the world is valid
         World _world = Universe.get().getWorld(_world_name);
         if (_world == null) {
-            printChat(playerRef, LogTypes.KOTTInvalidWorld, Color.RED);
+            printChat(playerRef, LogTypes.KOTTInvalidWorld, MessageHandler.NotificationTypes.ERROR);
             return CompletableFuture.completedFuture(null);
         }
 

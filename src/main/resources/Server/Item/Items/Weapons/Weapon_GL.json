@@ -1,6 +1,7 @@
 {
   "TranslationProperties": {
-    "Name": "GL"
+    "Name": "items.weapon_gl.name",
+    "Description": "items.weapon_gl.description"
   },
   "Categories": [
     "Items.Weapons"

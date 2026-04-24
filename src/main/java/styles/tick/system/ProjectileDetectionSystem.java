@@ -3,31 +3,19 @@ package styles.tick.system;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
-import com.hypixel.hytale.math.util.ChunkUtil;
-import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.server.core.entity.ExplosionConfig;
-import com.hypixel.hytale.server.core.entity.ExplosionUtils;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.ProjectileComponent;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
-import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
-import com.hypixel.hytale.server.core.modules.entity.damage.DamageCause;
-import com.hypixel.hytale.server.core.modules.physics.component.Velocity;
-import com.hypixel.hytale.server.core.modules.projectile.component.PredictedProjectile;
 import com.hypixel.hytale.server.core.modules.projectile.component.Projectile;
 import com.hypixel.hytale.server.core.universe.world.World;
-import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import styles.team.KOTTTeam;
 import styles.util.MathHelper;
 import styles.world.KOTTMatch;
 import styles.world.zone.KOTTTeamZone;
-import styles.world.zone.KOTTZone;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import static styles.util.MessageHandler.printLog;
 
 public class ProjectileDetectionSystem extends EntityTickingSystem<EntityStore> {
     @Override

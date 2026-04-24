@@ -52,13 +52,13 @@
     "DamageResistance": {
       "Physical": [
         {
-          "Amount": 0.09,
+          "Amount": 0.045,
           "CalculationType": "Multiplicative"
         }
       ],
       "Projectile": [
         {
-          "Amount": 0.18,
+          "Amount": 0.09,
           "CalculationType": "Multiplicative"
         }
       ]
@@ -66,13 +66,13 @@
     "StatModifiers": {
       "Health": [
         {
-          "Amount": 17,
+          "Amount": 34,
           "CalculationType": "Additive"
         }
       ]
     }
   },
-  "MaxDurability": 100,
+  "MaxDurability": 200,
   "DurabilityLossOnHit": 0.5,
   "Tags": {
     "Type": [

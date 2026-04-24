@@ -5,6 +5,7 @@ public enum LogTypesDebug {
     KOTTLoadFailed,
     KOTTLoadSuccess,
 
-    KOTTMatchStarted;
+    KOTTMatchStarted,
 
+    KOTTInvalidMatch,
 }

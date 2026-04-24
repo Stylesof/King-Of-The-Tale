@@ -1,0 +1,35 @@
+weapon_vhg-1.name = VHG-1
+weapon_vhg-1.description = Very Heavy Gun (Version 1): designed to end your enemies.
+
+weapon_vps-1.name = VPS-1
+weapon_vps-1.description = Very Powerful Sniper (Version 1): designed to destroy your targets.
+weapon_gl.name = GL
+weapon_gl.description = GL (Grenade Launcher): launches small but powerful grenades.
+weapon_rpg.name = RPG
+weapon_rpg.description = Rocket Launcher: launches a powerful missile, designed to destroy buildings.
+weapon_vector.name = Vector
+weapon_vector.description = Light Submachine Gun: low impact but fast fire rate.
+
+bullet_explosive_vps-1.name = VPS-1 Explosive Bullet
+bullet_explosive_vps-1.description = Explosive ammo for VPS-1.
+bullet_vps-1.name = VPS-1 Bullet
+bullet_vps-1.name = Ammo for VPS-1.
+bullet_vhg-1.name = VHG-1 Bullet
+bullet_vhg-1.description = Ammo for VHG-1
+
+armor_level1_head_kevlar.name = Level 1 Kevlar Helmet
+armor_level1_head_kevlar.description = Basic helmet, designed to handle impact in the head.
+armor_level1_chest_kevlar.name = Level 1 Kevlar Chest
+armor_level1_chest_kevlar.description = Basic chest, used to protect the user against enemy attack.
+armor_level1_legs_kevlar.name = Level 1 Kevlar Leggings
+armor_level1_legs_kevlar.description = Basic leggings, used to protect your knees and legs.
+
+armor_level2_head_kevlar.name = Level 2 Kevlar Helmet
+armor_level2_head_kevlar.description = Strong helmet, designed to handle heavy damage against user's head.
+armor_level2_chest_kevlar.name = Level 2 Kevlar Chest
+armor_level2_chest_kevlar.description = Strong chest, used to achieve high protection against any damage source.
+armor_level2_legs_kevlar.name = Level 2 Kevlar Leggings
+armor_level2_legs_kevlar.description =  Strong leggings, used to protect your smallest unsafe points.
+
+money.name = Money
+money.description = Money currency, can be used to trade for weapons/gears.

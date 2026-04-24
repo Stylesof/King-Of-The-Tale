@@ -8,6 +8,7 @@ import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.util.NotificationUtil;
+import org.jline.utils.Log;
 import styles.util.item.ItemTypes;
 import styles.util.log.LogTypes;
 import styles.util.log.LogTypesDebug;
@@ -26,11 +27,20 @@ public class MessageHandler {
     static {
         //debug
         logsDebug.put(LogTypesDebug.KOTTLoadFailed,
-                "Failed to load the KOTH mod! ");
+                "Failed to load the KOTH mod!");
         logsDebug.put(LogTypesDebug.KOTTLoadSuccess,
-                "KOTT mod successfuly loaded! ");
+                "KOTT mod successfuly loaded!");
+        logsDebug.put(LogTypesDebug.KOTTInvalidMatch,
+                "Invalid KOTT match!");
 
         //normal
+        logs.put(LogTypes.PlayerMatchJoin,
+                "You joined the match!");
+        logs.put(LogTypes.PlayerMatchLeave,
+                "You have left the match!");
+        logs.put(LogTypes.PlayerMatchJoinFailed,
+                "Failed to join the match!");
+
         logs.put(LogTypes.KOTTInvalidAreaSize,
                 "Invalid Area Size! Use: (min: 100, max: 500)");
         logs.put(LogTypes.KOTTInvalidTeamCount,
@@ -39,10 +49,16 @@ public class MessageHandler {
                 "Has already an KOTT Match happening in the world ");
         logs.put(LogTypes.KOTTInvalidWorld,
                 "This world doesn't exist! Use \"/world list\" to see all available worlds!");
+            logs.put(LogTypes.KOTTInvalidWorldDesc,
+                    "You need to specify an world via --world parameter!");
         logs.put(LogTypes.KOTTMatchJoin,
                 "You have joined an in progress match!");
         logs.put(LogTypes.KOTTMatchStarted,
                 "Successfully started a KOTT match!");
+        logs.put(LogTypes.KOTTMatchStop,
+                "Stopped the active match!");
+        logs.put(LogTypes.KOTTInvalidMatch,
+                "There isn't a match happening in this world!");
     }
 
     public static final Map<ItemTypes, ItemWithAllMetadata> Icons = new HashMap<>();
@@ -73,6 +89,18 @@ public class MessageHandler {
         };
     }
 
+    private static Level getNotificationTypeToLevel(NotificationTypes type) {
+        return switch (type) {
+            case SUCCESS -> Level.FINE;
+            case WARNING -> Level.INFO;
+            case ERROR -> Level.SEVERE;
+        };
+    }
+
+    public static void printNotification(PlayerRef playerRef, LogTypes log, String subTitle, ItemTypes icon, NotificationTypes type) {
+        printNotification(playerRef, logs.get(log), subTitle, icon, type);
+    }
+
     public static void printNotification(PlayerRef playerRef, String title, String subTitle, ItemTypes icon, NotificationTypes type) {
         if (playerRef == null) return;
         NotificationUtil.sendNotification(
@@ -84,19 +112,26 @@ public class MessageHandler {
     }
 
     public static void printChat(CommandContext cmdctx, Message msg) {
-        if (cmdctx != null) cmdctx.sendMessage(Message.join(Message.raw("[KOTT] ").color(Color.GREEN), msg));
+        if (cmdctx == null) return;
+        cmdctx.sendMessage(Message.join(Message.raw("[KOTT] ").color(Color.GREEN), msg));
     }
-
-    public static void printChat(PlayerRef playerRef, Message msg) {
-        if (playerRef != null) playerRef.sendMessage(Message.join(Message.raw("[KOTT] ").color(Color.GREEN), msg));
-    }
-
     public static void printChat(CommandContext cmdctx, String msg) {
-        if (cmdctx != null) cmdctx.sendMessage(Message.join(Message.raw("[KOTT] ").color(Color.GREEN), Message.raw(msg).color(Color.WHITE)));
+        if (cmdctx == null) return;
+        cmdctx.sendMessage(Message.join(Message.raw("[KOTT] ").color(Color.GREEN), Message.raw(msg).color(Color.WHITE)));
+    }
+    public static void printChat(CommandContext cmdctx, LogTypes logType, @Nonnull NotificationTypes type) {
+        if (cmdctx == null) return;
+        cmdctx.sendMessage(Message.join(Message.raw("[KOTT] ").color(Color.GREEN), Message.raw(logs.get(logType)).color(getNotficationTitleColor(type))));
     }
 
-    public static void printChat(PlayerRef playerRef, String msg) {
-        if (playerRef != null) playerRef.sendMessage(Message.join(Message.raw("[KOTT] ").color(Color.GREEN), Message.raw(msg).color(Color.WHITE)));
+    public static void printChat(@Nonnull PlayerRef playerRef, Message msg) {
+        playerRef.sendMessage(Message.join(Message.raw("[KOTT] ").color(Color.GREEN), msg));
+    }
+    public static void printChat(@Nonnull PlayerRef playerRef, String msg) {
+        playerRef.sendMessage(Message.join(Message.raw("[KOTT] ").color(Color.GREEN), Message.raw(msg).color(Color.WHITE)));
+    }
+    public static void printChat(PlayerRef playerRef, LogTypes logType, @Nonnull NotificationTypes type) {
+        printChat(playerRef, Message.raw(logs.get(logType)).color(getNotficationTitleColor(type)));
     }
 
     // PRINT TO THE LOGGER
@@ -106,13 +141,12 @@ public class MessageHandler {
     public static void printLog(String message){
         HytaleLogger.getLogger().at(Level.INFO).log("[KOTT Debug] " + message);
     }
+    public static void printLog(LogTypesDebug logType, NotificationTypes type) {
+        HytaleLogger.getLogger().at(getNotificationTypeToLevel(type)).log(logsDebug.get(logType));
+    }
 
     public static void printLog(LogTypesDebug logType) {
         printLog(logsDebug.get(logType));
-    }
-
-    public static void printChat(PlayerRef playerRef, LogTypes logType, @Nonnull Color color) {
-        printChat(playerRef, Message.raw(logs.get(logType)).color(color));
     }
 
     public static void printNotification(PlayerRef playerRef, LogTypes logType, ItemTypes icon, NotificationTypes type) {

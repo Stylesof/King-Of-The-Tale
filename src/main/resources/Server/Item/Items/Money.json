@@ -1,7 +1,7 @@
 {
   "TranslationProperties": {
-    "Name": "Money",
-    "Description": "Money currency, used to trade!"
+    "Name": "items.money.name",
+    "Description": "items.money.description"
   },
    "Id": "Money",
   "Icon": "Icons/ItemsGenerated/MoneyIcon.png",

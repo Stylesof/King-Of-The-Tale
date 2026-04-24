@@ -1,6 +1,7 @@
 {
   "TranslationProperties": {
-    "Name": "Vector"
+    "Name": "items.weapon_vector.name",
+    "Description": "items.weapon_vector.description"
   },
   "Categories": [
     "Items.Weapons"
