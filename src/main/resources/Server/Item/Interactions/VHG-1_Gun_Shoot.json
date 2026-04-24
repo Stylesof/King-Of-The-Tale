@@ -17,8 +17,8 @@
         "Color": "#ff0000"
       }
     ],
-    "LocalSoundEventId": "SFX_Rifle_Fire_Local",
-    "WorldSoundEventId": "SFX_Rifle_Fire"
+    "LocalSoundEventId": "SFX_VHG-1_Shoot",
+    "WorldSoundEventId": "SFX_VHG-1_Shoot"
   },
   "ProjectileId": "VHG-1_Bullet"
 }

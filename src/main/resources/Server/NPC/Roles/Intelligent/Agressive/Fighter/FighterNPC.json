@@ -34,8 +34,7 @@
   },
   "Parameters": {
     "NameTranslationKey": {
-      "Value": "Fighter",
-      "Description": "Translation key for NPC name display"
+      "Value": "FighterNPC"
     }
   }
 }

@@ -69,7 +69,7 @@ public class DeathSystem extends EntityTickingSystem<EntityStore> {
                         match.getScoreBoard().addDeath(playerRef);
                         PlayerRef finalPlayerRef = playerRef;
 
-                        ThreadSafetyProvider.DeathSystemScheduler.schedule(() -> playerCanChangeScore.remove(finalPlayerRef), 2, TimeUnit.SECONDS);
+                        ThreadSafetyProvider.DeathSystemScheduler.schedule(() -> playerCanChangeScore.remove(finalPlayerRef), 3, TimeUnit.SECONDS);
                     }
                 }
             } else {
@@ -92,7 +92,7 @@ public class DeathSystem extends EntityTickingSystem<EntityStore> {
                             KOTTMoney.addMoneyToPlayer(killer, 100);
                             printChat(killer, "+$100.00 for the kill!");
 
-                            ThreadSafetyProvider.DeathSystemScheduler.schedule(() -> playerCanChangeScore.remove(killer), 2, TimeUnit.SECONDS);
+                            ThreadSafetyProvider.DeathSystemScheduler.schedule(() -> playerCanChangeScore.remove(killer), 3, TimeUnit.SECONDS);
                         }
                     }
                 });

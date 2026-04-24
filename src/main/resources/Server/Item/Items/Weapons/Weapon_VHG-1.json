@@ -6,8 +6,8 @@
     "Items.Weapons"
   ],
   "Icon": "Icons/ItemsGenerated/Weapons/VHG-1Icon.png",
-  "Model": "Items/Weapon_VHG-1/VHG-1_model.blockymodel",
-  "Texture": "Items/Weapon_VHG-1/VHG-1_texture.png",
+  "Model": "Items/Weapons/VHG-1/VHG-1_model.blockymodel",
+  "Texture": "Items/Weapons/VHG-1/VHG-1_texture.png",
   "PlayerAnimationsId": {
     "Parent": "Rifle",
     "Animations": {
@@ -35,8 +35,8 @@
             "Parent": "VHG-1_Gun_Shoot",
             "RunTime": 0.01,
             "Effects": {
-
-            }
+            },
+            "Next": "Far_Shoot_Heavy_Sound"
           },
           "Failed": "Gun_Shoot_Fail"
         }

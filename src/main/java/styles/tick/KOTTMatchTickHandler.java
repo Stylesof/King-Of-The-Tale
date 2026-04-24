@@ -19,12 +19,10 @@ import styles.world.util.WorldBuilder;
 
 import javax.annotation.Nonnull;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static styles.util.MessageHandler.*;
 
@@ -34,10 +32,10 @@ public class KOTTMatchTickHandler extends TickingSystem<EntityStore> {
     public void tick(float dt, int index, @Nonnull Store<EntityStore> store) {
         for (KOTTMatch match : KOTTMatch.getMatchesList().values()) {
             if (match != null && match.getKOTTMatchStatus() && match.getCanMarkPoint()) {
-                long end = System.currentTimeMillis();
+                AtomicLong end = new AtomicLong(System.currentTimeMillis());
 
-                if (end - match.npcSpawnTimer.get() >= 15000) {
-                    if (match.npcSpawnTimer.compareAndSet(match.npcSpawnTimer.get(), end)) {
+                if (end.get() - match.npcSpawnTimer.get() >= 30000) {
+                    if (match.npcSpawnTimer.compareAndSet(match.npcSpawnTimer.get(), end.get())) {
                         printLog("Time to spawn NPC reached!");
 
                         // try to spawn an NPC in zone to fight every 15 seconds
@@ -60,8 +58,8 @@ public class KOTTMatchTickHandler extends TickingSystem<EntityStore> {
                             }
 
                             if (i != 0 && i == match.getZone().getPlayersInZone().size()) {
-                                AtomicInteger npcCounter = new AtomicInteger(0);
-                                match.getMatchWorld().execute(() -> match.getMatchWorld().getEntityStore().getStore().forEachChunk(NPCEntity.getComponentType(), (archetypeChunk, commandBuffer) -> {
+                                AtomicInteger npcCounter = new AtomicInteger();
+                                match.getMatchWorld().getEntityStore().getStore().forEachChunk(NPCEntity.getComponentType(), (archetypeChunk, commandBuffer) -> {
                                     for(int _index = 0; _index < archetypeChunk.size(); _index++) {
                                         NPCEntity npc = archetypeChunk.getComponent(_index, Objects.requireNonNull(NPCEntity.getComponentType()));
 
@@ -71,8 +69,10 @@ public class KOTTMatchTickHandler extends TickingSystem<EntityStore> {
                                             }
                                         }
                                     }
-                                }));
 
+                                });
+
+                                // TODO: Seems NOT to WORK, it's like the npcCounter isn't being updated at the time
                                 if (npcCounter.get() < match.npcCounter) {
                                     printLog("Spawning NPC in: (" + pos.x + ", " + pos.y + ", " + pos.z + ")");
                                     NPCPlugin.get().spawnNPC(
@@ -90,8 +90,9 @@ public class KOTTMatchTickHandler extends TickingSystem<EntityStore> {
                     }
                 }
 
-                if (end - match.matchStartTimer.get() < KOTTMatch.timeToPoint) continue;
-                if (!match.matchStartTimer.compareAndSet(match.matchStartTimer.get(), end)) continue;
+                if (end.get() - match.pointMarkerTimer.get() < KOTTMatch.timeToPoint) continue;
+                printLog("Time to point reached!");
+                if (!match.pointMarkerTimer.compareAndSet(match.pointMarkerTimer.get(), end.get())) continue;
 
                 World world = match.getMatchWorld();
 
@@ -117,7 +118,10 @@ public class KOTTMatchTickHandler extends TickingSystem<EntityStore> {
                     }
                 }
 
-                if (firstTeam == null || match.getTeamCountInZone().get(firstTeam).equals(match.getTeamCountInZone().get(secondTeam))) continue;
+                printLog("Team to point: " + firstTeam);
+                Integer firstTeamCount = firstTeam == null ? 0 : match.getTeamCountInZone().get(firstTeam);
+                Integer secondTeamCount = secondTeam == null ? 0 : match.getTeamCountInZone().get(secondTeam);
+                if (firstTeam == null || firstTeamCount.equals(secondTeamCount)) continue;
 
                 firstTeam.teamPoints++;
                 printLog("Team " + firstTeam.getDisplayName() + " marked a point! (" + firstTeam.teamPoints + " / 100)");

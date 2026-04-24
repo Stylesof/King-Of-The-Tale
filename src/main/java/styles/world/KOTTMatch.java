@@ -52,9 +52,9 @@ public class KOTTMatch {
 
     // [World Name] [KOTTMatch]
     private static final Map<String, KOTTMatch> matchesList = new HashMap<>();
-    public static final long timeToPoint = 35000;
+    public static final long timeToPoint = 25000;
 
-    public AtomicLong matchStartTimer = new AtomicLong(System.currentTimeMillis());
+    public AtomicLong pointMarkerTimer = new AtomicLong(System.currentTimeMillis());
     public AtomicLong npcSpawnTimer = new AtomicLong(System.currentTimeMillis());
 
     public final int npcCounter = 10;

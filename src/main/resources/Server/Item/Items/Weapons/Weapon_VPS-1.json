@@ -6,8 +6,8 @@
     "Items.Weapons"
   ],
   "Icon": "Icons/ItemsGenerated/Weapons/VPS-1Icon.png",
-  "Model": "Items/Weapon_VPS-1/VPS-1_model.blockymodel",
-  "Texture": "Items/Weapon_VPS-1/VPS-1_texture.png",
+  "Model": "Items/Weapons/VPS-1/VPS-1_model.blockymodel",
+  "Texture": "Items/Weapons/VPS-1/VPS-1_texture.png",
   "PlayerAnimationsId": {
     "Parent": "Rifle",
     "Animations": {

@@ -1,0 +1,65 @@
+{
+  "Appearance": "RPG_Missile",
+  "Radius": 10,
+  "Height": 0,
+  "DepthShot": 0.7,
+  "PitchAdjustShot": true,
+  "SticksVertically": true,
+  "MuzzleVelocity": 100,
+  "TerminalVelocity": 100,
+  "Gravity": 25,
+  "Bounciness": 0,
+  "ImpactSlowdown": 0,
+  "TimeToLive": 200,
+  "Damage": 130,
+  "DeathEffectsOnHit": true,
+  "DeadTime": 0.1,
+  "DeadTimeMiss": 0,
+  "MissParticles": {
+    "SystemId": "Explosion_Medium"
+  },
+  "DeathParticles": {
+    "SystemId": "Explosion_Big"
+  },
+  "VerticalCenterShot": 0,
+  "HorizontalCenterShot": 0,
+  "DeathSoundEventId": "SFX_RPG_Death",
+  "ExplosionConfig": {
+    "DamageEntities": true,
+    "DamageBlocks": true,
+    "BlockDamageRadius": 10,
+    "EntityDamageRadius": 12,
+    "EntityDamageFalloff": 2,
+    "BlockDropChance": 0,
+    "EntityDamage": 250,
+    "BlockDamageFalloff": 0.5,
+    "ItemTool": {
+      "Specs": [
+        {
+          "Power": 3.5,
+          "GatherType": "SoftBlocks"
+        },
+        {
+          "Power": 2.5,
+          "GatherType": "Soils"
+        },
+        {
+          "Power": 2,
+          "GatherType": "Woods"
+        },
+        {
+          "Power": 1.5,
+          "GatherType": "Rocks"
+        },
+        {
+          "Power": 2,
+          "GatherType": "Benches"
+        },
+        {
+          "Power": 0.5,
+          "GatherType": "VolcanicRocks"
+        }
+      ]
+    }
+  }
+}

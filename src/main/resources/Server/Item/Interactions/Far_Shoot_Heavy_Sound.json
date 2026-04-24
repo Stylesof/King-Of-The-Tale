@@ -1,0 +1,6 @@
+{
+  "Type": "Simple",
+  "Effects": {
+    "WorldSoundEventId": "SFX_Far_Shoot_Heavy"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "Interactions": [
+    "RPG_Gun_Shoot"
+  ],
+  "Tags": {
+    "Attack": [
+      "Ranged"
+    ]
+  }
+}
