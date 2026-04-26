@@ -41,6 +41,9 @@
       ]
     }
   },
+  "Armor": {
+    "ArmorSlot": "Chest"
+  },
   "MaxDurability": 100,
   "DurabilityLossOnHit": 0.5,
   "Tags": {
