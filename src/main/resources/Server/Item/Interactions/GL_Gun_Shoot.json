@@ -4,19 +4,6 @@
   "Effects": {
     "ItemAnimationId": "Shoot",
     "CameraEffect": "Handgun_Shoot",
-    "Particles": [
-      {
-        "SystemId": "RifleShooting",
-        "PositionOffset": {
-          "Z": 0.85,
-          "Y": 0.15
-        },
-        "RotationOffset": {
-          "Pitch": 90
-        },
-        "Color": "#ff0000"
-      }
-    ],
     "LocalSoundEventId": "SFX_GL_Shoot",
     "WorldSoundEventId": "SFX_GL_Shoot"
   },

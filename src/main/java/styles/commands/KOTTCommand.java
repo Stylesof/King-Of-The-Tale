@@ -16,6 +16,7 @@ public class KOTTCommand extends AbstractCommandCollection {
         this.addSubCommand(new KOTTStartCommand());
         this.addSubCommand(new KOTTJoinCommand());
         this.addSubCommand(new KOTTStopCommand());
+        this.addSubCommand(new KOTTLeaveCommand());
         this.addSubCommand(new KOTTEndCommand());
 
         this.addSubCommand(new KOTTTeamCommand());
@@ -31,7 +32,7 @@ public class KOTTCommand extends AbstractCommandCollection {
         this.addSubCommand(new KOTTScoreboardCommand());
 
         // === FOR TEST ===
-        this.addSubCommand(new TestCommand());
-        this.addSubCommand(new TestGUICommand());
+        //this.addSubCommand(new TestCommand());
+        //this.addSubCommand(new TestGUICommand());
     }
 }

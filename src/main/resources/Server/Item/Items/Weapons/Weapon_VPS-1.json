@@ -35,9 +35,7 @@
           "Next": {
             "Parent": "VPS-1_Gun_Shoot",
             "RunTime": 0.01,
-            "Effects": {
-
-            }
+            "Next": "Far_Shoot_VeryHeavy_Sound"
           },
           "Failed": {
             "Type": "ModifyInventory",
@@ -49,9 +47,7 @@
             "Next": {
               "Parent": "VPS-1_Gun_Shoot_Explosive",
               "RunTime": 0.01,
-              "Effects": {
-
-              }
+              "Next": "Far_Shoot_VeryHeavy_Sound"
             },
             "Failed": "Gun_Shoot_Fail"
           }

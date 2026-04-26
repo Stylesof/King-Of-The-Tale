@@ -1,6 +1,7 @@
 {
   "TranslationProperties": {
-    "Name": "Level 1 Kevlar Leggings"
+    "Name": "items.armor_camouniform_chest.name",
+    "Description": "items.armor_camouniform_chest.description"
   },
   "Quality": "Uncommon",
   "ItemLevel": 20,
@@ -9,7 +10,7 @@
   "Categories": [
     "Items.Armors"
   ],
-  "Icon": "Icons/ItemsGenerated/Armor/Level1/Legs_KevlarIcon.png",
+  "Icon": "Icons/ItemsGenerated/Armor/CamoUniform/ChestIcon.png",
   "IconProperties": {
     "Rotation": [
       22.5,
@@ -22,8 +23,8 @@
       -13.2
     ]
   },
-  "Model": "Items/Armors/Level1/Legs_Kevlar_model.blockymodel",
-  "Texture": "Items/Armors/Level1/Legs_Kevlar_texture.png",
+  "Model": "Items/Armors/CamoUniform/Chest_CamoUniform_model.blockymodel",
+  "Texture": "Items/Armors/CamoUniform/Chest_CamoUniform_texture.png",
   "Interactions": {
     "Primary": {
       "Interactions": [
@@ -41,10 +42,8 @@
     }
   },
   "Armor": {
-    "ArmorSlot": "Legs",
+    "ArmorSlot": "Chest",
     "BaseDamageResistance": 0,
-    "CosmeticsToHide": [
-    ],
     "DamageResistance": {
       "Physical": [
         {

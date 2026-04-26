@@ -1,6 +1,7 @@
 {
   "TranslationProperties": {
-    "Name": "Level 1 Kevlar Chest"
+    "Name": "items.armor_level1_chest_kevlar.name",
+    "Description": "items.armor_level1_chest_kevlar.description"
   },
   "Quality": "Uncommon",
   "ItemLevel": 20,
@@ -9,7 +10,7 @@
   "Categories": [
     "Items.Armors"
   ],
-  "Icon": "Icons/ItemsGenerated/Armor/Level1/Chest_KevlarIcon.png",
+  "Icon": "Icons/ItemsGenerated/Armor/Level1/ChestIcon.png",
   "IconProperties": {
     "Rotation": [
       22.5,

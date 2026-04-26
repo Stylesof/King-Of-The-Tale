@@ -1,6 +1,5 @@
 weapon_vhg-1.name = VHG-1
 weapon_vhg-1.description = Very Heavy Gun (Version 1): designed to end your enemies.
-
 weapon_vps-1.name = VPS-1
 weapon_vps-1.description = Very Powerful Sniper (Version 1): designed to destroy your targets.
 weapon_gl.name = GL
@@ -13,9 +12,20 @@ weapon_vector.description = Light Submachine Gun: low impact but fast fire rate.
 bullet_explosive_vps-1.name = VPS-1 Explosive Bullet
 bullet_explosive_vps-1.description = Explosive ammo for VPS-1.
 bullet_vps-1.name = VPS-1 Bullet
-bullet_vps-1.name = Ammo for VPS-1.
+bullet_vps-1.description = Ammo for VPS-1.
 bullet_vhg-1.name = VHG-1 Bullet
 bullet_vhg-1.description = Ammo for VHG-1
+bullet_vector.name = Vector Bullet
+bullet_vector.description = Ammo for Vector
+
+missile_rpg.name = RPG Missile
+missile_rpg.description = Missile for RPG Launcher.
+
+grenade_gl.name = GL Grenade
+grenade_gl.description = Grenade ammo for GL.
+
+armor_armband.name = Armband (Colored)
+armor_armband.description = Armband used to identify your teammates.
 
 armor_level1_head_kevlar.name = Level 1 Kevlar Helmet
 armor_level1_head_kevlar.description = Basic helmet, designed to handle impact in the head.
@@ -32,4 +42,4 @@ armor_level2_legs_kevlar.name = Level 2 Kevlar Leggings
 armor_level2_legs_kevlar.description =  Strong leggings, used to protect your smallest unsafe points.
 
 money.name = Money
-money.description = Money currency, can be used to trade for weapons/gears.
+money.description = Money currency, can be used to trade for weapons/gears

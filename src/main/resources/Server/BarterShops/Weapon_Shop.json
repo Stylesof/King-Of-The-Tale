@@ -9,6 +9,39 @@
             "Type": "Fixed",
             "Trade": {
                 "Output": {
+                    "ItemId": "Weapon_Handgun",
+                    "Quantity": 1
+                },
+                "Input": [
+                    {
+                        "ItemId": "Money",
+                        "Quantity": 10
+                    }
+                ],
+                "Stock": 10000
+            }
+        },
+        {
+            "Type": "Fixed",
+            "Trade": {
+                "Output": {
+                    "ItemId": "Weapon_Arrow_Crude",
+                    "Quantity": 20
+                },
+                "Input": [
+                    {
+                        "ItemId": "Money",
+                        "Quantity": 5
+                    }
+                ],
+                "Stock": 10000
+            }
+        },
+
+        {
+            "Type": "Fixed",
+            "Trade": {
+                "Output": {
                 "ItemId": "Weapon_VHG-1",
                 "Quantity": 1
                 },
@@ -64,7 +97,7 @@
                 "Input": [
                     {
                         "ItemId": "Money",
-                        "Quantity": 500
+                        "Quantity": 250
                     }
                 ],
                 "Stock": 10000
@@ -103,6 +136,22 @@
                 "Stock": 10000
             }
         },
+        {
+            "Type": "Fixed",
+            "Trade": {
+                "Output": {
+                    "ItemId": "Bullet_Vector",
+                    "Quantity": 30
+                },
+                "Input": [
+                    {
+                        "ItemId": "Money",
+                        "Quantity": 50
+                    }
+                ],
+                "Stock": 10000
+            }
+        },
 
         {
             "Type": "Fixed",
@@ -120,6 +169,22 @@
                 "Stock": 10000
             }
         },
+        {
+            "Type": "Fixed",
+            "Trade": {
+                "Output": {
+                    "ItemId": "Missile_RPG",
+                    "Quantity": 1
+                },
+                "Input": [
+                    {
+                        "ItemId": "Money",
+                        "Quantity": 500
+                    }
+                ],
+                "Stock": 10000
+            }
+        },
 
         {
             "Type": "Fixed",
@@ -132,6 +197,22 @@
                     {
                         "ItemId": "Money",
                         "Quantity": 1500
+                    }
+                ],
+                "Stock": 10000
+            }
+        },
+        {
+            "Type": "Fixed",
+            "Trade": {
+                "Output": {
+                    "ItemId": "Grenade_GL",
+                    "Quantity": 1
+                },
+                "Input": [
+                    {
+                        "ItemId": "Money",
+                        "Quantity": 350
                     }
                 ],
                 "Stock": 10000

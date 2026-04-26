@@ -9,6 +9,8 @@ import com.hypixel.hytale.protocol.Color;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.entity.entities.player.data.PlayerRespawnPointData;
+import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.entity.component.PropComponent;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
@@ -293,7 +295,11 @@ public class KOTTMatch {
                 Player playerComp = this.getMatchWorld().getEntityStore().getStore().getComponent(_playerRef.getReference(), Player.getComponentType());
 
                 boolean joinStatus = join(_playerRef);
-                if (playerComp == null || !joinStatus) {
+                if (playerComp != null && joinStatus) {
+                    KOTTTeam team = getPlayerTeam(_playerRef);
+                    PlayerRespawnPointData[] respawnPointData = { new PlayerRespawnPointData(team.getBaseZone().getPosition(), team.getBaseZone().getPosition().toVector3d(), "Team " + team.getDisplayName() + " Respawn") };
+                    playerComp.getPlayerConfigData().getPerWorldData(world.getName()).setRespawnPoints(respawnPointData);
+                } else {
                     printLog("Failed to add the player: " + _playerRef.getUsername() + ", to a team");
                 }
             }
@@ -393,6 +399,7 @@ public class KOTTMatch {
         return false;
     }
 
+    @Deprecated
     public boolean join(@Nonnull PlayerRef playerRef) {
 
         if (!getKOTTMatchStatus() || getIsEnding()){
@@ -424,6 +431,7 @@ public class KOTTMatch {
                         ItemTypes.MITHRIL_SWORD,
                         NotificationTypes.ERROR
                 );
+                KOTTLoadingUI.unloadHud(playerRef);
                 return false;
             }
         }
@@ -446,6 +454,31 @@ public class KOTTMatch {
             this.getScoreBoard().getPlayersDeathCount().put(playerRef, 0);
         }
 
+        KOTTTeam finalChosenTeam = chosenTeam;
+        matchWorld.execute(() -> {
+            Player player = null;
+            if (playerRef.getReference() != null) {
+                player = matchWorld.getEntityStore().getStore().getComponent(playerRef.getReference(), Player.getComponentType());
+            } else if (playerRef.getHolder() != null){
+                player = playerRef.getHolder().getComponent(Player.getComponentType());
+            }
+
+            if (player != null) {
+                player.getInventory().clear();
+
+                String armbandColor = ColorHandler.getColorType(finalChosenTeam.getTeamColor()).toString();
+                armbandColor = armbandColor.substring(0, 1).toUpperCase() + armbandColor.substring(1).toLowerCase();
+
+                ItemStack armband = new ItemStack("Armband_" + armbandColor, 1);
+                player.getInventory().getArmor().addItemStack(armband);
+
+                ItemStack pistol = new ItemStack("Weapon_Handgun", 1);
+                ItemStack pistolAmmo = new ItemStack("Weapon_Arrow_Crude", 20);
+                player.getInventory().getHotbar().addItemStack(pistol);
+                player.getInventory().getHotbar().addItemStack(pistolAmmo);
+            }
+        });
+
         printNotification(
                 playerRef,
                 LogTypes.PlayerMatchJoin,
@@ -462,6 +495,16 @@ public class KOTTMatch {
     public void leave(@Nonnull PlayerRef playerRef, @Nullable Holder<EntityStore> holder) {
         // if has an holder, it's probably the player haven't been started yet, like in AddPlayerWorldEvent, or something like it
         // for it, it's necessary another way to handle it
+        if (!this.getKOTTMatchStatus() || !this.getCanMarkPoint()) {
+            printChat(playerRef, Message.raw("Cannot leave the match at this moment!").color(java.awt.Color.RED));
+            return;
+        }
+
+        if (!this.getPlayersInMatch().containsValue(playerRef)) {
+            printChat(playerRef, Message.raw("Player not in match!").color(java.awt.Color.RED));
+            return;
+        }
+
         removeFromMatch(playerRef);
 
         if (holder == null) {
@@ -500,6 +543,7 @@ public class KOTTMatch {
 
     public static CompletableFuture<Void> stop(@Nonnull String worldName, boolean forceStop) { return stop(worldName, forceStop, null, false); }
     public static CompletableFuture<Void> stop(@Nonnull String worldName, boolean forceStop, @Nullable CommandContext commandContext) { return stop(worldName, forceStop, commandContext, false); }
+    @Deprecated
     public static CompletableFuture<Void> stop(@Nonnull String worldName, boolean forceStop, @Nullable CommandContext commandContext, boolean serverStop) {
         MessageHandler.printLog("Stopping match...");
         World world = Universe.get().getWorld(worldName);
@@ -573,6 +617,8 @@ public class KOTTMatch {
                                 if (world.getEntityStore().getStore().getComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType()) != null) {
                                     world.getEntityStore().getStore().removeComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType());
                                 }
+
+                                player.getInventory().clear();
                             }
                         } else if (playerRef.getHolder() != null) {
                             Player player = playerRef.getHolder().getComponent(Player.getComponentType());
@@ -580,6 +626,8 @@ public class KOTTMatch {
                                 if (playerRef.getHolder().getComponent(InvulnerabilityComponent.getComponentType()) != null) {
                                     playerRef.getHolder().removeComponent(InvulnerabilityComponent.getComponentType());
                                 }
+
+                                player.getInventory().clear();
                             }
                         }
                     });

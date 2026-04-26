@@ -1,0 +1,20 @@
+
+{
+  "TranslationProperties": {
+    "Name": "items.missile_rpg.name",
+    "Description": "items.missile_rpg.description"
+  },
+  "Id": "Missile_RPG",
+  "Icon": "Icons/ItemsGenerated/Weapons/RPG_MissileIcon.png",
+  "Model": "Items/Weapons/RPG/RPG_Missile_model.blockymodel",
+  "Texture": "Items/Weapons/RPG/RPG_Missile_texture.png",
+  "Quality": "Common",
+  "PlayerAnimationsId": "Item",
+  "MaxStack": 5,
+  "IconProperties": {
+    "Scale": 0.25
+  },
+  "Categories": [
+    "Items.Example"
+  ]
+}

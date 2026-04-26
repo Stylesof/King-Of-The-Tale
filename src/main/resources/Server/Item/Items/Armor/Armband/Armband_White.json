@@ -1,0 +1,37 @@
+{
+  "TranslationProperties": {
+    "Name": "items.armor_armband.name",
+    "Description": "items.armor_armband.description"
+  },
+  "Parent": "Armor_Iron_Chest",
+  "Quality": "Common",
+  "ItemLevel": 25,
+  "Icon": "Icons/ItemsGenerated/Armor/Armband/Armband_WhiteIcon.png",
+  "IconProperties": {
+    "Rotation": [
+      22.5,
+      45,
+      22.5
+    ],
+    "Scale": 0.59,
+    "Translation": [
+      0.6,
+      -32.4
+    ]
+  },
+  "Model": "Items/Armors/Armband/Armband_model.blockymodel",
+  "Texture": "Items/Armors/Armband/Armband_White_texture.png",
+  "Armor": {
+    "ArmorSlot": "Hands"
+  },
+  "Tags": {
+    "Type": [
+      "Armor"
+    ],
+    "Family": [
+      "Cloth_Cotton"
+    ]
+  },
+  "MaxDurability": 999999,
+  "ItemSoundSetId": "ISS_Armor_Cloth"
+}

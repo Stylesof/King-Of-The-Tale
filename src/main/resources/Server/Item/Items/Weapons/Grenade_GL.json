@@ -1,0 +1,20 @@
+
+{
+  "TranslationProperties": {
+    "Name": "items.grenade_gl.name",
+    "Description": "items.grenade_gl.description"
+  },
+  "Id": "Grenade_GL",
+  "Icon": "Icons/ItemsGenerated/Weapons/GL_GrenadeIcon.png",
+  "Model": "Items/Weapons/GL/GL_Grenade_model.blockymodel",
+  "Texture": "Items/Weapons/GL/GL_Grenade_texture.png",
+  "Quality": "Common",
+  "PlayerAnimationsId": "Item",
+  "MaxStack": 8,
+  "IconProperties": {
+    "Scale": 0.25
+  },
+  "Categories": [
+    "Items.Example"
+  ]
+}

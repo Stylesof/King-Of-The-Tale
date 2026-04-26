@@ -11,7 +11,7 @@
   "Bounciness": 0,
   "ImpactSlowdown": 0,
   "TimeToLive": 50,
-  "Damage": 100,
+  "Damage": 180,
   "DeathEffectsOnHit": true,
   "DeadTime": 0.1,
   "DeadTimeMiss": 0,
@@ -23,7 +23,7 @@
   },
   "VerticalCenterShot": 0,
   "HorizontalCenterShot": 0,
-  "DeathSoundEventId": "SFX_GunPvP_Assault_Rifle_Bullet_Death",
+  "DeathSoundEventId": "SFX_GL_Death",
   "ExplosionConfig": {
     "DamageEntities": true,
     "DamageBlocks": true,

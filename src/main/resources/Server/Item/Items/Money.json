@@ -3,7 +3,6 @@
     "Name": "items.money.name",
     "Description": "items.money.description"
   },
-   "Id": "Money",
   "Icon": "Icons/ItemsGenerated/MoneyIcon.png",
   "Model": "Items/Money/money.blockymodel",
   "Texture": "Items/Money/money_texture.png",

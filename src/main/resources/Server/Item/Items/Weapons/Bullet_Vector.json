@@ -1,0 +1,18 @@
+{
+  "TranslationProperties": {
+    "Name": "items.bullet_vector.name",
+    "Description": "items.bullet_vector.description"
+  },
+  "Icon": "Icons/ItemsGenerated/Weapons/Vector_BulletIcon.png",
+  "Model": "Items/Weapons/Vector/Vector_Bullet_model.blockymodel",
+  "Texture": "Items/Weapons/Vector/Vector_Bullet_texture.png",
+  "Quality": "Common",
+  "PlayerAnimationsId": "Item",
+  "MaxStack": 30,
+  "IconProperties": {
+    "Scale": 0.25
+  },
+  "Categories": [
+    "Items.Example"
+  ]
+}

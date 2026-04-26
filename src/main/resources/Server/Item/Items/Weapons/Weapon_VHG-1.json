@@ -4,7 +4,7 @@
     "Description": "items.weapon_vhg-1.description"
   },
   "Categories": [
-    "Items.Weapons"
+    "Items.Weapon"
   ],
   "Icon": "Icons/ItemsGenerated/Weapons/VHG-1Icon.png",
   "Model": "Items/Weapons/VHG-1/VHG-1_model.blockymodel",

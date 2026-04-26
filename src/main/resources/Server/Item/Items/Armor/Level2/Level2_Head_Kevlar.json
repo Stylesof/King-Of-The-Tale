@@ -1,6 +1,7 @@
 {
   "TranslationProperties": {
-    "Name": "Level 1 Kevlar Helmet"
+    "Name": "items.armor_level2_head_kevlar.name",
+    "Description": "items.armor_level2_head_kevlar.description"
   },
   "Quality": "Uncommon",
   "ItemLevel": 20,
@@ -9,7 +10,7 @@
   "Categories": [
     "Items.Armors"
   ],
-  "Icon": "Icons/ItemsGenerated/Armor/Level1/Head_KevlarIcon.png",
+  "Icon": "Icons/ItemsGenerated/Armor/Level2/HeadIcon.png",
   "IconProperties": {
     "Rotation": [
       22.5,
@@ -22,8 +23,8 @@
       -13.2
     ]
   },
-  "Model": "Items/Armors/Level1/Head_Kevlar_model.blockymodel",
-  "Texture": "Items/Armors/Level1/Head_Kevlar_texture.png",
+  "Model": "Items/Armors/Level2/Head_Kevlar_model.blockymodel",
+  "Texture": "Items/Armors/Level2/Head_Kevlar_texture.png",
   "Interactions": {
     "Primary": {
       "Interactions": [
@@ -52,13 +53,13 @@
     "DamageResistance": {
       "Physical": [
         {
-          "Amount": 0.09,
+          "Amount": 0.045,
           "CalculationType": "Multiplicative"
         }
       ],
       "Projectile": [
         {
-          "Amount": 0.18,
+          "Amount": 0.09,
           "CalculationType": "Multiplicative"
         }
       ]
@@ -66,13 +67,13 @@
     "StatModifiers": {
       "Health": [
         {
-          "Amount": 17,
+          "Amount": 34,
           "CalculationType": "Additive"
         }
       ]
     }
   },
-  "MaxDurability": 100,
+  "MaxDurability": 200,
   "DurabilityLossOnHit": 0.5,
   "Tags": {
     "Type": [

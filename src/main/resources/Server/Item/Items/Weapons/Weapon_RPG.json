@@ -29,7 +29,7 @@
           "Type": "ModifyInventory",
           "RequiredGameMode": "Adventure",
           "ItemToRemove": {
-            "Id": "Bullet_VPS-1",
+            "Id": "Missile_RPG",
             "Quantity": 1
           },
           "Next": {

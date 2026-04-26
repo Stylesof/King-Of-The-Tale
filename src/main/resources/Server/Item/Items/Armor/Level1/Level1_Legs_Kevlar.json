@@ -1,6 +1,7 @@
 {
   "TranslationProperties": {
-    "Name": "Level 2 Kevlar Helmet"
+    "Name": "items.armor_level1_legs_kevlar.name",
+    "Description": "items.armor_level1_legs_kevlar.description"
   },
   "Quality": "Uncommon",
   "ItemLevel": 20,
@@ -9,7 +10,7 @@
   "Categories": [
     "Items.Armors"
   ],
-  "Icon": "Icons/ItemsGenerated/Armor/Level1/Head_KevlarIcon.png",
+  "Icon": "Icons/ItemsGenerated/Armor/Level1/LegsIcon.png",
   "IconProperties": {
     "Rotation": [
       22.5,
@@ -22,8 +23,8 @@
       -13.2
     ]
   },
-  "Model": "Items/Armors/Level2/Head_Kevlar_model.blockymodel",
-  "Texture": "Items/Armors/Level2/Head_Kevlar_texture.png",
+  "Model": "Items/Armors/Level1/Legs_Kevlar_model.blockymodel",
+  "Texture": "Items/Armors/Level1/Legs_Kevlar_texture.png",
   "Interactions": {
     "Primary": {
       "Interactions": [
@@ -41,24 +42,20 @@
     }
   },
   "Armor": {
-    "ArmorSlot": "Head",
+    "ArmorSlot": "Legs",
     "BaseDamageResistance": 0,
     "CosmeticsToHide": [
-      "EarAccessory",
-      "Ear",
-      "Haircut",
-      "HeadAccessory"
     ],
     "DamageResistance": {
       "Physical": [
         {
-          "Amount": 0.045,
+          "Amount": 0.09,
           "CalculationType": "Multiplicative"
         }
       ],
       "Projectile": [
         {
-          "Amount": 0.09,
+          "Amount": 0.18,
           "CalculationType": "Multiplicative"
         }
       ]
@@ -66,13 +63,13 @@
     "StatModifiers": {
       "Health": [
         {
-          "Amount": 34,
+          "Amount": 17,
           "CalculationType": "Additive"
         }
       ]
     }
   },
-  "MaxDurability": 200,
+  "MaxDurability": 100,
   "DurabilityLossOnHit": 0.5,
   "Tags": {
     "Type": [

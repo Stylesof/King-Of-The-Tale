@@ -13,9 +13,9 @@
     "DropList": "Empty",
     "Appearance": "FighterNPC_Model",
     "Weapons": [
-      "Weapon_VHG-1"
+      "Weapon_Vector"
     ],
-    "Attack": "VHG-1_Shoot",
+    "Attack": "Vector_Shoot",
     "CombatBackOffAfterAttack": false,
     "AttackDistance": 70,
     "CombatFleeIfTooCloseDistance": 0,

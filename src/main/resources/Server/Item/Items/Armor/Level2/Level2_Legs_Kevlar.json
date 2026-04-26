@@ -1,6 +1,7 @@
 {
   "TranslationProperties": {
-    "Name": "Level 2 Kevlar Chest"
+    "Name": "items.armor_level2_legs_kevlar.name",
+    "Description": "items.armor_level2_legs_kevlar.description"
   },
   "Quality": "Uncommon",
   "ItemLevel": 20,
@@ -9,7 +10,7 @@
   "Categories": [
     "Items.Armors"
   ],
-  "Icon": "Icons/ItemsGenerated/Armor/Level1/Chest_KevlarIcon.png",
+  "Icon": "Icons/ItemsGenerated/Armor/Level2/LegsIcon.png",
   "IconProperties": {
     "Rotation": [
       22.5,
@@ -22,8 +23,8 @@
       -13.2
     ]
   },
-  "Model": "Items/Armors/Level2/Chest_Kevlar_model.blockymodel",
-  "Texture": "Items/Armors/Level2/Chest_Kevlar_texture.png",
+  "Model": "Items/Armors/Level2/Legs_Kevlar_model.blockymodel",
+  "Texture": "Items/Armors/Level2/Legs_Kevlar_texture.png",
   "Interactions": {
     "Primary": {
       "Interactions": [
@@ -41,8 +42,10 @@
     }
   },
   "Armor": {
-    "ArmorSlot": "Chest",
+    "ArmorSlot": "Legs",
     "BaseDamageResistance": 0,
+    "CosmeticsToHide": [
+    ],
     "DamageResistance": {
       "Physical": [
         {
@@ -57,9 +60,6 @@
         }
       ]
     },
-    "CosmeticsToHide": [
-      "Overtop"
-    ],
     "StatModifiers": {
       "Health": [
         {

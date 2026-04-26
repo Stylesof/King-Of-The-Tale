@@ -185,6 +185,12 @@ public class KOTTMoneyCommand extends AbstractAsyncPlayerCommand {
             }
 
             Player player = store.getComponent(playerRef.getReference(), Player.getComponentType());
+            if (player == null) {
+                printChat(playerRef, "Invalid player component!");
+                printLog("Invalid player component!");
+                return CompletableFuture.completedFuture(null);
+            }
+
             ItemStack moneyItem = new ItemStack("Money", _quantity);
             ItemStackTransaction transaction = player.giveItem(moneyItem, playerRef.getReference(), store);
             ItemStack remainder = transaction.getRemainder();

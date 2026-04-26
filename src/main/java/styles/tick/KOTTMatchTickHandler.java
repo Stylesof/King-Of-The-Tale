@@ -9,6 +9,7 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.NPCPlugin;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
+import com.hypixel.hytale.server.npc.util.InventoryHelper;
 import styles.player.component.KOTTMoney;
 import styles.team.KOTTTeam;
 import styles.util.MathHelper;
@@ -42,12 +43,14 @@ public class KOTTMatchTickHandler extends TickingSystem<EntityStore> {
                         // Spawn in randow pos with safe 10 blocks from any player
                         // in radius
                         match.getMatchWorld().execute(() -> {
-                            Vector3i pos = getRandomPos(match);
+                            Vector3i pos = getRandomPos(match.getZone().getZoneRadius());
+                            pos.x += match.getZone().getPosition().x;
+                            pos.z += match.getZone().getPosition().z;
                             pos = WorldBuilder.alignVectorToWorldSurface(pos, match.getMatchWorld());
 
                             int i = 0;
                             if (pos != null) {
-                                for (i = 0; i < match.getZone().getPlayersInZone().size(); i++) {
+                                for (; i < match.getZone().getPlayersInZone().size(); i++) {
                                     double distance = MathHelper.positionDistance(match.getZone().getPlayersInZone().get(i).getTransform().getPosition(), pos.toVector3d());
                                     if (distance < 10.0f) {
                                         break;
@@ -57,8 +60,8 @@ public class KOTTMatchTickHandler extends TickingSystem<EntityStore> {
                                 printLog("Invalid NPC spawn position");
                             }
 
-                            if (i != 0 && i == match.getZone().getPlayersInZone().size()) {
-                                AtomicInteger npcCounter = new AtomicInteger();
+                            if (pos != null && i == match.getZone().getPlayersInZone().size()) {
+                                AtomicInteger npcCounter = new AtomicInteger(0);
                                 match.getMatchWorld().getEntityStore().getStore().forEachChunk(NPCEntity.getComponentType(), (archetypeChunk, commandBuffer) -> {
                                     for(int _index = 0; _index < archetypeChunk.size(); _index++) {
                                         NPCEntity npc = archetypeChunk.getComponent(_index, Objects.requireNonNull(NPCEntity.getComponentType()));
@@ -75,13 +78,17 @@ public class KOTTMatchTickHandler extends TickingSystem<EntityStore> {
                                 // TODO: Seems NOT to WORK, it's like the npcCounter isn't being updated at the time
                                 if (npcCounter.get() < match.npcCounter) {
                                     printLog("Spawning NPC in: (" + pos.x + ", " + pos.y + ", " + pos.z + ")");
-                                    NPCPlugin.get().spawnNPC(
+                                    var npc = NPCPlugin.get().spawnNPC(
                                             match.getMatchWorld().getEntityStore().getStore(),
                                             "FighterNPC",
                                             null,
                                             pos.toVector3d(),
                                             new Vector3f(0.0f, 0.0f, 0.0f)
                                     );
+
+                                    NPCEntity npcE = match.getMatchWorld().getEntityStore().getStore().getComponent(npc.first(), NPCEntity.getComponentType());
+                                    InventoryHelper.useArmor(npcE.getInventory().getArmor(), "CamoUniform_Chest");
+                                    InventoryHelper.useArmor(npcE.getInventory().getArmor(), "CamoUniform_Legs");
                                 } else {
                                     printLog("NPC in Zone limit reached!");
                                 }
@@ -155,15 +162,10 @@ public class KOTTMatchTickHandler extends TickingSystem<EntityStore> {
         }
     }
 
-    private static Vector3i getRandomPos(KOTTMatch match) {
+    private static Vector3i getRandomPos(int radius) {
         Random random = new Random();
-        int areaRadius = match.getZone().getZoneRadius();
-        int randomX = random.nextInt(-areaRadius, areaRadius);
-        int randomZ = random.nextInt(-areaRadius, areaRadius);
-
-        randomX += match.getZone().getPosition().x;
-        randomZ += match.getZone().getPosition().z;
-
+        int randomX = random.nextInt(-radius, radius);
+        int randomZ = random.nextInt(-radius, radius);
         return new Vector3i(randomX, 0, randomZ);
     }
 }
