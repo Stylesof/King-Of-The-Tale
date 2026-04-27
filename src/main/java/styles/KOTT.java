@@ -82,35 +82,6 @@ public class KOTT extends JavaPlugin {
         this.getEntityStoreRegistry().registerSystem(new InvulnerabilitySystem(this.invulnerabilityComponentType));
         this.getEntityStoreRegistry().registerSystem(new ProjectileDetectionSystem());
         this.getEntityStoreRegistry().registerSystem(new DeathSystem());
-
-        // Removed due to player mouse1 usage cancel
-        //PlayerAttackHandler atkHandler = new PlayerAttackHandler();
-        /* COMMENTED DUE TO HEAVY QUANTITY MESSAGES SENDED TO PLAYER
-        PacketAdapters.registerInbound((PlayerPacketFilter) (player, packet) ->{
-            if(!(packet instanceof SyncInteractionChains syncPacket)) return false;
-            if (player == null) return false;
-
-            World world = Universe.get().getWorld(player.getWorldUuid());
-
-            if (world != null) {
-                KOTTMatch match = KOTTMatch.getMatch(world.getName());
-                if (match != null) {
-                    KOTTTeam team = match.getPlayerTeam(player);
-                    if (team != null) {
-                        if (team.getBaseZone().isInside(player.getTransform().getPosition())) {
-                            for (SyncInteractionChain chain : syncPacket.updates) {
-                                if (chain.interactionType == InteractionType.Primary) {
-                                    printChat(player, Message.raw("You can't shoot or attack while inside the base!").color("#FF0000"));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            return false;
-        });
-        */
     }
 
     @Override

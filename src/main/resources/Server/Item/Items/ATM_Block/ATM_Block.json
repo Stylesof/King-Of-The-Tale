@@ -44,6 +44,14 @@
     "ParticleColor": "#9f9e81",
     "CustomModelScale": 1.0
   },
+  "Interactions": {
+    "Use": {
+      "Type": "OpenCustomUI",
+      "Page": {
+        "Id": "ATMBlockInteractionUI"
+      }
+    },
+  },
   "Tags": {
     "Type": [
       "Furniture"

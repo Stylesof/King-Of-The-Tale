@@ -14,6 +14,8 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import styles.player.component.KOTTMoney;
+import styles.player.util.InventoryManagement;
+import styles.team.KOTTTeam;
 import styles.thread.ThreadSafetyProvider;
 import styles.util.ColorHandler;
 import styles.world.KOTTMatch;
@@ -75,18 +77,12 @@ public class DeathSystem extends EntityTickingSystem<EntityStore> {
                         ThreadSafetyProvider.DeathSystemScheduler.schedule(() -> playerCanChangeScore.remove(finalPlayerRef), 3, TimeUnit.SECONDS);
                     }
 
-                    player.getInventory().clear();
-
-                    String armbandColor = ColorHandler.getColorType(match.getPlayerTeam(playerRef).getTeamColor()).toString();
-                    armbandColor = armbandColor.substring(0, 1).toUpperCase() + armbandColor.substring(1).toLowerCase();
-
-                    ItemStack armband = new ItemStack("Armband_" + armbandColor, 1);
-                    player.getInventory().getArmor().addItemStack(armband);
-
-                    ItemStack pistol = new ItemStack("Weapon_Handgun", 1);
-                    ItemStack pistolAmmo = new ItemStack("Weapon_Arrow_Crude", 20);
-                    player.getInventory().getHotbar().addItemStack(pistol);
-                    player.getInventory().getHotbar().addItemStack(pistolAmmo);
+                    if (playerRef != null) {
+                        KOTTTeam team = match.getPlayerTeam(playerRef);
+                        if (team != null) {
+                            InventoryManagement.KOTTStarterKit.applyKit(player, team);
+                        }
+                    }
                 }
             } else {
                 return;

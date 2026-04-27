@@ -41,7 +41,6 @@ public class PlayerTickHandler extends EntityTickingSystem<EntityStore> {
         // verify if actual entity is inside any zone
         Ref<EntityStore> ref = archetypeChunk.getReferenceTo(index);
         PlayerRef playerRef = ref.getStore().getComponent(ref, PlayerRef.getComponentType());
-
         if (playerRef == null || playerRef.getWorldUuid() == null) return;
 
         World world = Universe.get().getWorld(playerRef.getWorldUuid());
@@ -62,7 +61,6 @@ public class PlayerTickHandler extends EntityTickingSystem<EntityStore> {
                     }
                 }
             }));
-
             return;
         }
 
@@ -109,9 +107,18 @@ public class PlayerTickHandler extends EntityTickingSystem<EntityStore> {
             world.execute(() -> {
                 if (playerRef.getReference() == null) return;
                 InvulnerabilityComponent ic = store.getComponent(playerRef.getReference(), InvulnerabilityComponent.getComponentType());
-                if (ic == null) return;
-                if (team.containsPlayer(playerRef)) {
-                    ic.setActiveStatus(team.getBaseZone().getPlayersInZone().contains(playerRef));
+                if (ic != null) {
+                    if (team.getBaseZone().getPlayersInZone().contains(playerRef)) {
+                        if (!ic.getActiveStatus()) {
+                            ic.startTime.set(System.currentTimeMillis());
+                            ic.setActiveStatus(true);
+                        }
+                    } else {
+                        if (ic.getActiveStatus()) {
+                            ic.setActiveStatus(false);
+                            ic.setCooldownStatus(true);
+                        }
+                    }
                 }
             });
         }

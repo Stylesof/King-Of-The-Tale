@@ -21,6 +21,7 @@ import com.hypixel.hytale.server.core.universe.world.worldmap.markers.worldstore
 import com.hypixel.hytale.server.npc.NPCPlugin;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import styles.player.component.InvulnerabilityComponent;
+import styles.player.util.InventoryManagement;
 import styles.team.KOTTTeam;
 import styles.ui.KOTTEndUI;
 import styles.ui.KOTTLoadingUI;
@@ -299,6 +300,12 @@ public class KOTTMatch {
                     KOTTTeam team = getPlayerTeam(_playerRef);
                     PlayerRespawnPointData[] respawnPointData = { new PlayerRespawnPointData(team.getBaseZone().getPosition(), team.getBaseZone().getPosition().toVector3d(), "Team " + team.getDisplayName() + " Respawn") };
                     playerComp.getPlayerConfigData().getPerWorldData(world.getName()).setRespawnPoints(respawnPointData);
+
+                    InvulnerabilityComponent ic = world.getEntityStore().getStore().getComponent(_playerRef.getReference(), InvulnerabilityComponent.getComponentType());
+                    if (ic == null) {
+                        ic = new InvulnerabilityComponent();
+                        world.getEntityStore().getStore().addComponent(_playerRef.getReference(), InvulnerabilityComponent.getComponentType(), ic);
+                    }
                 } else {
                     printLog("Failed to add the player: " + _playerRef.getUsername() + ", to a team");
                 }
@@ -464,18 +471,7 @@ public class KOTTMatch {
             }
 
             if (player != null) {
-                player.getInventory().clear();
-
-                String armbandColor = ColorHandler.getColorType(finalChosenTeam.getTeamColor()).toString();
-                armbandColor = armbandColor.substring(0, 1).toUpperCase() + armbandColor.substring(1).toLowerCase();
-
-                ItemStack armband = new ItemStack("Armband_" + armbandColor, 1);
-                player.getInventory().getArmor().addItemStack(armband);
-
-                ItemStack pistol = new ItemStack("Weapon_Handgun", 1);
-                ItemStack pistolAmmo = new ItemStack("Weapon_Arrow_Crude", 20);
-                player.getInventory().getHotbar().addItemStack(pistol);
-                player.getInventory().getHotbar().addItemStack(pistolAmmo);
+                InventoryManagement.KOTTStarterKit.applyKit(player, finalChosenTeam);
             }
         });
 
