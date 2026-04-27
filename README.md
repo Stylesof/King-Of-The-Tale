@@ -1,5 +1,8 @@
 <h1><strong>King Of The</strong>&nbsp;<span style="color: #e03e2d;"><strong>Tale</strong></span>&nbsp; <span style="color: #ced4d9;"><strong>(W.I.P.)</strong></span></h1>
 <p>&nbsp;</p>
+
+Mod Page: <a href="https://www.curseforge.com/hytale/mods/king-of-the-tale" target="_blank" rel="noopener">https://www.curseforge.com/hytale/mods/king-of-the-tale</a></span></li>
+
 <h3><span style="color: #fff;"><strong>Description</strong></span></h3>
 <p style="padding-left: 40px;"><span style="color: #ced4d9;">Fight against other players, or in zone spawning NPCs, stay inside the Main Zone to mark points for your Team, kill other Players/NPCs, make money (you will need for buying new tools/weapons/gears) and most important thing: work with your team (or not if you are a lonewolf &gt;:-D)</span></p>
 <p style="padding-left: 40px;"><span style="color: #f1c40f;">To start playing with the mod, you must create (or load) an Hytale World with this Mod loaded, while in the World (in-game), you must use&nbsp;<span style="color: #ba372a;">/op self <span style="color: #f1c40f;">to be able to use commands, and use</span></span>&nbsp;<span style="color: #e03e2d;">/kott gui<span style="color: #f1c40f;">.</span></span> This command will open an UI interface to you configure the KOTT Match settings. When ready, click in the Start button to start the match.</span></p>
