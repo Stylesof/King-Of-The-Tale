@@ -21,7 +21,7 @@ public class ATMBlockInteractionPage extends InteractiveCustomUIPage<ATMBlockInt
 
     @Override
     public void build(@NonNullDecl Ref<EntityStore> ref, @NonNullDecl UICommandBuilder uiCommandBuilder, @NonNullDecl UIEventBuilder uiEventBuilder, @NonNullDecl Store<EntityStore> store) {
-        uiCommandBuilder.append("KOTT/KOTTStartUI.ui");
+        uiCommandBuilder.append("KOTT/atm/ATMBlock.ui");
     }
 
     public static class Data {

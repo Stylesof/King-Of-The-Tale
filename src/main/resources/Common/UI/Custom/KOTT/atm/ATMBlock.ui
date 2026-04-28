@@ -1,0 +1,17 @@
+$C = "../../Common.ui";
+
+Group {
+    Anchor: (Width: 1280, Height: 1024);
+    Background: "ATMBlock.png";
+
+    Group #ButtonSpace {
+        Anchor: (Height: 64, Right: 10, Left: 10, Top: 10);
+
+        $C.@Button {
+            Group {
+                Anchor: (Width: 64, Height: 64);
+                Background: #000000;
+            }
+        }
+    }
+}
