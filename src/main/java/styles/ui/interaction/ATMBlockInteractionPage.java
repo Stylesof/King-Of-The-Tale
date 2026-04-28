@@ -13,9 +13,9 @@ import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 
 import javax.annotation.Nonnull;
 
-public class ATMBlockInteractionUI extends InteractiveCustomUIPage<ATMBlockInteractionUI.Data> {
+public class ATMBlockInteractionPage extends InteractiveCustomUIPage<ATMBlockInteractionPage.Data> {
 
-    public ATMBlockInteractionUI(@Nonnull PlayerRef playerRef) {
+    public ATMBlockInteractionPage(@Nonnull PlayerRef playerRef) {
         super(playerRef, CustomPageLifetime.CanDismiss, Data.CODEC);
     }
 
@@ -26,7 +26,6 @@ public class ATMBlockInteractionUI extends InteractiveCustomUIPage<ATMBlockInter
 
     public static class Data {
         public static BuilderCodec<Data> CODEC = BuilderCodec.builder(Data.class, Data::new)
-
                 .build();
     }
 }

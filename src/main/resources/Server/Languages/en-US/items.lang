@@ -28,9 +28,9 @@ armor_armband.name = Armband (Colored)
 armor_armband.description = Armband used to identify your teammates.
 
 armor_camouniform_chest.name = Camo Uniform Chest
-armor_camouniform_chest.description = Uniform: designed to be used by NPCs (It haven't any attribute).
+armor_camouniform_chest.description = Uniform: designed to be used by NPCs (It doesn't have any attribute).
 armor_camouniform_legs.name = Camo Uniform Legs
-armor_camouniform_legs.description = Uniform: designed to be used by NPCs (It haven't any attribute).
+armor_camouniform_legs.description = Uniform: designed to be used by NPCs (It doesn't have any attribute).
 
 armor_level1_head_kevlar.name = Level 1 Kevlar Helmet
 armor_level1_head_kevlar.description = Basic helmet, designed to handle impact in the head.

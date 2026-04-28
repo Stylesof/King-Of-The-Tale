@@ -165,11 +165,8 @@ public class KOTTStartUI extends InteractiveCustomUIPage<KOTTStartUI.Data> {
         uiCommandBuilder.set("#ErrorMessage.Text", this.errorMessage);
     }
 
-    public void closePage() {
-        close();
-    }
-
     public static class Data {
+
         private String key;
         private String value;
 
